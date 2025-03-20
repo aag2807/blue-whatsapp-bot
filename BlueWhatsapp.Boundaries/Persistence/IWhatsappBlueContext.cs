@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BlueWhatsapp.Boundaries.Persistence.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace BlueWhatsapp.Boundaries.Persistence;
@@ -8,6 +9,26 @@ namespace BlueWhatsapp.Boundaries.Persistence;
 /// </summary>
 public interface IWhatsappBlueContext
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    public DbSet<Hotel> Hotels { get; set; }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    public DbSet<HotelSchedule> HotelSchedules { get; set; }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    public DbSet<Route> Routes { get; set; }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    public DbSet<Schedule> Schedules { get; set; }
+    
     /// <inheritdoc cref="DbContext.SaveChanges()"/>
     int SaveChanges();
 

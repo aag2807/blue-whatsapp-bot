@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using BlueWhatsapp.Boundaries.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Triplex.Validations;
@@ -27,6 +28,26 @@ public class WhatsappBlueContext : DbContext, IWhatsappBlueContext
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.EnableSensitiveDataLogging();
+    }
+
+    #region [DBSET]
+    /// <inheritdoc />
+    DbSet<Hotel> IWhatsappBlueContext.Hotels { get; set; }
+
+    /// <inheritdoc />
+    DbSet<HotelSchedule> IWhatsappBlueContext.HotelSchedules { get; set; }
+    
+    /// <inheritdoc />
+    DbSet<Route> IWhatsappBlueContext.Routes { get; set; }
+    
+    /// <inheritdoc />
+    DbSet<Schedule> IWhatsappBlueContext.Schedules { get; set; }
+    
+    #endregion
+    
     #region Context methods implementations
 
     /// <inheritdoc />
