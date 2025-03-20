@@ -1,0 +1,7 @@
+﻿**/bin/
+**/obj/
+**/out/
+**/.vs/
+**/.idea/
+**/logs/
+WhatsappApp.db
