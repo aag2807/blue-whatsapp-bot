@@ -1,0 +1,66 @@
+﻿@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Index";
+}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Stats Cards -->
+            <div class="bg-[#1e1e2d] rounded-xl p-6">
+                <div class="text-gray-400 mb-2">Total Users</div>
+                <div class="text-white text-2xl font-bold">2,543</div>
+                <div class="text-green-500 text-sm mt-2">↑ 12% from last month</div>
+            </div>
+            <div class="bg-[#1e1e2d] rounded-xl p-6">
+                <div class="text-gray-400 mb-2">Active Projects</div>
+                <div class="text-white text-2xl font-bold">95</div>
+                <div class="text-red-500 text-sm mt-2">↓ 3% from last month</div>
+            </div>
+            <div class="bg-[#1e1e2d] rounded-xl p-6">
+                <div class="text-gray-400 mb-2">Revenue</div>
+                <div class="text-white text-2xl font-bold">$45,234</div>
+                <div class="text-green-500 text-sm mt-2">↑ 8% from last month</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Graph -->
+            <div class="bg-[#1e1e2d] rounded-xl p-6">
+                <h2 class="text-white text-lg font-semibold mb-4">Monthly Activity</h2>
+                <canvas id="activityChart" class="w-full h-64"></canvas>
+            </div>
+
+            <!-- List -->
+            <div class="bg-[#1e1e2d] rounded-xl p-6">
+                <h2 class="text-white text-lg font-semibold mb-4">Recent Activities</h2>
+                <div class="space-y-4">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white">JD
+                        </div>
+                        <div class="ml-4">
+                            <div class="text-white">John Doe</div>
+                            <div class="text-gray-400 text-sm">Created a new project</div>
+                        </div>
+                        <div class="ml-auto text-gray-400 text-sm">2h ago</div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center text-white">
+                            AS
+                        </div>
+                        <div class="ml-4">
+                            <div class="text-white">Alice Smith</div>
+                            <div class="text-gray-400 text-sm">Updated dashboard layout</div>
+                        </div>
+                        <div class="ml-auto text-gray-400 text-sm">5h ago</div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center text-white">
+                            RJ
+                        </div>
+                        <div class="ml-4">
+                            <div class="text-white">Robert Johnson</div>
+                            <div class="text-gray-400 text-sm">Completed task: Design Review</div>
+                        </div>
+                        <div class="ml-auto text-gray-400 text-sm">1d ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>

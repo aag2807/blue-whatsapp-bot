@@ -1,0 +1,15 @@
+﻿namespace BlueWhatsapp.Api.Extensions;
+
+/// <summary>
+/// 
+/// </summary>
+internal static class DomainServiceExtensions
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="builder"></param>
+    internal static void ConfigureDomainServices(this WebApplicationBuilder builder)
+    {
+    }
+}

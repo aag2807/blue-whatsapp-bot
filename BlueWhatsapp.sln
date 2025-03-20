@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlueWhatsapp.Api", "BlueWhatsapp.Api\BlueWhatsapp.Api.csproj", "{AF8EC3A8-FE95-45B9-9A60-E6F02758F9F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlueWhatsapp.Boundaries", "BlueWhatsapp.Boundaries\BlueWhatsapp.Boundaries.csproj", "{5FF3CD45-49BC-4106-9F53-E5C78E2591AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlueWhatsapp.Core", "BlueWhatsapp.Core\BlueWhatsapp.Core.csproj", "{16043E89-095C-4076-AE33-A632F689A5FF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AF8EC3A8-FE95-45B9-9A60-E6F02758F9F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF8EC3A8-FE95-45B9-9A60-E6F02758F9F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF8EC3A8-FE95-45B9-9A60-E6F02758F9F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF8EC3A8-FE95-45B9-9A60-E6F02758F9F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FF3CD45-49BC-4106-9F53-E5C78E2591AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FF3CD45-49BC-4106-9F53-E5C78E2591AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FF3CD45-49BC-4106-9F53-E5C78E2591AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FF3CD45-49BC-4106-9F53-E5C78E2591AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16043E89-095C-4076-AE33-A632F689A5FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16043E89-095C-4076-AE33-A632F689A5FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16043E89-095C-4076-AE33-A632F689A5FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16043E89-095C-4076-AE33-A632F689A5FF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

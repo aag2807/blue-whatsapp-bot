@@ -1,0 +1,97 @@
+﻿@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Index";
+}
+<div class="min-h-screen flex items-center justify-center bg-[#2a2a3c]">
+    <div class="w-full max-w-6xl bg-[#1e1e2d] rounded-3xl overflow-hidden shadow-2xl">
+        <div class="flex flex-col md:flex-row max-h-[600px] min-h-[500px]">
+            <!-- Left Side - Image -->
+            <div class="w-full md:w-1/2 relative">
+                <div class="h-64 md:h-full relative" x-data="{
+                     images:[
+                        'https://images.pexels.com/photos/1310781/pexels-photo-1310781.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+                        'https://images.pexels.com/photos/221304/pexels-photo-221304.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+                        'https://images.pexels.com/photos/175764/pexels-photo-175764.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+                    ],
+                    currentIndex: 0,
+                    fadeIn: true,
+                    getCurrentImage() {
+                        return this.images[this.currentIndex];
+                    },
+                    nextImage() {
+                        // First set fadeIn to false to trigger the fade-out effect
+                        this.fadeIn = false;
+                        
+                        // Wait for the fade-out transition to complete
+                        setTimeout(() => {
+                            // Change the image
+                            const tempIndex = this.currentIndex + 1;
+                            if(tempIndex >= this.images.length) {
+                                this.currentIndex = 0;
+                            } else {
+                                this.currentIndex = tempIndex;
+                            }
+                            
+                            // Trigger the fade-in effect
+                            this.fadeIn = true;
+                        }, 500); // This duration should match the CSS transition duration
+                    },
+                    init() {
+                        setInterval(() => {
+                            this.nextImage();
+                        }, 5000);
+                    }
+                }" x-init="init()">
+                    <img :src="getCurrentImage()"
+                         alt="Desert Landscape"
+                         class="w-full h-full object-cover transition-opacity duration-500"
+                         :class="fadeIn ? 'opacity-100' : 'opacity-0'">
+                </div>
+            </div>
+            
+            <!-- Right Side - Form -->
+            <div class="w-full md:w-1/2 p-8 md:p-12" x-data="{ showPassword: false }">
+                <div class="max-w-md mx-auto">
+                    <h1 class="text-3xl font-bold text-white mb-2">Bienvenido!</h1>
+                    <p class="text-gray-400 mb-8">
+                        Inicie Session
+                    </p>
+
+                    @using (@Html.BeginForm("Dashboard", "Backoffice", FormMethod.Post))
+                    {
+                        <div class="space-y-4">
+                        
+                            @Html.AntiForgeryToken()
+
+                            <input
+                                name="Email"
+                                type="email" placeholder="Email" class="w-full px-4 py-3 rounded-lg bg-[#2a2a3c] text-white border-0 focus:ring-2 focus:ring-[#6366f1">
+                            <div class="relative mt-4">
+                                <input
+                                    :type="showPassword ? 'text' : 'password'"
+                                    placeholder="Enter your password"
+                                    name="Password"
+                                    class="w-full  px-4 py-3 rounded-lg bg-[#2a2a3c] text-white border-0 focus:ring-2 focus:ring-[#6366f1">
+                                <button
+                                    type="button"
+                                    x-on:click="showPassword = !showPassword"
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer transition hover:opacity-75">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </button>
+                            </div>
+
+
+                            <button type="submit" class="mt-5 w-full space-x-3 text-white bg-[#6366f1] rounded-lg px-4 py-3 text-white font-semibold py-3 px-4 rounded-lg transition-colors cursor-pointer hover:bg-[#4f46e5]">
+                                Inciar Sesion
+                            </button>
+
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

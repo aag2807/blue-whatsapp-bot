@@ -1,0 +1,18 @@
+﻿version: '3.8'
+
+services:
+  bluewhatsapp-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - sqlite-data:/app/data
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - SQLite__DatabasePath=/app/data/WhatsappApp.db
+    restart: unless-stopped
+
+volumes:
+  sqlite-data:
