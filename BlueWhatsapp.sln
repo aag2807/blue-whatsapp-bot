@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlueWhatsapp.Boundaries", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlueWhatsapp.Core", "BlueWhatsapp.Core\BlueWhatsapp.Core.csproj", "{16043E89-095C-4076-AE33-A632F689A5FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlueWhatsapp.Test", "BlueWhatsapp.Test\BlueWhatsapp.Test.csproj", "{5F179866-FB22-4109-A75D-B52DEE4861D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{16043E89-095C-4076-AE33-A632F689A5FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16043E89-095C-4076-AE33-A632F689A5FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16043E89-095C-4076-AE33-A632F689A5FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F179866-FB22-4109-A75D-B52DEE4861D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F179866-FB22-4109-A75D-B52DEE4861D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F179866-FB22-4109-A75D-B52DEE4861D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F179866-FB22-4109-A75D-B52DEE4861D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

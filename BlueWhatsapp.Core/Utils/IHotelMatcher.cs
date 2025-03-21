@@ -1,4 +1,6 @@
-﻿namespace BlueWhatsapp.Core.Utils;
+﻿using BlueWhatsapp.Core.Models;
+
+namespace BlueWhatsapp.Core.Utils;
 
 /// <summary>
 /// 
@@ -11,5 +13,16 @@ public interface IHotelMatcher
     /// <param name="hotelName">The name to search for</param>
     /// <param name="threshold">Minimum similarity score (0-1)</param>
     /// <returns>Hotels with similarity scores in descending order</returns>
-    public List<dynamic> FindMatches(string hotelName, double threshold = 0.7);
+    public List<HotelMatch> FindMatches(string hotelName, double threshold = 0.7);
+
+    /// <summary>
+    /// Presents the matches as a numbered list to show to the user.
+    /// </summary>
+    public string FormatMatchesForDisplay(List<HotelMatch> matches, int maxToShow = 5);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="hotels"></param>
+    public void SetHotelData(ICollection<CoreHotel> hotels);
 }
