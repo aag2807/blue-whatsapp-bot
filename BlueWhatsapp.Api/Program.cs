@@ -17,7 +17,7 @@ builder.Services.AddCors(options =>
 
 // builder.ConfigureAutoMapperProfiles();
 builder.Services.AddMvc();
-builder.Services.AddOpenApi();
+// builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.ConfigureCronSchedulerJobs();
 builder.ConfigurePersistenceServices();
@@ -29,7 +29,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    // app.MapOpenApi();
 }
 
 using (IServiceScope? serviceScope = app.Services.CreateScope())

@@ -1,7 +1,7 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:9.0-preview AS build
+﻿FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy only the project files we need
+# Copy project files and restore dependencies
 COPY ["BlueWhatsapp.Api/BlueWhatsapp.Api.csproj", "BlueWhatsapp.Api/"]
 COPY ["BlueWhatsapp.Boundaries/BlueWhatsapp.Boundaries.csproj", "BlueWhatsapp.Boundaries/"]
 COPY ["BlueWhatsapp.Core/BlueWhatsapp.Core.csproj", "BlueWhatsapp.Core/"]
@@ -12,15 +12,18 @@ RUN dotnet restore "BlueWhatsapp.Api/BlueWhatsapp.Api.csproj"
 # Copy the rest of the source code
 COPY . .
 
-# Build the project
-RUN dotnet build "BlueWhatsapp.Api/BlueWhatsapp.Api.csproj" -c Release -o /app/build
+# Use a properly formatted appsettings.json file
+COPY BlueWhatsapp.Api/appsettings.json BlueWhatsapp.Api/appsettings.json
+# If the file doesn't exist in your source, create it with proper formatting
+RUN if [ ! -f BlueWhatsapp.Api/appsettings.json ]; then \
+    echo '{\n  "Logging": {\n    "LogLevel": {\n      "Default": "Information",\n      "Microsoft.AspNetCore": "Warning"\n    }\n  },\n  "AllowedHosts": "*"\n}' > BlueWhatsapp.Api/appsettings.json; \
+    fi
 
-# Publish the application
-FROM build AS publish
+# Build and publish
 RUN dotnet publish "BlueWhatsapp.Api/BlueWhatsapp.Api.csproj" -c Release -o /app/publish
 
 # Build the runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:9.0-preview AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
 # Create directory for SQLite database
@@ -28,7 +31,7 @@ RUN mkdir -p /app/data
 VOLUME /app/data
 
 # Copy the published application
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
 
 # Set environment variables
 ENV ASPNETCORE_URLS=http://+:80
@@ -39,4 +42,4 @@ ENV SQLite__DatabasePath=/app/data/WhatsappApp.db
 EXPOSE 80
 
 # Set the entry point
-ENTRYPOINT ["dotnet", "BlueWhatsapp.Api.dll"]
+CMD ["dotnet", "BlueWhatsapp.Api.dll"]
