@@ -1,14 +1,13 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+﻿FROM mcr.microsoft.com/dotnet/sdk:9.0-preview AS build
 WORKDIR /src
 
-# Copy the solution file and project files
-COPY ["BlueWhatsapp.sln", "./"]
+# Copy only the project files we need
 COPY ["BlueWhatsapp.Api/BlueWhatsapp.Api.csproj", "BlueWhatsapp.Api/"]
 COPY ["BlueWhatsapp.Boundaries/BlueWhatsapp.Boundaries.csproj", "BlueWhatsapp.Boundaries/"]
 COPY ["BlueWhatsapp.Core/BlueWhatsapp.Core.csproj", "BlueWhatsapp.Core/"]
 
-# Restore dependencies
-RUN dotnet restore
+# Restore only the API project and its dependencies
+RUN dotnet restore "BlueWhatsapp.Api/BlueWhatsapp.Api.csproj"
 
 # Copy the rest of the source code
 COPY . .
@@ -21,7 +20,7 @@ FROM build AS publish
 RUN dotnet publish "BlueWhatsapp.Api/BlueWhatsapp.Api.csproj" -c Release -o /app/publish
 
 # Build the runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-preview AS runtime
 WORKDIR /app
 
 # Create directory for SQLite database
