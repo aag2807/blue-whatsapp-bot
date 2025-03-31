@@ -1,4 +1,6 @@
-﻿using BlueWhatsapp.Api.Utils;
+﻿using BlueWhatsapp.Api.models.DTO;
+using BlueWhatsapp.Api.models.DTO.Messages;
+using BlueWhatsapp.Api.Utils;
 using BlueWhatsapp.Core.Logger;
 using Microsoft.AspNetCore.Mvc;
 using Quartz.Util;
@@ -22,7 +24,7 @@ public class WhatsappController : ControllerBase
         return Ok(new { healthy = true });
     }
 
-    [HttpGet("verify-token")]
+    [HttpGet]
     [LogAction]
     public async Task<IActionResult> ValidateToken()
     {
@@ -43,5 +45,24 @@ public class WhatsappController : ControllerBase
         }
 
         return Ok(challenge);
+    }
+
+    [HttpPost]
+    [LogAction]
+    public async Task<IActionResult> ReceiveMessage([FromBody] WhatsAppCloudModel body)
+    {
+        _logger.LogInfo("receive-message");
+        try
+        {
+            Message? Message = body.Entry[0]?.Changes[0]?.Value?.Messages[0];
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex);
+            return Ok("EVENT_RECEIVED");
+        }
+        
+        return Ok();
     }
 }

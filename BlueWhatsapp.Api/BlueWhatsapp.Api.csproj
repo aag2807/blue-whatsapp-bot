@@ -37,7 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="models\DTO\" />
     <Folder Include="wwwroot\lib\" />
   </ItemGroup>
 

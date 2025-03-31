@@ -1,4 +1,6 @@
-﻿namespace BlueWhatsapp.Api.Extensions;
+﻿using BlueWhatsapp.Core.Services;
+
+namespace BlueWhatsapp.Api.Extensions;
 
 /// <summary>
 /// 
@@ -11,5 +13,6 @@ internal static class DomainServiceExtensions
     /// <param name="builder"></param>
     internal static void ConfigureDomainServices(this WebApplicationBuilder builder)
     {
+        builder.Services.AddTransient<IWhatsappCloudService, WhatsappCloudService>();
     }
 }
