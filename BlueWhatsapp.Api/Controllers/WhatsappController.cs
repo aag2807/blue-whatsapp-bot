@@ -28,6 +28,7 @@ public class WhatsappController : ControllerBase
     }
 
     [HttpGet("health")]
+    [LogAction]
     public async Task<IActionResult> Health()
     {
         return Ok(new { healthy = true });
