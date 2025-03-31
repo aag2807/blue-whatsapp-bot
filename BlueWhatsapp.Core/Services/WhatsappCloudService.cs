@@ -6,6 +6,16 @@ namespace BlueWhatsapp.Core.Services;
 
 public sealed class WhatsappCloudService : IWhatsappCloudService
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    private readonly IWhatsappCloudService _self;
+    
+    public WhatsappCloudService()
+    {
+        _self = this;    
+    }
+    
     /// <inheritdoc />
     async Task<bool> IWhatsappCloudService.SendMessage<T>(T model)
     {

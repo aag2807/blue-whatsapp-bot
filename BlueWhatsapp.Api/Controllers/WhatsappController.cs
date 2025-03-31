@@ -2,6 +2,8 @@
 using BlueWhatsapp.Api.models.DTO.Messages;
 using BlueWhatsapp.Api.Utils;
 using BlueWhatsapp.Core.Logger;
+using BlueWhatsapp.Core.Models.Messages;
+using BlueWhatsapp.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using Quartz.Util;
 
@@ -12,10 +14,17 @@ namespace BlueWhatsapp.Api.Controllers;
 public class WhatsappController : ControllerBase
 {
     private readonly IAppLogger _logger;
+    private readonly IWhatsappCloudService _whatsappCloudService;
 
-    public WhatsappController(IAppLogger logger)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="logger"></param>
+    /// <param name="whatsappCloudService"></param>
+    public WhatsappController(IAppLogger logger, IWhatsappCloudService whatsappCloudService)
     {
         _logger = logger;
+        _whatsappCloudService = whatsappCloudService;
     }
 
     [HttpGet("health")]
@@ -52,10 +61,13 @@ public class WhatsappController : ControllerBase
     public async Task<IActionResult> ReceiveMessage([FromBody] WhatsAppCloudModel body)
     {
         _logger.LogInfo("receive-message");
+        _logger.LogInfo(body);
+        
         try
         {
-            Message? Message = body.Entry[0]?.Changes[0]?.Value?.Messages[0];
-
+            Message? message = body.Entry[0]?.Changes[0]?.Value?.Messages[0];
+            string? userNumber = message.From!;
+            await _whatsappCloudService.SendMessage(new CoreMessage("Hola, ¿cómo te puedo ayudar? 😃", userNumber)).ConfigureAwait(true);
         }
         catch (Exception ex)
         {
@@ -63,6 +75,37 @@ public class WhatsappController : ControllerBase
             return Ok("EVENT_RECEIVED");
         }
         
-        return Ok();
+        return Ok("EVENT_RECEIVED");
+    }
+    
+    private string GetUserText(Message message)
+    {
+        string TypeMessage = message.Type;
+
+        if(TypeMessage.ToUpper() == "TEXT")
+        {
+            return message.Text.Body;
+        }
+        else if (TypeMessage.ToUpper() == "INTERACTIVE")
+        {
+            string interactiveType = message.Interactive.Type;
+
+            if(interactiveType.ToUpper() == "LIST_REPLY")
+            {
+                return message.Interactive.List_Reply.Title;
+            }
+            else if (interactiveType.ToUpper() == "BUTTON_REPLY")
+            {
+                return message.Interactive.Button_Reply.Title;
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+        else
+        {
+            return string.Empty;
+        }
     }
 }
