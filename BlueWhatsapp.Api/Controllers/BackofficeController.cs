@@ -78,7 +78,6 @@ public class BackofficeController : Controller
         return View();
     }
 
-
     public IActionResult Logout()
     {
         return RedirectToAction("Index", "Backoffice");

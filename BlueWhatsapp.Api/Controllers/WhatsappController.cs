@@ -1,10 +1,13 @@
-﻿using BlueWhatsapp.Api.models.DTO;
+﻿using BlueWhatsapp.Api.Hubs;
+using BlueWhatsapp.Api.models.DTO;
 using BlueWhatsapp.Api.models.DTO.Messages;
 using BlueWhatsapp.Api.Utils;
 using BlueWhatsapp.Core.Logger;
 using BlueWhatsapp.Core.Models.Messages;
+using BlueWhatsapp.Core.Persistence;
 using BlueWhatsapp.Core.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Quartz.Util;
 
 namespace BlueWhatsapp.Api.Controllers;
@@ -15,23 +18,22 @@ public class WhatsappController : ControllerBase
 {
     private readonly IAppLogger _logger;
     private readonly IWhatsappCloudService _whatsappCloudService;
+    private readonly IHubContext<MessagesHub> _hubContext;
+    private readonly IMessageService _messageService;
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="logger"></param>
     /// <param name="whatsappCloudService"></param>
-    public WhatsappController(IAppLogger logger, IWhatsappCloudService whatsappCloudService)
+    /// <param name="hubContext"></param>
+    /// <param name="messageService"></param>
+    public WhatsappController(IAppLogger logger, IWhatsappCloudService whatsappCloudService,  IHubContext<MessagesHub> hubContext, IMessageService messageService)
     {
         _logger = logger;
         _whatsappCloudService = whatsappCloudService;
-    }
-
-    [HttpGet("health")]
-    [LogAction]
-    public async Task<IActionResult> Health()
-    {
-        return Ok(new { healthy = true });
+        _hubContext = hubContext;
+        _messageService = messageService;
     }
 
     [HttpGet]
@@ -68,7 +70,11 @@ public class WhatsappController : ControllerBase
         {
             Message? message = body.Entry[0]?.Changes[0]?.Value?.Messages[0];
             string? userNumber = message.From!;
-            await _whatsappCloudService.SendMessage(new CoreMessage("Hola, ¿cómo te puedo ayudar? 😃", userNumber)).ConfigureAwait(true);
+            string timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+            await _hubContext.Clients.All.SendAsync("ReceiveWhatsAppMessage", userNumber, timestamp ).ConfigureAwait(true);
+            await _whatsappCloudService.SendMessage(new CoreMessageToSend($"{message} 😃", userNumber)).ConfigureAwait(true);
+            await _messageService.SaveAsync($"{message} 😃", userNumber).ConfigureAwait(true);
         }
         catch (Exception ex)
         {
@@ -108,5 +114,12 @@ public class WhatsappController : ControllerBase
         {
             return string.Empty;
         }
+    }
+    
+    [HttpGet("health")]
+    [LogAction]
+    public async Task<IActionResult> Health()
+    {
+        return Ok(new { healthy = true });
     }
 }

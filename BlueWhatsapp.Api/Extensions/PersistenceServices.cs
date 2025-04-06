@@ -1,4 +1,6 @@
 ﻿using BlueWhatsapp.Boundaries.Persistence;
+using BlueWhatsapp.Boundaries.Persistence.Repositories.Implementation;
+using BlueWhatsapp.Core.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlueWhatsapp.Api.Extensions;
@@ -21,5 +23,6 @@ internal static class PersistenceServices
         builder.Services.AddTransient<IWhatsappBlueContext, WhatsappBlueContext>();
 
         //repositories
+        builder.Services.AddTransient<IMessageRepository, MessageRepository>();
     }
 }

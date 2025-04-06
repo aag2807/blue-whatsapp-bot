@@ -4,7 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BlueWhatsapp.Boundaries.Persistence.Models;
 
 /// <summary>
-/// 
+/// Represents the base entity class, providing common properties
+/// for all derived entities in the persistence layer of the application.
 /// </summary>
 public abstract class BaseEntity
 {

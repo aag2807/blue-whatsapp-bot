@@ -1,4 +1,5 @@
 using BlueWhatsapp.Api.Extensions;
+using BlueWhatsapp.Api.Hubs;
 using BlueWhatsapp.Core.Logger;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,8 @@ builder.Services.AddCors(options =>
 
 // builder.ConfigureAutoMapperProfiles();
 builder.Services.AddMvc();
+builder.Services.AddSignalR();
+
 // builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.ConfigureCronSchedulerJobs();
@@ -46,5 +49,6 @@ app.UseCors(myAllowSpecificOrigins);
 app.UseRouting();
 app.UseAuthorization();
 app.MapControllerRoute(name: "default", pattern: "{controller}/{action=Index}/{id?}");
+app.MapHub<MessagesHub>("/messages");
 
 app.Run();

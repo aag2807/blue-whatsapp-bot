@@ -5,14 +5,16 @@ ViewBag.ActivePage = "Dashboard";
 }
 
 @section Styles {
-<style>
-    .map-container {
-        background-image: url('https://api.mapbox.com/styles/v1/mapbox/light-v10/static/-71.0589,42.3601,11,0/600x400?access_token=pk.placeholder');
-    }
-</style>
+    <style>
+        .map-container {
+            background-image: url('https://api.mapbox.com/styles/v1/mapbox/light-v10/static/-71.0589,42.3601,11,0/600x400?access_token=pk.placeholder');
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.6/signalr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 }
 
-<div class="flex-1 overflow-y-auto">
+<div x-data="dashboard" class="flex-1 overflow-y-auto">
     <!-- Header -->
     <div class="p-4 flex items-center justify-between border-b">
         <div>
@@ -43,7 +45,7 @@ ViewBag.ActivePage = "Dashboard";
                 <div class="bg-white rounded-lg shadow p-4 py-8">
                     <div class="flex items-start justify-between">
                         <div>
-                            <h3 class="text-3xl font-bold">3</h3>
+                            <h3 class="text-3xl font-bold" x-text="openChats"></h3>
                             <p class="text-sm text-gray-500">Chats abiertos</p>
                         </div>
                         <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
@@ -52,11 +54,10 @@ ViewBag.ActivePage = "Dashboard";
                     </div>
                 </div>
 
-                <!-- Items to Pick Up Stat -->
                 <div class="bg-white rounded-lg shadow p-4 py-8">
                     <div class="flex items-start justify-between">
                         <div>
-                            <h3 class="text-3xl font-bold">3</h3>
+                            <h3 class="text-3xl font-bold" x-text="0"></h3>
                             <p class="text-sm text-gray-500">Chats cerrados</p>
                         </div>
                         <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
@@ -168,114 +169,95 @@ ViewBag.ActivePage = "Dashboard";
 </div>
 }
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    function dashboard() {
-        const satisfactionCtx = document.getElementById('satisfactionChart').getContext('2d');
-        const satisfactionChart = new Chart(satisfactionCtx, {
-            type: 'doughnut',
-            data: {
-                datasets: [{
-                    data: [50, 100 - 30],
-                    backgroundColor: [
-                        'rgba(16, 185, 129, 1)',
-                        'rgba(229, 231, 235, 1)'
-                    ],
-                    borderWidth: 0,
-                    cutout: '80%'
-                }]
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('dashboard', () => ({
+            openChats: 0,
+            totalMessages: 0,
+            recentMessages: [],
+            currentConversation: null,
+            conversationMessages: [],
+            connection: null,
+            
+            init() {
+                this.connection = new signalR.HubConnectionBuilder()
+                    .withUrl("/messages")
+                    .withAutomaticReconnect()
+                    .build();
+
+                // Handle receiving dashboard stats
+                this.connection.on("UpdateDashboardStats", (openChats, totalMessages) => {
+                    this.openChats = openChats;
+                    this.totalMessages = totalMessages;
+                });
+
+                // Handle receiving a new message
+                this.connection.on("ReceiveWhatsAppMessage", (from, timestamp) => {
+                    // Add to recent messages
+                    this.recentMessages.unshift({
+                        from: from,
+                        timestamp: timestamp
+                    });
+
+                    // Keep only the 20 most recent messages
+                    if (this.recentMessages.length > 20) {
+                        this.recentMessages.pop();
+                    }
+
+                    // Update stats
+                    this.totalMessages++;
+
+                    // Show notification
+                    this.showNotification(from);
+
+                    // If this message is part of the current conversation, refresh it
+                    if (this.currentConversation === from) {
+                        this.loadConversation(from);
+                    }
+                });
+
+                // Handle receiving recent messages
+                this.connection.on("ReceiveRecentMessages", (messages) => {
+                    this.recentMessages = messages.map(m => ({
+                        from: m.from,
+                        timestamp: new Date(m.createdTime).toLocaleString()
+                    }));
+                });
+
+                // Handle receiving message history for a conversation
+                this.connection.on("ReceiveMessageHistory", (from, messages) => {
+                    this.currentConversation = from;
+                    this.conversationMessages = messages.map(m => ({
+                        from: m.from,
+                        body: m.body,
+                        timestamp: new Date(m.createdTime).toLocaleString()
+                    }));
+                });
+
+                // Start the connection
+                this.connection.start()
+                    .then(() => {
+                        console.log("SignalR Connected");
+                        // Request initial data
+                        this.connection.invoke("GetRecentMessages", 20);
+                    })
+                    .catch(err => console.error("SignalR Connection Error: ", err));
             },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        enabled: false
-                    }
-                }
-            }
-        });
-
-        // Add center text to doughnut chart
-        Chart.register({
-            id: 'centerText',
-            beforeDraw: function(chart) {
-                if (chart.config.type === 'doughnut') {
-                    const width = chart.width;
-                    const height = chart.height;
-                    const ctx = chart.ctx;
-
-                    ctx.restore();
-                    const fontSize = (height / 114).toFixed(2);
-                    ctx.font = fontSize + 'em sans-serif';
-                    ctx.textBaseline = 'middle';
-
-                    const text = '100';
-                    const textX = Math.round((width - ctx.measureText(text).width) / 2);
-                    const textY = height / 2;
-
-                    ctx.fillStyle = '#000';
-                    ctx.fillText(text, textX, textY);
-                    ctx.save();
-                }
-            }
-        });
-
-        // Initialize Work Orders Chart
-        const ordersCtx = document.getElementById('ordersChart').getContext('2d');
-        const ordersChart = new Chart(ordersCtx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                datasets: [
-                    {
-                        label: 'Completed',
-                        data: [],
-                        borderColor: 'rgba(16, 185, 129, 1)',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        tension: 0.4,
-                        fill: false
-                    },
-                    {
-                        label: 'Assigned',
-                        data: [],
-                        borderColor: 'rgba(245, 158, 11, 1)',
-                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                        tension: 0.4,
-                        fill: false
-                    }
-                ]
+            // Method to load a conversation
+            loadConversation(from)
+            {
+                this.connection.invoke("GetMessagesByFrom", from);
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100,
-                        ticks: {
-                            stepSize: 5
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            boxWidth: 10,
-                            usePointStyle: true,
-                            pointStyle: 'circle'
-                        }
-                    }
+            // Method to show browser notification
+            showNotification(from)
+            {
+                if (Notification.permission === "granted")
+                {
+                    new Notification("New WhatsApp Message", {body: `New message from ${from}`,icon: "/images/whatsapp-icon.png"});
+                } else if (Notification.permission !== "denied") {
+                    Notification.requestPermission();
                 }
             }
-        });
-    }
-
-    // Initialize charts when the page loads
-    document.addEventListener('DOMContentLoaded', function() {
-        dashboard();
-    });
+        }));
+    })
 </script>

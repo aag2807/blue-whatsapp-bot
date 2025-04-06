@@ -3,18 +3,18 @@
 namespace BlueWhatsapp.Boundaries.Persistence.Models;
 
 /// <summary>
-/// 
+/// Represents a schedule entity used to define specific time slots and related information.
 /// </summary>
 [Table("Schedules")]
 public sealed class Schedule : BaseEntity
 {
     /// <summary>
-    /// 
+    /// The name associated with this schedule
     /// </summary>
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
-    /// 
+    /// Represents the specific time associated with the schedule.
     /// </summary>
     public string Time { get; set; } = "0:00";
     

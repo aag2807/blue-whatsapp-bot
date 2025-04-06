@@ -16,7 +16,7 @@ public abstract class BaseEntity
     /// <summary>
     /// Generic factory method that creates an entity of type TEntity from data of type TData
     /// </summary>
-    public static TEntity Create<TEntity, TData>(TData data) where TEntity : BaseEntity, new()
+    public static TEntity Create<TEntity, TData>(TData data) where TEntity : class, new()
     {
         var entity = new TEntity();
         PropertyMapper.MapProperties(data, entity);

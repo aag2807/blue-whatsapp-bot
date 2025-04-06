@@ -1,0 +1,62 @@
+using BlueWhatsapp.Core.Enums;
+using BlueWhatsapp.Core.Models.Messages;
+using BlueWhatsapp.Core.Persistence;
+using Microsoft.AspNetCore.SignalR;
+
+namespace BlueWhatsapp.Api.Hubs;
+
+public class MessagesHub : Hub
+{
+    private readonly IMessageRepository _messageRepository;
+
+    /// <summary>
+    /// Hub class facilitating real-time communication between clients and the server for managing and retrieving messages.
+    /// </summary>
+    public MessagesHub(IMessageRepository messageRepository)
+    {
+        _messageRepository = messageRepository;
+    }
+
+    /// <summary>
+    /// Method that can be called from the client to get recent messages
+    /// </summary>
+    public async Task GetRecentMessages(int count = 20)
+    {
+        IEnumerable<CoreMessage> messages = await _messageRepository.GetRecentMessagesAsync(count);
+        
+        // Send the messages to the requesting client only
+        await Clients.Caller.SendAsync("ReceiveRecentMessages", messages).ConfigureAwait(true);
+    }
+    
+    /// <summary>
+    /// Method called by the repository when a new message is added
+    /// </summary>
+    public async Task NewWhatsAppMessage(string from, string body, string timestamp)
+    {
+        await Clients.All.SendAsync("ReceiveWhatsAppMessage", from, body, timestamp).ConfigureAwait(true);
+    }
+    
+    /// <summary>
+    /// Method that can be called by clients to get messages from a specific sender
+    /// </summary>
+    public async Task GetMessagesByFrom(string from)
+    {
+        IEnumerable<CoreMessage> messages = await _messageRepository.GetMessagesByFromAsync(from).ConfigureAwait(true);
+        
+        await Clients.Caller.SendAsync("ReceiveMessageHistory", from, messages).ConfigureAwait(true);
+    }
+    
+    /// <summary>
+    /// Override of OnConnectedAsync to send initial data when a client connects
+    /// </summary>
+    public override async Task OnConnectedAsync()
+    {
+        // Get counts for dashboard
+        IEnumerable<CoreMessage> openChats = await _messageRepository.GetMessagesByTypeAsync(MessageStatus.Pending).ConfigureAwait(true);
+        int totalMessages = await _messageRepository.CountAsync().ConfigureAwait(true);
+        
+        await Clients.Caller.SendAsync("UpdateDashboardStats", openChats, totalMessages);
+        
+        await base.OnConnectedAsync().ConfigureAwait(true);
+    }
+}

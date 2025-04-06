@@ -25,10 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Persistence\Repositories\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\BlueWhatsapp.Core\BlueWhatsapp.Core.csproj" />
   </ItemGroup>
 

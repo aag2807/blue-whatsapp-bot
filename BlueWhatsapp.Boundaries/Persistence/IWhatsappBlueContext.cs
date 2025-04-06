@@ -1,6 +1,7 @@
 ﻿using BlueWhatsapp.Boundaries.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace BlueWhatsapp.Boundaries.Persistence;
 
@@ -9,6 +10,16 @@ namespace BlueWhatsapp.Boundaries.Persistence;
 /// </summary>
 public interface IWhatsappBlueContext
 {
+    /// <summary>
+    /// Provides access to database related information and operations for this context.
+    /// </summary>
+    DatabaseFacade Database { get; }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    public DbSet<Message> Messages { get; set; }
+    
     /// <summary>
     /// 
     /// </summary>
@@ -65,4 +76,7 @@ public interface IWhatsappBlueContext
 
     /// <inheritdoc cref="DbContext.RollbackTransactionAsync()"/>
     Task RollBack();
+    
+    /// <inheritdoc cref="DbContext.Set()"/>
+    DbSet<TEntity> Set<TEntity>() where TEntity: class;
 }
