@@ -46,6 +46,44 @@ public class BackofficeController : Controller
         return View();
     }
     
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public IActionResult Trips()
+    {
+        return View();
+    }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public IActionResult Hotels()
+    {
+        return View();
+    }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public IActionResult Schedules()
+    {
+        return View();
+    }
+    
+    public IActionResult Settings()
+    {
+        return View();
+    }
+
+
+    public IActionResult Logout()
+    {
+        return RedirectToAction("Index", "Backoffice");
+    }
+
     private bool VerifyCredentials(string email, string password)
     {
         // Implement your authentication logic here

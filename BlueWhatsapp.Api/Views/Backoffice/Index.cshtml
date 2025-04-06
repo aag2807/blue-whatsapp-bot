@@ -2,95 +2,148 @@
     Layout = "_Layout";
     ViewData["Title"] = "Index";
 }
-<div class="min-h-screen flex items-center justify-center bg-[#2a2a3c]">
-    <div class="w-full max-w-6xl bg-[#1e1e2d] rounded-3xl overflow-hidden shadow-2xl">
-        <div class="flex flex-col md:flex-row max-h-[600px] min-h-[500px]">
-            <!-- Left Side - Image -->
-            <div class="w-full md:w-1/2 relative">
-                <div class="h-64 md:h-full relative" x-data="{
-                     images:[
-                        'https://images.pexels.com/photos/1310781/pexels-photo-1310781.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-                        'https://images.pexels.com/photos/221304/pexels-photo-221304.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-                        'https://images.pexels.com/photos/175764/pexels-photo-175764.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-                    ],
-                    currentIndex: 0,
-                    fadeIn: true,
-                    getCurrentImage() {
-                        return this.images[this.currentIndex];
-                    },
-                    nextImage() {
-                        // First set fadeIn to false to trigger the fade-out effect
-                        this.fadeIn = false;
-                        
-                        // Wait for the fade-out transition to complete
-                        setTimeout(() => {
-                            // Change the image
-                            const tempIndex = this.currentIndex + 1;
-                            if(tempIndex >= this.images.length) {
-                                this.currentIndex = 0;
-                            } else {
-                                this.currentIndex = tempIndex;
-                            }
-                            
-                            // Trigger the fade-in effect
-                            this.fadeIn = true;
-                        }, 500); // This duration should match the CSS transition duration
-                    },
-                    init() {
-                        setInterval(() => {
-                            this.nextImage();
-                        }, 5000);
-                    }
-                }" x-init="init()">
-                    <img :src="getCurrentImage()"
-                         alt="Desert Landscape"
-                         class="w-full h-full object-cover transition-opacity duration-500"
-                         :class="fadeIn ? 'opacity-100' : 'opacity-0'">
+<div class="w-full h-screen">
+    <div class="flex h-full">
+        <!-- Left side - Login Form -->
+        <div class="w-full md:w-1/2 flex flex-col justify-center items-center p-8 md:p-16">
+            <div class="w-full max-w-md">
+                <!-- Logo -->
+                <div class="flex items-center justify-center mb-8">
+                    <div class="w-14 h-14 rounded-full bg-orange-500 flex items-center justify-center mr-3">
+                        <i class="fa-solid fa-taxi text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">Field Services</h1>
+                        <p class="text-gray-500">Workforce Management</p>
+                    </div>
                 </div>
-            </div>
-            
-            <!-- Right Side - Form -->
-            <div class="w-full md:w-1/2 p-8 md:p-12" x-data="{ showPassword: false }">
-                <div class="max-w-md mx-auto">
-                    <h1 class="text-3xl font-bold text-white mb-2">Bienvenido!</h1>
-                    <p class="text-gray-400 mb-8">
-                        Inicie Session
-                    </p>
 
+                <!-- Login Form -->
+                <div class="bg-white rounded-lg shadow-lg p-8">
+                    <h2 class="text-xl font-semibold mb-6">Login to your account</h2>
                     @using (@Html.BeginForm("Dashboard", "Backoffice", FormMethod.Post))
                     {
-                        <div class="space-y-4">
-                        
-                            @Html.AntiForgeryToken()
-
-                            <input
-                                name="Email"
-                                type="email" placeholder="Email" class="w-full px-4 py-3 rounded-lg bg-[#2a2a3c] text-white border-0 focus:ring-2 focus:ring-[#6366f1">
-                            <div class="relative mt-4">
+                        <!-- email Field -->
+                        <div class="mb-4">
+                            <label for="Email" class="block text-sm font-medium text-gray-700 mb-1">Correo</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-user text-gray-400"></i>
+                                </div>
                                 <input
-                                    :type="showPassword ? 'text' : 'password'"
-                                    placeholder="Enter your password"
-                                    name="Password"
-                                    class="w-full  px-4 py-3 rounded-lg bg-[#2a2a3c] text-white border-0 focus:ring-2 focus:ring-[#6366f1">
-                                <button
-                                    type="button"
-                                    x-on:click="showPassword = !showPassword"
-                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer transition hover:opacity-75">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                    </svg>
-                                </button>
+                                    type="email"
+                                    name="Email"
+                                    id="Email"
+                                    class="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                                    placeholder="Correo Electrónico"
+                                    required>
                             </div>
-
-
-                            <button type="submit" class="mt-5 w-full space-x-3 text-white bg-[#6366f1] rounded-lg px-4 py-3 text-white font-semibold py-3 px-4 rounded-lg transition-colors cursor-pointer hover:bg-[#4f46e5]">
-                                Inciar Sesion
-                            </button>
                         </div>
+
+                        <!-- Password Field -->
+                        <div class="mb-6">
+                            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-lock text-gray-400"></i>
+                                </div>
+                                <input
+                                    id="password"
+                                    type="password"
+                                    name="Password"
+                                    class="pl-10 pr-10 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                                    placeholder="Contraseña"
+                                    required>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                    <button
+                                        type="button"
+                                        class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                                        <i class="fas" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Remember Me & Forgot Password -->
+                        <div x-data="rememberMeComponent" class="flex items-center justify-between mb-6">
+                            <div class="flex items-center">
+                                <input
+                                    x-on:click="toggleRememberMe"
+                                    x-model="remembered"
+                                    type="checkbox"
+                                    id="remember"
+                                    class="h-4 w-4 text-accent focus:ring-accent border-gray-300 rounded">
+                                <label for="remember" class="ml-2 block text-sm text-gray-700">
+                                    Recordarme
+                                </label>
+                            </div>
+                            <div>
+                                <a href="mailto:aagn2807@gmail.com" class="text-sm text-accent hover:text-sidebar">Olvido su contraseña?</a>
+                            </div>
+                        </div>
+
+                        <!-- Login Button -->
+                        <button
+                            type="submit"
+                            class="w-full bg-sidebar hover:bg-sidebar-hover text-white py-2 px-4 rounded-md transition duration-200 flex items-center justify-center"
+                            >
+                            <span>Login</span>
+                            <span  x-cloak x-show="isLoading" class="flex items-center">
+                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Logging in...
+                            </span>
+                        </button>
                     }
                 </div>
+
+                <!-- Footer -->
+                <div class="mt-6 text-center text-sm text-gray-500">
+                    <p>No tiene una cuenta? <a href="mailto:aagn2807@gmail.com" class="text-accent hover:text-sidebar">Contacte a su administrador</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right side - Background Image (hidden on mobile) -->
+        <div class="hidden md:block md:w-1/2 login-bg">
+            <div class="h-full w-full bg-black bg-opacity-40 flex items-center justify-center p-16">
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    const REMEMBER_ME_KEY = 'rememberMe';
+    const EMAIL_KEY = 'email';
+
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('rememberMeComponent', () => ({
+            remembered: false, // Changed from rememberMe
+            isLoading: false,
+            init() {
+                const remembered = localStorage.getItem(REMEMBER_ME_KEY);
+                this.remembered = remembered === 'true';
+
+                if (this.remembered) {
+                    const email = document.querySelector('input[name="Email"]');
+                    if (email) {
+                        email.value = localStorage.getItem(EMAIL_KEY);
+                    }
+                }
+            },
+            toggleRememberMe() {
+                this.remembered = !this.remembered;
+                if(!!this.remembered) {
+                    const email = document.querySelector('input[name="Email"]');
+                    localStorage.setItem(EMAIL_KEY, email.value);
+                    localStorage.setItem(REMEMBER_ME_KEY, this.remembered);
+                } else {
+                    localStorage.removeItem(REMEMBER_ME_KEY);
+                    localStorage.removeItem(EMAIL_KEY);                    
+                }
+            }
+        }))
+    })
+</script>

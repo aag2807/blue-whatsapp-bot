@@ -5,64 +5,151 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Backoffice</title>
     <link rel="stylesheet" href="~/css/index.css"/>
-    <script src="~/js/tailwind.js"></script>
     <script src="~/js/alpine.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sidebar': '#0d5c46',
+                        'sidebar-hover': '#0a4e3b',
+                        'accent': '#10b981',
+                        'map-dark': '#1a202c',
+                        'priority-1': '#ef4444',
+                        'priority-2': '#f59e0b',
+                        'priority-3': '#3b82f6',
+                        'new-tag': '#10b981',
+                    },
+                    fontSize: {
+                        'base': '14px',
+                    },
+                    lineHeight: {
+                        'base': '17px',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    @RenderSection("Styles", required: false)
 </head>
-<body class="bg-[#2a2a3c]" x-data="{ sidebarOpen: false }">
-    <div class="md:hidden bg-[#1e1e2d] p-4 flex items-center justify-between">
-        <div class="text-white text-2xl font-bold">TRANSPORTE</div>
-        <button x-on:click="sidebarOpen = !sidebarOpen" class="text-white cursor-pointer transition hover:opacity-70">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>  
-        </button>
-    </div>
-
-    <div class="flex">
+<body class="min-h-screen">
+<div class="w-full h-screen" x-data="@ViewBag.AlpineComponent">
+    <!-- Tablet/Desktop View -->
+    
+    <div class="hidden md:flex bg-white h-full w-full">
         <!-- Sidebar -->
-        <div
-            class="fixed md:static inset-y-0 left-0 transform md:translate-x-0 transition-transform duration-200 ease-in-out z-30"
-            :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}"
-        >
-            <div class="bg-[#1e1e2d] h-screen w-64 py-6 px-4">
-                <div class="hidden md:block text-white text-2xl font-bold mb-8">TRANSPORTE</div>
-                <nav class="space-y-2">
-                    <a href="#" class="flex items-center space-x-3 text-white bg-[#6366f1] rounded-lg px-4 py-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                        </svg>
-                        <span>Dashboard</span>
-                    </a>
+        <div class="bg-sidebar text-white w-20 flex flex-col items-center py-4">
+            <div class="flex flex-col items-center space-y-6 flex-1">
+                <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center mb-1">
+                        <i class="fa-solid fa-taxi text-white"></i>
+                    </div>
+                    <span class="text-xs text-center">Transporte</span>
+                </div>
 
-                    <a href="#" class="flex items-center space-x-3 text-gray-400 hover:bg-[#2a2a3c] rounded-lg px-4 py-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                        <span>Settings</span>
-                    </a>
-                </nav>
+                <a href="@Url.Action("Dashboard", "Backoffice")" class="transition flex flex-col items-center cursor-pointer w-full @(ViewBag.ActivePage == "Dashboard" ? "bg-sidebar-hover" : "hover:bg-sidebar-hover") p-2 rounded">
+                    <div class="w-10 h-10 flex items-center justify-center">
+                        <i class="fas fa-th-large"></i>
+                    </div>
+                    <span class="text-xs">Dashboard</span>
+                </a>
+
+                <a href="@Url.Action("Trips", "Backoffice")" class="transition flex flex-col items-center cursor-pointer w-full @(ViewBag.ActivePage == "Trips" ? "bg-sidebar-hover" : "hover:bg-sidebar-hover") p-2 rounded">
+                    <div class="w-10 h-10 flex items-center justify-center">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <span class="text-xs">Viajes</span>
+                </a>
+
+                <a href="@Url.Action("Hotels", "Backoffice")" class="transition flex flex-col items-center cursor-pointer w-full @(ViewBag.ActivePage == "Hotels" ? "bg-sidebar-hover" : "hover:bg-sidebar-hover") p-2 rounded">
+                    <div class="w-10 h-10 flex items-center justify-center">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <span class="text-xs">Hoteles</span>
+                </a>
+
+                <a href="@Url.Action("Schedules", "Backoffice")" class="transition flex flex-col items-center cursor-pointer w-full @(ViewBag.ActivePage == "Schedules" ? "bg-sidebar-hover" : "hover:bg-sidebar-hover") p-2 rounded">
+                    <div class="w-10 h-10 flex items-center justify-center">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <span class="text-xs">Incidents</span>
+                </a>
+
+                <a href="@Url.Action("Settings", "Backoffice")" class="transition flex flex-col items-center cursor-pointer w-full @(ViewBag.ActivePage == "Settings" ? "bg-sidebar-hover" : "hover:bg-sidebar-hover") p-2 rounded mt-auto">
+                    <div class="w-10 h-10 flex items-center justify-center">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <span class="text-xs">Settings</span>
+                </a>
+
+                <a href="@Url.Action("Index", "Backoffice")" class="transition flex flex-col items-center cursor-pointer w-full hover:bg-sidebar-hover p-2 rounded !mt-auto">
+                    <div class="w-10 h-10 flex items-center justify-center">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </div>
+                    <span class="text-xs">Cerrar</span>
+                </a>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="flex-1 p-8">
-            @RenderBody()
+        <!-- Main Content Area -->
+        @RenderBody()
+    </div>
+
+    <!-- Mobile View -->
+    <div class="md:hidden bg-white h-full w-full">
+        <!-- Header -->
+        <div class="bg-white p-4 flex items-center justify-between border-b">
+            <div class="flex items-center">
+                <div class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center mr-2">
+                    <i class="fa-solid fa-taxi text-white text-sm"></i>
+                </div>
+                <span class="font-medium">Transporte</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                    <i class="fas fa-bell text-green-500 text-sm"></i>
+                </div>
+                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                    <i class="fas fa-user text-gray-500 text-sm"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="flex flex-col h-[calc(100%-60px)]">
+            <!-- Mobile Content -->
+            @RenderSection("MobileContent", required: false)
+
+            <!-- Bottom Navigation -->
+            <div class="bg-white border-t flex justify-between p-2">
+                <a href="@Url.Action("Index", "Dashboard")" class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Dashboard" ? "text-green-500" : "text-gray-500")">
+                    <i class="fas fa-th-large"></i>
+                    <span class="text-xs mt-1">Dashboard</span>
+                </a>
+                <a href="@Url.Action("Index", "WorkOrders")" class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "WorkOrders" ? "text-green-500" : "text-gray-500")">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span class="text-xs mt-1">Work Orders</span>
+                </a>
+                <a href="@Url.Action("Index", "Inventory")" class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Inventory" ? "text-green-500" : "text-gray-500")">
+                    <i class="fas fa-box"></i>
+                    <span class="text-xs mt-1">Inventory</span>
+                </a>
+                <a href="@Url.Action("Index", "Incidents")" class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Incidents" ? "text-green-500" : "text-gray-500")">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span class="text-xs mt-1">Incidents</span>
+                </a>
+                <a href="@Url.Action("Index", "Settings")" class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Settings" ? "text-green-500" : "text-gray-500")">
+                    <i class="fas fa-cog"></i>
+                    <span class="text-xs mt-1">Settings</span>
+                </a>
+            </div>
         </div>
     </div>
+</div>
 
-    <!-- Overlay for mobile sidebar -->
-    <div
-        x-show="sidebarOpen"
-        x-on:click="sidebarOpen = false"
-        class="fixed inset-0 bg-black bg-opacity-50 md:hidden z-20">
-    </div>
-
-    @await RenderSectionAsync("Scripts", required: false)
+@RenderSection("Scripts", required: false)
 </body>
+
 </html>

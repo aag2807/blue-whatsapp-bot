@@ -1,66 +1,281 @@
 ﻿@{
-    Layout = "_DashboardLayout";
-    ViewData["Title"] = "Index";
+Layout = "_DashboardLayout";
+ViewData["Title"] = "Dashboard";
+ViewBag.ActivePage = "Dashboard";
 }
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <!-- Stats Cards -->
-            <div class="bg-[#1e1e2d] rounded-xl p-6">
-                <div class="text-gray-400 mb-2">Total Users</div>
-                <div class="text-white text-2xl font-bold">2,543</div>
-                <div class="text-green-500 text-sm mt-2">↑ 12% from last month</div>
-            </div>
-            <div class="bg-[#1e1e2d] rounded-xl p-6">
-                <div class="text-gray-400 mb-2">Active Projects</div>
-                <div class="text-white text-2xl font-bold">95</div>
-                <div class="text-red-500 text-sm mt-2">↓ 3% from last month</div>
-            </div>
-            <div class="bg-[#1e1e2d] rounded-xl p-6">
-                <div class="text-gray-400 mb-2">Revenue</div>
-                <div class="text-white text-2xl font-bold">$45,234</div>
-                <div class="text-green-500 text-sm mt-2">↑ 8% from last month</div>
-            </div>
+
+@section Styles {
+<style>
+    .map-container {
+        background-image: url('https://api.mapbox.com/styles/v1/mapbox/light-v10/static/-71.0589,42.3601,11,0/600x400?access_token=pk.placeholder');
+    }
+</style>
+}
+
+<div class="flex-1 overflow-y-auto">
+    <!-- Header -->
+    <div class="p-4 flex items-center justify-between border-b">
+        <div>
+            <h1 class="text-lg font-semibold">Welcome</h1>
+            <p class="text-sm text-gray-500">@DateTime.Now.ToString("dddd, dd MMM")</p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Graph -->
-            <div class="bg-[#1e1e2d] rounded-xl p-6">
-                <h2 class="text-white text-lg font-semibold mb-4">Monthly Activity</h2>
-                <canvas id="activityChart" class="w-full h-64"></canvas>
+        <div class="flex items-center">
+            <div class="relative mr-4">
+                <input type="text" placeholder="Search" class="pl-8 pr-4 py-2 border rounded-md">
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
             </div>
 
-            <!-- List -->
-            <div class="bg-[#1e1e2d] rounded-xl p-6">
-                <h2 class="text-white text-lg font-semibold mb-4">Recent Activities</h2>
-                <div class="space-y-4">
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white">JD
+            <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center ml-4">
+                <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" class="w-8 h-8 rounded-full" alt="Profile">
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="p-4 grid grid-cols-12 gap-4">
+        <!-- Left Column -->
+        <div class="col-span-8 space-y-4">
+            <!-- Stats Row -->
+            <div class="grid grid-cols-2 gap-4">
+                
+                <!-- Work Orders Stat -->
+                <div class="bg-white rounded-lg shadow p-4 py-8">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 class="text-3xl font-bold">3</h3>
+                            <p class="text-sm text-gray-500">Chats abiertos</p>
                         </div>
-                        <div class="ml-4">
-                            <div class="text-white">John Doe</div>
-                            <div class="text-gray-400 text-sm">Created a new project</div>
+                        <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                            <i class="fas fa-clipboard-list text-orange-500"></i>
                         </div>
-                        <div class="ml-auto text-gray-400 text-sm">2h ago</div>
                     </div>
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center text-white">
-                            AS
+                </div>
+
+                <!-- Items to Pick Up Stat -->
+                <div class="bg-white rounded-lg shadow p-4 py-8">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 class="text-3xl font-bold">3</h3>
+                            <p class="text-sm text-gray-500">Chats cerrados</p>
                         </div>
-                        <div class="ml-4">
-                            <div class="text-white">Alice Smith</div>
-                            <div class="text-gray-400 text-sm">Updated dashboard layout</div>
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                            <i class="fas fa-box text-blue-500"></i>
                         </div>
-                        <div class="ml-auto text-gray-400 text-sm">5h ago</div>
                     </div>
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center text-white">
-                            RJ
+
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Customer Satisfaction -->
+                <div class="bg-white rounded-lg shadow p-4">
+                    <h2 class="font-medium mb-4">Customer Satisfaction</h2>
+                    <div class="flex justify-center">
+                        <div class="h-[300px] w-[300px] flex items-center justify-centers">
+                            <canvas id="satisfactionChart" width="200" height="200"></canvas>
                         </div>
-                        <div class="ml-4">
-                            <div class="text-white">Robert Johnson</div>
-                            <div class="text-gray-400 text-sm">Completed task: Design Review</div>
-                        </div>
-                        <div class="ml-auto text-gray-400 text-sm">1d ago</div>
                     </div>
+                </div>
+
+                <!-- Work Orders Per Day -->
+                <div class="bg-white rounded-lg shadow p-4">
+                    <h2 class="font-medium mb-4">Work Orders / Day</h2>
                 </div>
             </div>
         </div>
+
+        <!-- Right Column - Work Orders List -->
+        <div class="col-span-4">
+            <div class="bg-white rounded-lg shadow">
+                <div class="p-4 border-b">
+                    <h2 class="font-medium">Today's Work Orders</h2>
+                </div>
+
+                <!-- Work Order List -->
+                <div class="divide-y">
+                    @for (int i = 0; i < 5; i++)
+                    {
+                        <div class="bg-white p-3 py-5 rounded-lg shadow">
+                            <div class="flex space-x-2 mb-1">
+                                <span class="px-2 py-0.5 bg-red-600 text-white rounded-full text-xs">Prioridad</span>
+                                <span class="px-2 py-0.5 bg-yellow-500 text-white rounded-full text-xs">Overdue</span>
+                            </div>
+                            <h3 class="font-medium">chat @i</h3>
+
+                            <div class="flex items-center space-x-4 mt-1">
+                                <div class="flex items-center">
+                                    <i class="fas fa-map-marker-alt text-gray-400 mr-1"></i>
+                                    <span class="text-sm">ubicacion</span>
+                                </div>
+                                <div class="flex items-center ">
+                                    <i class="far fa-clock mr-1"></i>
+                                    <span class="text-sm">Horario</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section MobileContent
+{
+<div class="p-4">
+    <h1 class="text-lg font-semibold mb-3">Dashboard</h1>
+
+    <!-- Stats Row -->
+    <div class="grid grid-cols-2 gap-4 mb-4">
+        <!-- Work Orders Stat -->
+        <div class="bg-white rounded-lg shadow p-4">
+            <div class="flex items-start justify-between">
+                <div>
+                    <h3 class="text-3xl font-bold">3</h3>
+                    <p class="text-sm text-gray-500">Work Orders</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                    <i class="fas fa-clipboard-list text-orange-500"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items to Pick Up Stat -->
+        <div class="bg-white rounded-lg shadow p-4">
+            <div class="flex items-start justify-between">
+                <div>
+                    <h3 class="text-3xl font-bold">2</h3>
+                    <p class="text-sm text-gray-500">Items</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                    <i class="fas fa-box text-blue-500"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Work Orders -->
+    <h2 class="font-medium mb-2">Today's Work Orders</h2>
+    <div class="space-y-2 mb-4">
+     
+    </div>
+
+    <a href="#" class="w-full bg-green-500 text-white py-2 rounded-md text-center block mb-4">
+        View All Work Orders
+    </a>
+</div>
+}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    function dashboard() {
+        const satisfactionCtx = document.getElementById('satisfactionChart').getContext('2d');
+        const satisfactionChart = new Chart(satisfactionCtx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [50, 100 - 30],
+                    backgroundColor: [
+                        'rgba(16, 185, 129, 1)',
+                        'rgba(229, 231, 235, 1)'
+                    ],
+                    borderWidth: 0,
+                    cutout: '80%'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                }
+            }
+        });
+
+        // Add center text to doughnut chart
+        Chart.register({
+            id: 'centerText',
+            beforeDraw: function(chart) {
+                if (chart.config.type === 'doughnut') {
+                    const width = chart.width;
+                    const height = chart.height;
+                    const ctx = chart.ctx;
+
+                    ctx.restore();
+                    const fontSize = (height / 114).toFixed(2);
+                    ctx.font = fontSize + 'em sans-serif';
+                    ctx.textBaseline = 'middle';
+
+                    const text = '100';
+                    const textX = Math.round((width - ctx.measureText(text).width) / 2);
+                    const textY = height / 2;
+
+                    ctx.fillStyle = '#000';
+                    ctx.fillText(text, textX, textY);
+                    ctx.save();
+                }
+            }
+        });
+
+        // Initialize Work Orders Chart
+        const ordersCtx = document.getElementById('ordersChart').getContext('2d');
+        const ordersChart = new Chart(ordersCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [
+                    {
+                        label: 'Completed',
+                        data: [],
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: false
+                    },
+                    {
+                        label: 'Assigned',
+                        data: [],
+                        borderColor: 'rgba(245, 158, 11, 1)',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.4,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            stepSize: 5
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 10,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Initialize charts when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        dashboard();
+    });
+</script>

@@ -18,3 +18,30 @@
 ::-webkit-scrollbar-thumb:hover {
     background: #4f46e5;
 }
+
+body {
+    font-size: 14px;
+    line-height: 17px;
+}
+
+.map-container {
+    background-size: cover;
+    background-position: center;
+}
+
+@media (max-width: 768px) {
+    .map-container {
+        background-image: url('https://api.mapbox.com/styles/v1/mapbox/dark-v10/static/-71.0589,42.3601,13,0/600x800?access_token=pk.placeholder');
+    }
+}
+
+.calendar-day {
+    width: 36px;
+    height: 36px;
+}
+
+.calendar-day.active {
+    background-color: #10b981;
+    color: white;
+    border-radius: 50%;
+}
