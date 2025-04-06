@@ -14,5 +14,6 @@ internal static class DomainServiceExtensions
     internal static void ConfigureDomainServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddTransient<IWhatsappCloudService, WhatsappCloudService>();
+        builder.Services.AddTransient<IMessageService, MessageService>();
     }
 }
