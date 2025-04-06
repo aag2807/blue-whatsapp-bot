@@ -45,7 +45,7 @@ ViewBag.ActivePage = "Dashboard";
                 <div class="bg-white rounded-lg shadow p-4 py-8">
                     <div class="flex items-start justify-between">
                         <div>
-                            <h3 class="text-3xl font-bold" x-text="openChats"></h3>
+                            <h3 class="text-3xl font-bold" x-text="pendingChatCount"></h3>
                             <p class="text-sm text-gray-500">Chats abiertos</p>
                         </div>
                         <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
@@ -57,7 +57,7 @@ ViewBag.ActivePage = "Dashboard";
                 <div class="bg-white rounded-lg shadow p-4 py-8">
                     <div class="flex items-start justify-between">
                         <div>
-                            <h3 class="text-3xl font-bold" x-text="0"></h3>
+                            <h3 class="text-3xl font-bold" x-text="closedChatCount"></h3>
                             <p class="text-sm text-gray-500">Chats cerrados</p>
                         </div>
                         <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
@@ -179,41 +179,45 @@ ViewBag.ActivePage = "Dashboard";
             conversationMessages: [],
             connection: null,
             
+            pendingChats: [],
+            closedChats: [],
+            
+            get pendingChatCount() {
+                return this.pendingChats.length;
+            },
+            
+            get closedChatCount() {
+                return this.closedChats.length;
+            },
+            
             init() {
                 this.connection = new signalR.HubConnectionBuilder()
                     .withUrl("/messages")
                     .withAutomaticReconnect()
                     .build();
 
-                // Handle receiving dashboard stats
-                this.connection.on("UpdateDashboardStats", (openChats, totalMessages) => {
-                    this.openChats = openChats;
-                    this.totalMessages = totalMessages;
-                });
+                this.connection.on('ReceiveOpenChats', (openChats) => {
+                    const mappedPendingChats = openChats.map(m => ({
+                        from: m.from,
+                        timestamp: new Date(m.createdTime).toLocaleString()
+                    }))
+
+                    this.pendingChats = mappedPendingChats
+                })
+
+                this.connection.on('ReceiveClosedMessages', (openChats) => {
+                    const mappedClosedChats = openChats.map(m => ({
+                        from: m.from,
+                        timestamp: new Date(m.createdTime).toLocaleString()
+                    }))
+
+                    this.closedChats = mappedClosedChats
+                })
 
                 // Handle receiving a new message
                 this.connection.on("ReceiveWhatsAppMessage", (from, timestamp) => {
-                    // Add to recent messages
-                    this.recentMessages.unshift({
-                        from: from,
-                        timestamp: timestamp
-                    });
-
-                    // Keep only the 20 most recent messages
-                    if (this.recentMessages.length > 20) {
-                        this.recentMessages.pop();
-                    }
-
-                    // Update stats
-                    this.totalMessages++;
-
-                    // Show notification
-                    this.showNotification(from);
-
-                    // If this message is part of the current conversation, refresh it
-                    if (this.currentConversation === from) {
-                        this.loadConversation(from);
-                    }
+                    this.connection.invoke("GetPendingMessages")
+                    this.connection.invoke("GetClosedMessages")
                 });
 
                 // Handle receiving recent messages
@@ -237,9 +241,8 @@ ViewBag.ActivePage = "Dashboard";
                 // Start the connection
                 this.connection.start()
                     .then(() => {
-                        console.log("SignalR Connected");
-                        // Request initial data
-                        this.connection.invoke("GetRecentMessages", 20);
+                        this.connection.invoke("GetPendingMessages");
+                        this.connection.invoke("GetClosedMessages");
                     })
                     .catch(err => console.error("SignalR Connection Error: ", err));
             },
@@ -253,7 +256,7 @@ ViewBag.ActivePage = "Dashboard";
             {
                 if (Notification.permission === "granted")
                 {
-                    new Notification("New WhatsApp Message", {body: `New message from ${from}`,icon: "/images/whatsapp-icon.png"});
+                    new Notification("New WhatsApp Message", {body: `New message from ${from}`});
                 } else if (Notification.permission !== "denied") {
                     Notification.requestPermission();
                 }

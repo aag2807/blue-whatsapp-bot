@@ -72,9 +72,9 @@ public class WhatsappController : ControllerBase
             string? userNumber = message.From!;
             string timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
+            await _whatsappCloudService.SendMessage(new CoreMessageToSend($"{message.Text.Body} 😃", userNumber)).ConfigureAwait(true);
+            await _messageService.SaveAsync($"{message.Text.Body} 😃", userNumber).ConfigureAwait(true);
             await _hubContext.Clients.All.SendAsync("ReceiveWhatsAppMessage", userNumber, timestamp ).ConfigureAwait(true);
-            await _whatsappCloudService.SendMessage(new CoreMessageToSend($"{message} 😃", userNumber)).ConfigureAwait(true);
-            await _messageService.SaveAsync($"{message} 😃", userNumber).ConfigureAwait(true);
         }
         catch (Exception ex)
         {

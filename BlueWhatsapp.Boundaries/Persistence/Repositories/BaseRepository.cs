@@ -19,34 +19,100 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
         _dbSet = _dbContext.Set<TEntity>();
     }
 
+    /// <summary>
+    /// Helper method to filter entities by the current day
+    /// </summary>
+    /// <returns>Expression that filters entities to the current day</returns>
+    protected Expression<Func<TEntity, bool>> GetSameDayFilter()
+    {
+        var today = DateTime.UtcNow.Date;
+        return e => e.CreatedTime.Date == today;
+    }
+
+    /// <summary>
+    /// Apply all standard filters (active status and same day)
+    /// </summary>
+    /// <param name="query">Query to filter</param>
+    /// <param name="includeInactive">Whether to include inactive entities</param>
+    /// <param name="filterByToday">Whether to filter by today's date</param>
+    /// <returns>Filtered query</returns>
+    protected IQueryable<TEntity> ApplyStandardFilters(
+        IQueryable<TEntity> query, 
+        bool includeInactive = false,
+        bool filterByToday = true)
+    {
+        if (!includeInactive)
+        {
+            query = query.Where(e => e.IsActive);
+        }
+
+        if (filterByToday)
+        {
+            var today = DateTime.UtcNow.Date;
+            query = query.Where(e => e.CreatedTime.Date == today);
+        }
+
+        return query;
+    }
+
     #region Read Operations
 
     /// <summary>
     /// Get entity by ID
     /// </summary>
     /// <param name="id">Entity ID</param>
+    /// <param name="filterByToday">Whether to filter by today's date</param>
     /// <returns>Entity if found, null otherwise</returns>
-    public virtual async Task<TEntity?> GetByIdAsync(int id)
+    public virtual async Task<TEntity?> GetByIdAsync(int id, bool filterByToday = true)
     {
-        return await _dbSet.FindAsync(id);
+        if (!filterByToday)
+        {
+            return await _dbSet.FindAsync(id);
+        }
+
+        var entity = await _dbSet.FindAsync(id);
+        if (entity != null && entity.CreatedTime.Date != DateTime.UtcNow.Date)
+        {
+            return null;
+        }
+        
+        return entity;
     }
 
     /// <summary>
     /// Get all active entities
     /// </summary>
+    /// <param name="filterByToday">Whether to filter by today's date</param>
     /// <returns>List of all active entities</returns>
-    public virtual async Task<IReadOnlyList<TEntity>> GetAllActiveAsync()
+    public virtual async Task<IReadOnlyList<TEntity>> GetAllActiveAsync(bool filterByToday = true)
     {
-        return await _dbSet.Where(e => e.IsActive).ToListAsync();
+        var query = _dbSet.Where(e => e.IsActive);
+        
+        if (filterByToday)
+        {
+            var today = DateTime.UtcNow.Date;
+            query = query.Where(e => e.CreatedTime.Date == today);
+        }
+        
+        return await query.ToListAsync();
     }
 
     /// <summary>
     /// Get all entities (including inactive ones)
     /// </summary>
+    /// <param name="filterByToday">Whether to filter by today's date</param>
     /// <returns>List of all entities</returns>
-    public virtual async Task<IReadOnlyList<TEntity>> GetAllAsync()
+    public virtual async Task<IReadOnlyList<TEntity>> GetAllAsync(bool filterByToday = true)
     {
-        return await _dbSet.ToListAsync();
+        var query = _dbSet.AsQueryable();
+        
+        if (filterByToday)
+        {
+            var today = DateTime.UtcNow.Date;
+            query = query.Where(e => e.CreatedTime.Date == today);
+        }
+        
+        return await query.ToListAsync();
     }
 
     /// <summary>
@@ -54,16 +120,14 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
     /// </summary>
     /// <param name="predicate">Filter condition</param>
     /// <param name="includeInactive">Whether to include inactive entities</param>
+    /// <param name="filterByToday">Whether to filter by today's date</param>
     /// <returns>List of entities matching the condition</returns>
-    public virtual async Task<IReadOnlyList<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, bool includeInactive = false)
+    public virtual async Task<IReadOnlyList<TEntity>> FindAsync(
+        Expression<Func<TEntity, bool>> predicate, 
+        bool includeInactive = false,
+        bool filterByToday = true)
     {
-        IQueryable<TEntity> query = _dbSet;
-
-        if (!includeInactive)
-        {
-            query = query.Where(e => e.IsActive);
-        }
-
+        var query = ApplyStandardFilters(_dbSet, includeInactive, filterByToday);
         return await query.Where(predicate).ToListAsync();
     }
 
@@ -72,18 +136,14 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
     /// </summary>
     /// <param name="predicate">Filter condition</param>
     /// <param name="includeInactive">Whether to include inactive entities</param>
+    /// <param name="filterByToday">Whether to filter by today's date</param>
     /// <returns>First entity matching the condition or null</returns>
     public virtual async Task<TEntity?> GetFirstOrDefaultAsync(
         Expression<Func<TEntity, bool>> predicate,
-        bool includeInactive = false)
+        bool includeInactive = false,
+        bool filterByToday = true)
     {
-        IQueryable<TEntity> query = _dbSet;
-
-        if (!includeInactive)
-        {
-            query = query.Where(e => e.IsActive);
-        }
-
+        var query = ApplyStandardFilters(_dbSet, includeInactive, filterByToday);
         return await query.FirstOrDefaultAsync(predicate);
     }
 
@@ -92,18 +152,14 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
     /// </summary>
     /// <param name="predicate">Filter condition</param>
     /// <param name="includeInactive">Whether to include inactive entities</param>
+    /// <param name="filterByToday">Whether to filter by today's date</param>
     /// <returns>True if at least one entity matches, false otherwise</returns>
     public virtual async Task<bool> ExistsAsync(
         Expression<Func<TEntity, bool>> predicate,
-        bool includeInactive = false)
+        bool includeInactive = false,
+        bool filterByToday = true)
     {
-        IQueryable<TEntity> query = _dbSet;
-
-        if (!includeInactive)
-        {
-            query = query.Where(e => e.IsActive);
-        }
-
+        var query = ApplyStandardFilters(_dbSet, includeInactive, filterByToday);
         return await query.AnyAsync(predicate);
     }
 
@@ -112,18 +168,15 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
     /// </summary>
     /// <param name="predicate">Filter condition</param>
     /// <param name="includeInactive">Whether to include inactive entities</param>
+    /// <param name="filterByToday">Whether to filter by today's date</param>
     /// <returns>Count of matching entities</returns>
     public virtual async Task<int> CountAsync(
         Expression<Func<TEntity, bool>>? predicate = null,
-        bool includeInactive = false)
+        bool includeInactive = false,
+        bool filterByToday = true)
     {
-        IQueryable<TEntity> query = _dbSet;
-
-        if (!includeInactive)
-        {
-            query = query.Where(e => e.IsActive);
-        }
-
+        var query = ApplyStandardFilters(_dbSet, includeInactive, filterByToday);
+        
         if (predicate != null)
         {
             query = query.Where(predicate);
@@ -175,9 +228,19 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
     /// Update an existing entity
     /// </summary>
     /// <param name="entity">Entity to update</param>
+    /// <param name="filterByToday">Whether to filter by today's date</param>
     /// <returns>Updated entity</returns>
-    public virtual async Task<TEntity> UpdateAsync(TEntity entity)
+    public virtual async Task<TEntity> UpdateAsync(TEntity entity, bool filterByToday = true)
     {
+        if (filterByToday)
+        {
+            var existingEntity = await _dbSet.FindAsync(entity.Id);
+            if (existingEntity == null || existingEntity.CreatedTime.Date != DateTime.UtcNow.Date)
+            {
+                throw new InvalidOperationException($"Entity with ID {entity.Id} not found for today's date or is not eligible for update.");
+            }
+        }
+        
         entity.ModifiedTime = DateTime.UtcNow;
 
         _dbContext.Entry(entity).State = EntityState.Modified;
@@ -190,12 +253,18 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
     /// Soft delete an entity (mark as inactive)
     /// </summary>
     /// <param name="id">Entity ID</param>
+    /// <param name="filterByToday">Whether to filter by today's date</param>
     /// <returns>True if successfully deleted, false if entity not found</returns>
-    public virtual async Task<bool> SoftDeleteAsync(int id)
+    public virtual async Task<bool> SoftDeleteAsync(int id, bool filterByToday = true)
     {
         var entity = await _dbSet.FindAsync(id);
 
         if (entity == null)
+        {
+            return false;
+        }
+
+        if (filterByToday && entity.CreatedTime.Date != DateTime.UtcNow.Date)
         {
             return false;
         }
@@ -211,12 +280,18 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
     /// Hard delete an entity (completely remove from database)
     /// </summary>
     /// <param name="id">Entity ID</param>
+    /// <param name="filterByToday">Whether to filter by today's date</param>
     /// <returns>True if successfully deleted, false if entity not found</returns>
-    public virtual async Task<bool> HardDeleteAsync(int id)
+    public virtual async Task<bool> HardDeleteAsync(int id, bool filterByToday = true)
     {
         var entity = await _dbSet.FindAsync(id);
 
         if (entity == null)
+        {
+            return false;
+        }
+
+        if (filterByToday && entity.CreatedTime.Date != DateTime.UtcNow.Date)
         {
             return false;
         }
@@ -231,10 +306,22 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
     /// </summary>
     /// <param name="predicate">Condition to select entities</param>
     /// <param name="updateAction">Action to perform on each entity</param>
+    /// <param name="filterByToday">Whether to filter by today's date</param>
     /// <returns>Number of entities updated</returns>
-    public virtual async Task<int> BulkUpdateAsync(Expression<Func<TEntity, bool>> predicate, Action<TEntity> updateAction)
+    public virtual async Task<int> BulkUpdateAsync(
+        Expression<Func<TEntity, bool>> predicate, 
+        Action<TEntity> updateAction,
+        bool filterByToday = true)
     {
-        var entities = await _dbSet.Where(predicate).ToListAsync();
+        var query = _dbSet.Where(predicate);
+        
+        if (filterByToday)
+        {
+            var today = DateTime.UtcNow.Date;
+            query = query.Where(e => e.CreatedTime.Date == today);
+        }
+        
+        var entities = await query.ToListAsync();
 
         if (entities.Count == 0)
         {
@@ -256,10 +343,13 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
     /// Bulk soft delete entities that match a condition
     /// </summary>
     /// <param name="predicate">Condition to select entities</param>
+    /// <param name="filterByToday">Whether to filter by today's date</param>
     /// <returns>Number of entities deleted</returns>
-    public virtual async Task<int> BulkSoftDeleteAsync(Expression<Func<TEntity, bool>> predicate)
+    public virtual async Task<int> BulkSoftDeleteAsync(
+        Expression<Func<TEntity, bool>> predicate,
+        bool filterByToday = true)
     {
-        return await BulkUpdateAsync(predicate, entity => entity.IsActive = false);
+        return await BulkUpdateAsync(predicate, entity => entity.IsActive = false, filterByToday);
     }
 
     #endregion

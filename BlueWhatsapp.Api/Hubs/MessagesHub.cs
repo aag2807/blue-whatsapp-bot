@@ -22,7 +22,7 @@ public class MessagesHub : Hub
     /// </summary>
     public async Task GetRecentMessages(int count = 20)
     {
-        IEnumerable<CoreMessage> messages = await _messageRepository.GetRecentMessagesAsync(count);
+        IEnumerable<CoreMessage> messages = await _messageRepository.GetRecentMessagesAsync(count).ConfigureAwait(true);
         
         // Send the messages to the requesting client only
         await Clients.Caller.SendAsync("ReceiveRecentMessages", messages).ConfigureAwait(true);
@@ -44,6 +44,26 @@ public class MessagesHub : Hub
         IEnumerable<CoreMessage> messages = await _messageRepository.GetMessagesByFromAsync(from).ConfigureAwait(true);
         
         await Clients.Caller.SendAsync("ReceiveMessageHistory", from, messages).ConfigureAwait(true);
+    }
+    
+    /// <summary>
+    /// Method that can be called by clients to get messages from a specific sender
+    /// </summary>
+    public async Task GetPendingMessages()
+    {
+        IEnumerable<CoreMessage> openChats = await _messageRepository.GetMessagesByTypeAsync(MessageStatus.Pending).ConfigureAwait(true);
+        
+        await Clients.Caller.SendAsync("ReceiveOpenChats", openChats).ConfigureAwait(true);
+    }
+    
+    /// <summary>
+    /// Method that can be called by clients to get messages from a specific sender
+    /// </summary>
+    public async Task GetClosedMessages()
+    {
+        IEnumerable<CoreMessage> completedChats = await _messageRepository.GetMessagesByTypeAsync(MessageStatus.Completed).ConfigureAwait(true);
+        
+        await Clients.Caller.SendAsync("ReceiveClosedMessages", completedChats).ConfigureAwait(true);
     }
     
     /// <summary>

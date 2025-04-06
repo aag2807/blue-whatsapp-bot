@@ -27,7 +27,7 @@ public sealed class MessageService : IMessageService
         await _messageRepository.Persist(message).ConfigureAwait(true);
     }
     
-    async Task IMessageService.SaveAsync(string message, string number)
+    async Task IMessageService.SaveAsync(string message, string number, MessageStatus status = MessageStatus.Pending)
     {
         Arguments.NotEmptyOrWhiteSpaceOnly(message, nameof(message));
         Arguments.NotEmptyOrWhiteSpaceOnly(number, nameof(number));
@@ -35,7 +35,8 @@ public sealed class MessageService : IMessageService
         CoreMessage messageToSave = new CoreMessage()
         {
             From = number,
-            Body = message
+            Body = message,
+            Status = status
         };
         
         await _messageRepository.Persist(messageToSave).ConfigureAwait(true);
