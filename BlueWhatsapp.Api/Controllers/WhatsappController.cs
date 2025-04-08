@@ -3,6 +3,7 @@ using BlueWhatsapp.Api.models.DTO;
 using BlueWhatsapp.Api.models.DTO.Messages;
 using BlueWhatsapp.Api.Utils;
 using BlueWhatsapp.Core.Logger;
+using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
 using BlueWhatsapp.Core.Persistence;
 using BlueWhatsapp.Core.Services;
@@ -20,20 +21,31 @@ public class WhatsappController : ControllerBase
     private readonly IWhatsappCloudService _whatsappCloudService;
     private readonly IHubContext<MessagesHub> _hubContext;
     private readonly IMessageService _messageService;
+    private readonly IConversationStateService _conversationStateService;
+    private readonly IConversationService _conversationService;
 
     /// <summary>
-    /// 
+    /// Controller responsible for handling API endpoints related to WhatsApp integrations.
     /// </summary>
-    /// <param name="logger"></param>
-    /// <param name="whatsappCloudService"></param>
-    /// <param name="hubContext"></param>
-    /// <param name="messageService"></param>
-    public WhatsappController(IAppLogger logger, IWhatsappCloudService whatsappCloudService,  IHubContext<MessagesHub> hubContext, IMessageService messageService)
+    /// <remarks>
+    /// This controller provides functionalities such as validating tokens, handling incoming messages,
+    /// and checking the health status of the service.
+    /// </remarks>
+    public WhatsappController(
+        IAppLogger logger, 
+        IWhatsappCloudService whatsappCloudService, 
+        IHubContext<MessagesHub> hubContext, 
+        IMessageService messageService,
+        IConversationStateService conversationStateService,
+        IConversationService conversationService
+        )
     {
         _logger = logger;
         _whatsappCloudService = whatsappCloudService;
         _hubContext = hubContext;
         _messageService = messageService;
+        _conversationStateService = conversationStateService;
+        _conversationService = conversationService;
     }
 
     [HttpGet]
@@ -69,12 +81,37 @@ public class WhatsappController : ControllerBase
         try
         {
             Message? message = body.Entry[0]?.Changes[0]?.Value?.Messages[0];
-            string? userNumber = message.From!;
-            string timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            if (message == null)
+            {
+                return Ok("EVENT_RECEIVED");
+            }
 
-            await _whatsappCloudService.SendMessage(new CoreMessageToSend($"{message.Text.Body} 😃", userNumber)).ConfigureAwait(true);
-            await _messageService.SaveAsync($"{message.Text.Body} 😃", userNumber).ConfigureAwait(true);
-            await _hubContext.Clients.All.SendAsync("ReceiveWhatsAppMessage", userNumber, timestamp ).ConfigureAwait(true);
+            string userNumber = message.From!;
+            string userText = GetUserText(message);
+            string timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            
+            CoreConversationState? state = await _conversationStateService.GetConversationStateByNumber(userNumber).ConfigureAwait(true);
+            if (state == null)
+            {
+                state = await _conversationStateService.CreateNewConversationState(userNumber).ConfigureAwait(true);
+            }
+        
+            if (state.IsAdminOverridden)
+            {
+                await _messageService.SaveAsync(userText, userNumber).ConfigureAwait(true);
+                await _hubContext.Clients.All.SendAsync("ReceiveWhatsAppMessage", userNumber, timestamp).ConfigureAwait(true);
+                return Ok("EVENT_RECEIVED");
+            }
+
+            string response = await _conversationService.ProcessMessageAsync(userText, userNumber).ConfigureAwait(true);
+            if (response != null)
+            {
+                await _whatsappCloudService.SendMessage(new CoreMessageToSend(response, userNumber)).ConfigureAwait(true);
+                await _messageService.SaveAsync(response, userNumber).ConfigureAwait(true);
+            }
+        
+            await _messageService.SaveAsync(userText, userNumber).ConfigureAwait(true);
+            await _hubContext.Clients.All.SendAsync("ReceiveWhatsAppMessage", userNumber, timestamp).ConfigureAwait(true);
         }
         catch (Exception ex)
         {
