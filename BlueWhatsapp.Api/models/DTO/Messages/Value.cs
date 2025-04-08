@@ -11,6 +11,11 @@ public class Value
     /// Metadata about the message
     /// </summary>
     public Metadata? Metadata { get; set; }
+
+    /// <summary>
+    /// The contacts in the conversation
+    /// </summary>
+    public List<Contact> Contacts {get; set;} = Enumerable.Empty<Contact>().ToList();
     
     /// <summary>
     /// The messages in the conversation

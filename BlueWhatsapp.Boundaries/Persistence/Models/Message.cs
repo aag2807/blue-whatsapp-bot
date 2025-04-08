@@ -59,7 +59,8 @@ public sealed class Message: BaseEntity
         {
             From = message.From,
             Body = message.Body,
-            Status = message.Status
+            Status = message.Status,
+            Number = message.Number
         };
     }
 }

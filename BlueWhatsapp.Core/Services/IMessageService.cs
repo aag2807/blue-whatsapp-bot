@@ -19,7 +19,7 @@ public interface IMessageService
     /// <param name="number">The recipient's phone number associated with the message. Cannot be null or empty.</param>
     /// <param name="status">The status of the message being sent.</param>
     /// <returns>A task representing the asynchronous save operation.</returns>
-    Task SaveAsync(string message, string number, MessageStatus status = MessageStatus.Pending);
+    Task SaveAsync(string from,string message, string number, MessageStatus status = MessageStatus.Pending);
 
     /// <summary>
     /// Retrieves all messages asynchronously.

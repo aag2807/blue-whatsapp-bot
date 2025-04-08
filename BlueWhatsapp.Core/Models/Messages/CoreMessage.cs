@@ -10,8 +10,21 @@ namespace BlueWhatsapp.Core.Models.Messages;
 public sealed class CoreMessage : BaseEntity
 {
     /// <summary>
-    /// Gets or sets the identifier of the sender for a message.
+    /// Represents the number of the message.
     /// </summary>
+    /// <remarks>
+    /// The <see cref="Number"/> property identifies the number of the message.
+    /// It is a required field and must be a non-empty string.
+    /// </remarks>
+    public string Number { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Represents the sender of the message.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="From"/> property identifies the originator of the message.
+    /// It is a required field and must be a non-empty string.
+    /// </remarks>
     public string From { get; set; } = string.Empty;
 
     /// <summary>
