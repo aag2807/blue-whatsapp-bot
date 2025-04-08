@@ -22,7 +22,7 @@ public sealed class ConversationStateRepository : BaseRepository<ConversationSta
     {
         Arguments.NotEmptyOrWhiteSpaceOnly(number, nameof(number));
         
-        ConversationState? model = await _dbSet.FirstAsync(cs => cs.UserNumber.Trim() == number.Trim()).ConfigureAwait(true);
+        ConversationState? model = await _dbSet.FirstOrDefaultAsync(cs => cs.UserNumber.Trim() == number.Trim()).ConfigureAwait(true);
         
         return model is null ? null : CoreConversationState.Create(model);
     }
@@ -42,12 +42,11 @@ public sealed class ConversationStateRepository : BaseRepository<ConversationSta
     async Task IConversationStateRepository.UpdateAsync(CoreConversationState state)
     {
         ConversationState model = await _dbSet.FirstOrDefaultAsync(cs => cs.UserNumber.Trim() == state.UserNumber.Trim()).ConfigureAwait(true)!;
-        ConversationState mappedModel = ConversationState.FromCore(state);
-        mappedModel.Id = model.Id;
-        
-        _dbSet.Update(mappedModel);
-        
+
+        model.CurrentStep = state.CurrentStep;
+        model.IsAdminOverridden = state.IsAdminOverridden;
+        model.IsComplete = state.IsComplete;
+
         await _dbContext.SaveChangesAsync().ConfigureAwait(true);
-    
     }
 }
