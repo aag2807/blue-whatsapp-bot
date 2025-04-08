@@ -20,4 +20,14 @@ public sealed class WhatsAppCloudModel
     {
         return Entry[0]?.Changes[0]?.Value?.Messages[0];
     }
+
+    public string GetFrom()
+    {
+        return Entry[0]?.Changes[0]?.Value?.Messages[0]?.From;
+    }
+
+    public string? GetMetadataPhoneNumberDisplay()
+    {
+        return Entry[0]?.Changes[0]?.Value?.Metadata.Display_Phone_Number;
+    }
 }

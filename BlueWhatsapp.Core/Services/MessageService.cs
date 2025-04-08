@@ -55,4 +55,11 @@ public sealed class MessageService : IMessageService
         
         return await _messageRepository.GetMessagesByTypeAsync(status).ConfigureAwait(true);
     }
+
+    /// <inheritdoc />
+    async Task<IEnumerable<CoreMessage>> IMessageService.GetAllByPhoneNumber(string phoneNumber)
+    {
+        Arguments.NotEmptyOrWhiteSpaceOnly(phoneNumber, nameof(phoneNumber));
+        return await _messageRepository.GetMessagesByPhoneNumber(phoneNumber).ConfigureAwait(true);
+    }
 }

@@ -8,6 +8,15 @@ namespace BlueWhatsapp.Boundaries.Persistence.Models;
 public sealed class Message: BaseEntity
 {
     /// <summary>
+    /// Represents the number of the message.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="Number"/> property identifies the number of the message.
+    /// It is a required field and must be a non-empty string.
+    /// </remarks>
+    public string Number { get; set; } = string.Empty;
+
+    /// <summary>
     /// Represents the sender of the message.
     /// </summary>
     /// <remarks>

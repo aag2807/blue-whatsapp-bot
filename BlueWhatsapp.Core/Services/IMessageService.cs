@@ -35,4 +35,11 @@ public interface IMessageService
     /// <param name="status">The status of the messages to retrieve. Must not be <c>MessageStatus.None</c>.</param>
     /// <returns>A task representing the asynchronous operation. The task result contains a collection of CoreMessage objects that match the specified status.</returns>
     Task<IEnumerable<CoreMessage>> GetAllByStatus(MessageStatus status);
+
+    /// <summary>
+    /// Retrieves all messages with the specified phone number asynchronously.
+    /// </summary>
+    /// <param name="phoneNumber">The phone number of the messages to retrieve. Cannot be null or empty.</param>
+    /// <returns>A task representing the asynchronous operation. The task result contains a collection of CoreMessage objects that match the specified phone number.</returns>
+    Task<IEnumerable<CoreMessage>> GetAllByPhoneNumber(string phoneNumber);
 }

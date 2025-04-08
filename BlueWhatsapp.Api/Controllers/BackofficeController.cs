@@ -2,14 +2,25 @@
 using System.Text.Encodings.Web;
 using BlueWhatsapp.Api.models.VM;
 using Microsoft.AspNetCore.Identity;
+using BlueWhatsapp.Core.Logger;
+using BlueWhatsapp.Api.Utils;
 namespace BlueWhatsapp.Api.Controllers;
 
 public class BackofficeController : Controller
 {
+ 
+    private readonly IAppLogger _logger;
+ 
+    public BackofficeController(IAppLogger logger)
+    {
+        _logger = logger;
+    }
+ 
     /// <summary>
     /// Displays the Index page in the Backoffice section.
     /// </summary>
     /// <returns>Returns the Index view for the Backoffice section.</returns>
+    [LogAction]
     public IActionResult Index()
     {
         return View();
@@ -20,9 +31,11 @@ public class BackofficeController : Controller
     /// </summary>
     /// <returns>Returns the Dashboard view for the Backoffice section.</returns>
     [HttpPost]
-    [ValidateAntiForgeryToken]
+    [LogAction]
     public ActionResult Dashboard(LoginViewModel model)
     {
+        _logger.LogInfo("Dashboard");
+        _logger.LogInfo(model);
         if (ModelState.IsValid)
         {
             bool isAuthenticated = VerifyCredentials(model.Email, model.Password);

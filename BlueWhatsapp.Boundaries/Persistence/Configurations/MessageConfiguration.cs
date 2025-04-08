@@ -13,6 +13,9 @@ public class MessageConfiguration : IEntityTypeConfiguration<Message>
         builder.Property(m => m.Id)
             .IsRequired()
             .ValueGeneratedOnAdd();
+
+        builder.Property(m => m.Number)
+            .IsRequired();
         
         builder.Property(hs => hs.CreatedTime)
             .IsRequired();

@@ -44,4 +44,11 @@ public interface IMessageRepository
     /// </summary>
     /// <returns>Returns the total count of messages as a task result.</returns>
     Task<int> CountAsync();
+
+    /// <summary>
+    /// Asynchronously retrieves messages from the repository that match the specified phone number.
+    /// </summary>
+    /// <param name="phoneNumber">The phone number to filter messages by.</param>
+    /// <returns>Returns a task that represents the asynchronous operation. The task result contains a collection of messages that match the specified phone number.</returns>
+    Task<IEnumerable<CoreMessage>> GetMessagesByPhoneNumber(string phoneNumber);
 }

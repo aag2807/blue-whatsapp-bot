@@ -42,8 +42,8 @@ internal static class ExceptionMiddlewareExtensions
 
     private static async Task BuildResponse(HttpContext context, int statusCode, string message, IAppLogger appLogger)
     {
-        context.Response.StatusCode = statusCode;
-        await context.Response.WriteAsJsonAsync(new { Message = message }).ConfigureAwait(false);
+        context.Response.StatusCode = (int)HttpStatusCode.OK;
+        await context.Response.WriteAsync("EVENT_RECEIVED");
         appLogger.LogError(new { Message = message, StatusCode = statusCode });
     }
 }

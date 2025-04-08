@@ -19,15 +19,19 @@ internal static class SwaggerExtensions
                         Email = "aagn2807@gmail.com"
                     }
                 });
+                c.AddServer(new OpenApiServer { Url = "/" });
             });
         }
     
         internal static void ConfigureSwaggerUIOnDevelopment(this WebApplication app)
         {
-            app.UseSwagger();
+            app.UseSwagger(c =>
+            {
+                c.SerializeAsV2 = false;
+            });
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Users API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Whatsapp API V1");
                 c.RoutePrefix = string.Empty;
             });
         }
