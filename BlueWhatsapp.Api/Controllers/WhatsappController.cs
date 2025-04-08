@@ -112,10 +112,9 @@ public class WhatsappController : ControllerBase
             if (response != null)
             {
                 await _whatsappCloudService.SendMessage(new CoreMessageToSend(response, userNumber)).ConfigureAwait(true);
-                await _messageService.SaveAsync(fromName, response, userNumber).ConfigureAwait(true);
+                await _messageService.SaveAsync(fromName, userText, userNumber).ConfigureAwait(true);
             }
         
-            await _messageService.SaveAsync(fromName, userText, userNumber).ConfigureAwait(true);
             await _hubContext.Clients.All.SendAsync("ReceiveWhatsAppMessage", userNumber, timestamp).ConfigureAwait(true);
         }
         catch (Exception ex)
