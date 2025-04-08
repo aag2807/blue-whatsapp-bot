@@ -1,4 +1,5 @@
 using BlueWhatsapp.Boundaries.Persistence.Models;
+using BlueWhatsapp.Core.Logger;
 using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ public sealed class ConversationStateRepository : BaseRepository<ConversationSta
     /// This repository serves as the implementation of the IConversationStateRepository interface
     /// and provides methods inherited from the BaseRepository to perform CRUD operations on the ConversationState entity.
     /// </summary>
-    public ConversationStateRepository(IWhatsappBlueContext dbContext) : base(dbContext)
+    public ConversationStateRepository(IWhatsappBlueContext dbContext, IAppLogger logger) : base(dbContext, logger)
     {
     }
 

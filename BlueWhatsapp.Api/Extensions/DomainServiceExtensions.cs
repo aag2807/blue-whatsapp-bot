@@ -18,6 +18,7 @@ internal static class DomainServiceExtensions
         builder.Services.AddTransient<IMessageService, MessageService>();
         builder.Services.AddTransient<IConversationStateService, ConversationStateService>();
         builder.Services.AddTransient<IConversationService, ConversationService>();
+        builder.Services.AddTransient<IUserService, UserService>();
 
         builder.Services.Configure<ConversationFlowOptions>(builder.Configuration.GetSection("ConversationFlow"));
         builder.Services.AddTransient<IConversationFlowService, ConversationFlowService>();

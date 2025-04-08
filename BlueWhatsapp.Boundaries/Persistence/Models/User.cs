@@ -26,6 +26,10 @@ public sealed class User : BaseEntity
     /// </summary>
     public string Password { get; set; } = string.Empty;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public static User FromCoreUser(CoreUser coreUser)
     {
         return new User
@@ -34,6 +38,15 @@ public sealed class User : BaseEntity
             Email = coreUser.Email,
             Password = coreUser.Password
         };
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public CoreUser ToCoreUser()
+    {
+        return CoreUser.FromRaw(Name, Email, Email, Password);
     }
 }
     

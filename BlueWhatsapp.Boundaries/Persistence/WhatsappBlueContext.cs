@@ -36,6 +36,9 @@ public class WhatsappBlueContext : DbContext, IWhatsappBlueContext
     #region [DBSET]
     /// <inheritdoc />
     DbSet<Message> IWhatsappBlueContext.Messages { get; set; }
+
+    /// <inheritdoc />
+    DbSet<User> IWhatsappBlueContext.Users { get; set; }
     
     /// <inheritdoc />
     DbSet<Hotel> IWhatsappBlueContext.Hotels { get; set; }

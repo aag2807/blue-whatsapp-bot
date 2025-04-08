@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using BlueWhatsapp.Boundaries.Persistence.Models;
+using BlueWhatsapp.Core.Logger;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlueWhatsapp.Boundaries.Persistence.Repositories;
@@ -12,11 +13,13 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
 {
     protected readonly IWhatsappBlueContext _dbContext;
     protected readonly DbSet<TEntity> _dbSet;
+    protected readonly IAppLogger _logger;
 
-    protected BaseRepository(IWhatsappBlueContext dbContext)
+    protected BaseRepository(IWhatsappBlueContext dbContext, IAppLogger logger)
     {
         _dbContext = dbContext;
         _dbSet = _dbContext.Set<TEntity>();
+        _logger = logger;
     }
 
     /// <summary>

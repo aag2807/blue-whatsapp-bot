@@ -1,5 +1,6 @@
 using BlueWhatsapp.Boundaries.Persistence.Models;
 using BlueWhatsapp.Core.Enums;
+using BlueWhatsapp.Core.Logger;
 using BlueWhatsapp.Core.Models.Messages;
 using BlueWhatsapp.Core.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +24,7 @@ public sealed class MessageRepository : BaseRepository<Message>, IMessageReposit
     /// This repository extends the functionality of the BaseRepository class
     /// to include methods for retrieving messages by sender, type, or recent messages.
     /// </remarks>
-    public MessageRepository(IWhatsappBlueContext dbContext) : base(dbContext)
+    public MessageRepository(IWhatsappBlueContext dbContext, IAppLogger logger) : base(dbContext, logger)
     {
     }
     

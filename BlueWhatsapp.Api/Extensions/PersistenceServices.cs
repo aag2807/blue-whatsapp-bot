@@ -31,5 +31,6 @@ internal static class PersistenceServices
         //repositories
         builder.Services.AddTransient<IMessageRepository, MessageRepository>();
         builder.Services.AddTransient<IConversationStateRepository, ConversationStateRepository>();
+        builder.Services.AddTransient<IUserRepository, UserRepository>();
     }
 }

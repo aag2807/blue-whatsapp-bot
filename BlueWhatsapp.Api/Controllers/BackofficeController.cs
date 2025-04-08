@@ -4,16 +4,18 @@ using BlueWhatsapp.Api.models.VM;
 using Microsoft.AspNetCore.Identity;
 using BlueWhatsapp.Core.Logger;
 using BlueWhatsapp.Api.Utils;
-namespace BlueWhatsapp.Api.Controllers;
+using BlueWhatsapp.Core.Services;
+using BlueWhatsapp.Core.Models.Users;
 
 public class BackofficeController : Controller
 {
- 
+    private readonly IUserService _userService;
     private readonly IAppLogger _logger;
  
-    public BackofficeController(IAppLogger logger)
+    public BackofficeController(IUserService userService, IAppLogger logger)
     {
         _logger = logger;
+        _userService = userService;
     }
  
     /// <summary>
@@ -32,15 +34,12 @@ public class BackofficeController : Controller
     /// <returns>Returns the Dashboard view for the Backoffice section.</returns>
     [HttpPost]
     [LogAction]
-    public ActionResult Dashboard(LoginViewModel model)
+    public async Task<ActionResult> Dashboard(LoginViewModel model)
     {
-        _logger.LogInfo("Dashboard");
-        _logger.LogInfo(model);
         if (ModelState.IsValid)
         {
-            bool isAuthenticated = VerifyCredentials(model.Email, model.Password);
-            
-            if (isAuthenticated)
+            CoreUser? user = await VerifyCredentials(model.Email, model.Password).ConfigureAwait(true);
+            if (user != null)
             {
                 return RedirectToAction("Dashboard", "Backoffice");
             }
@@ -113,10 +112,11 @@ public class BackofficeController : Controller
     /// <param name="email">The email address of the user attempting to log in.</param>
     /// <param name="password">The password associated with the specified email address.</param>
     /// <returns>Returns true if the credentials are valid; otherwise false.</returns>
-    private bool VerifyCredentials(string email, string password)
+    private async Task<CoreUser?> VerifyCredentials(string email, string password)
     {
-        // Implement your authentication logic here
-        // This might involve checking against a database, etc.
-        return true; // Placeholder
+        _logger.LogInfo($"Login attempt for {email}");
+        CoreUser? user =  await _userService.Login(email, password).ConfigureAwait(true);
+        
+        return user;
     }
 }
