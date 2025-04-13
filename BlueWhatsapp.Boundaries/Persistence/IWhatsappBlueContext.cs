@@ -39,6 +39,16 @@ public interface IWhatsappBlueContext
     /// 
     /// </summary>
     public DbSet<Route> Routes { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public DbSet<Reservation> Reservations { get; set; }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    public DbSet<Trip> Trips { get; set; }
     
     /// <summary>
     /// 

@@ -16,7 +16,7 @@ public sealed class ScheduleRepository : BaseRepository<Schedule>, IScheduleRepo
     /// <inheritdoc/>
     async Task<IEnumerable<CoreSchedule>> IScheduleRepository.GetAllSchedulesAsync()
     {
-        IReadOnlyList<Schedule> schedules = await GetAllAsync(false).ConfigureAwait(true);
+        IReadOnlyList<Schedule> schedules = await GetAllActiveAsync(false).ConfigureAwait(true);
 
         return schedules.Select(s => new CoreSchedule(s.Id, s.Name, s.Time));
     }

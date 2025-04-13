@@ -1,4 +1,7 @@
-﻿namespace BlueWhatsapp.Core.Models;
+﻿using BlueWhatsapp.Core.Models.Route;
+using BlueWhatsapp.Core.Models.Schedule;
+
+namespace BlueWhatsapp.Core.Models;
 
 public sealed class CoreHotel
 {
@@ -42,19 +45,13 @@ public sealed class CoreHotel
     /// </summary>
     public int RouteId { get; set; }
     
-    // /// <summary>
-    // /// Navigation property to the related Route
-    // /// </summary>
-    // public Route RouteNavigation { get; set; }
-    //
-    // /// <summary>
-    // /// Collection of schedules associated with this hotel through the junction table
-    // /// </summary>
-    // public ICollection<HotelSchedule> HotelSchedules { get; set; } = new List<HotelSchedule>();
-    //
-    // /// <summary>
-    // /// Collection of schedules associated with this hotel
-    // /// </summary>
-    // public ICollection<Schedule> Schedules { get; set; } = new List<Schedule>(); 
+    /// <summary>
+    /// Navigation property to the related Route
+    /// </summary>
+    public CoreRoute? RouteNavigation { get; set; }
     
+    /// <summary>
+    /// Collection of schedules associated with this hotel
+    /// </summary>
+    public ICollection<CoreSchedule> Schedules { get; set; } = new List<CoreSchedule>(); 
 }

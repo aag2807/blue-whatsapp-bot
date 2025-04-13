@@ -40,7 +40,7 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
     /// <param name="filterByToday">Whether to filter by today's date</param>
     /// <returns>Filtered query</returns>
     protected IQueryable<TEntity> ApplyStandardFilters(
-        IQueryable<TEntity> query, 
+        IQueryable<TEntity> query,
         bool includeInactive = false,
         bool filterByToday = true)
     {
@@ -78,8 +78,63 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
         {
             return null;
         }
-        
+
         return entity;
+    }
+
+    /// <summary>
+    /// Search all string properties in an entity to see if the string value is present or partially matches
+    /// </summary>
+    /// <param name="value">Value to search for</param>
+    /// <returns>List of entities that match the search</returns>
+    public virtual async Task<IReadOnlyList<TEntity>> SearchAsync(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return await _dbSet.ToListAsync();
+
+        }
+
+        // Get all string properties of the entity
+        IEnumerable<System.Reflection.PropertyInfo> stringProperties = typeof(TEntity).GetProperties()
+            .Where(p => p.PropertyType == typeof(string));
+
+        ParameterExpression parameter = Expression.Parameter(typeof(TEntity), "e");
+        Expression combinedExpression = null;
+
+        foreach (var prop in stringProperties)
+        {
+            MemberExpression propertyAccess = Expression.Property(parameter, prop);
+            var constant = Expression.Constant(value, typeof(string));
+
+            // e.Property.Contains(value)
+            var containsMethod = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+            var containsExpression = Expression.Call(propertyAccess, containsMethod, constant);
+
+            // Handle null properties
+            var propertyNotNull = Expression.NotEqual(propertyAccess, Expression.Constant(null, typeof(string)));
+            var safePropCheck = Expression.AndAlso(propertyNotNull, containsExpression);
+
+            // Combine with OR
+            if (combinedExpression == null)
+            {
+                combinedExpression = safePropCheck;
+            }
+            else
+            {
+                combinedExpression = Expression.OrElse(combinedExpression, safePropCheck);
+            }
+        }
+
+        if (combinedExpression == null)
+        {
+            return new List<TEntity>().AsReadOnly();
+        }
+
+        // Create the lambda expression
+        Expression<Func<TEntity, bool>> lambda = Expression.Lambda<Func<TEntity, bool>>(combinedExpression, parameter);
+
+        return await _dbSet.Where(lambda).ToListAsync();
     }
 
     /// <summary>
@@ -90,13 +145,13 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
     public virtual async Task<IReadOnlyList<TEntity>> GetAllActiveAsync(bool filterByToday = true)
     {
         var query = _dbSet.Where(e => e.IsActive);
-        
+
         if (filterByToday)
         {
             var today = DateTime.UtcNow.Date;
             query = query.Where(e => e.CreatedTime.Date == today);
         }
-        
+
         return await query.ToListAsync();
     }
 
@@ -108,13 +163,13 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
     public virtual async Task<IReadOnlyList<TEntity>> GetAllAsync(bool filterByToday = true)
     {
         var query = _dbSet.AsQueryable();
-        
+
         if (filterByToday)
         {
             var today = DateTime.UtcNow.Date;
             query = query.Where(e => e.CreatedTime.Date == today);
         }
-        
+
         return await query.ToListAsync();
     }
 
@@ -126,7 +181,7 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
     /// <param name="filterByToday">Whether to filter by today's date</param>
     /// <returns>List of entities matching the condition</returns>
     public virtual async Task<IReadOnlyList<TEntity>> FindAsync(
-        Expression<Func<TEntity, bool>> predicate, 
+        Expression<Func<TEntity, bool>> predicate,
         bool includeInactive = false,
         bool filterByToday = true)
     {
@@ -179,7 +234,7 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
         bool filterByToday = true)
     {
         var query = ApplyStandardFilters(_dbSet, includeInactive, filterByToday);
-        
+
         if (predicate != null)
         {
             query = query.Where(predicate);
@@ -243,7 +298,7 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
                 throw new InvalidOperationException($"Entity with ID {entity.Id} not found for today's date or is not eligible for update.");
             }
         }
-        
+
         entity.ModifiedTime = DateTime.UtcNow;
 
         _dbContext.Entry(entity).State = EntityState.Modified;
@@ -312,18 +367,18 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
     /// <param name="filterByToday">Whether to filter by today's date</param>
     /// <returns>Number of entities updated</returns>
     public virtual async Task<int> BulkUpdateAsync(
-        Expression<Func<TEntity, bool>> predicate, 
+        Expression<Func<TEntity, bool>> predicate,
         Action<TEntity> updateAction,
         bool filterByToday = true)
     {
         var query = _dbSet.Where(predicate);
-        
+
         if (filterByToday)
         {
             var today = DateTime.UtcNow.Date;
             query = query.Where(e => e.CreatedTime.Date == today);
         }
-        
+
         var entities = await query.ToListAsync();
 
         if (entities.Count == 0)

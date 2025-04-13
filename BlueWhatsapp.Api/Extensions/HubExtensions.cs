@@ -9,6 +9,9 @@ internal static class HubExtensions
         app.MapHub<MessagesHub>("/messages");
         app.MapHub<RouteHub>("/routes");
         app.MapHub<ScheduleHub>("/schedules");
+        app.MapHub<TripHub>("/trips");
+        app.MapHub<HotelHub>("/hotels");
+        app.MapHub<ReservationsHub>("/reservations");
     }
 }
 

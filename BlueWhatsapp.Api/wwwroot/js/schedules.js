@@ -41,7 +41,6 @@ document.addEventListener('alpine:init', () => {
                 .build();
 
             this.connection.on('ReceiveSchedules', (schedules) => {
-                console.log(schedules);
                 this.schedules = schedules;
             });
 
@@ -105,11 +104,37 @@ document.addEventListener('alpine:init', () => {
         },
 
         async saveSchedule() {
-
+            this.saving = true;
+            try {
+                await this.connection.invoke('CreateSchedule', this.currentSchedule);
+            } catch (error) {
+                console.error('Error saving schedule:', error);
+            } finally {
+                this.showModal = false;
+                this.saving = false;
+            }
         },
 
         async saveHotelAssignments() {
 
+        },
+
+        async deleteSchedule(scheduleId) {
+            const { Swal } = window;
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: 'No podrás revertir esto!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si, eliminar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.connection.invoke('DeleteSchedule', scheduleId);
+                }
+            });
         }
     }));
 });

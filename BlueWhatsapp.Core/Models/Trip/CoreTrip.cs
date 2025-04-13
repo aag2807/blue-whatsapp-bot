@@ -9,6 +9,11 @@ namespace BlueWhatsapp.Core.Models.Trip;
 public sealed class CoreTrip : BaseEntity
 {
     /// <summary>
+    /// The id of the trip
+    /// </summary>
+    public int Id { get; set; }
+
+    /// <summary>
     /// The number of the user
     /// </summary>
     public string UserNumber { get; set; } = string.Empty;

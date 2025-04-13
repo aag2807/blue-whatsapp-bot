@@ -34,5 +34,8 @@ internal static class PersistenceServices
         builder.Services.AddTransient<IUserRepository, UserRepository>();
         builder.Services.AddTransient<IRouteRepository, RouteRepository>();
         builder.Services.AddTransient<IScheduleRepository, ScheduleRepository>();
+        builder.Services.AddTransient<ITripRepository, TripRepository>();
+        builder.Services.AddTransient<IHotelRepository, HotelRepository>();
+        builder.Services.AddTransient<IReservationRepository, ReservationRepository>();
     }
 }

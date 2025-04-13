@@ -115,10 +115,22 @@ document.addEventListener('alpine:init', () => {
         },
 
         async deleteRoute(id) {
-            this.saving = true;
-            await this.connection.invoke('DeleteRoute', id);
-            this.showModal = false;
-            this.saving = false;
-        },
+            const { Swal } = window;    
+
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: 'No podrás revertir esto!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si, eliminar!',
+                cancelButtonText: 'Cancelar'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    await this.connection.invoke('DeleteRoute', id);
+                }
+            });
+        }
     }));
 });

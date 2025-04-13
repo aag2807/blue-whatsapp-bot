@@ -17,6 +17,11 @@ public sealed class Reservation : BaseEntity
     public string UserName { get; set; } = string.Empty;
 
     /// <summary>
+    /// The date of the reservation
+    /// </summary>
+    public DateTime ReservationDate { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
     /// The id of the trip associated with the reservation
     /// </summary>
     [ForeignKey("Trip")]

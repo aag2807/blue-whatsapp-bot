@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using BlueWhatsapp.Core.Models.Trip;
 
 namespace BlueWhatsapp.Boundaries.Persistence.Models;
 
@@ -35,5 +36,33 @@ public sealed class Trip : BaseEntity
     /// The route of the trip
     /// </summary>
     [NotMapped]
-    public Route Route { get; set; } = new Route();
+    public Route? Route { get; set; }
+
+    /// <summary>
+    /// The reservations for the trip
+    /// </summary>
+    public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
+    
+    /// <summary>
+    /// Converts the current entity to a CoreTrip
+    /// </summary>
+    /// <returns></returns>
+    public CoreTrip ToCoreTrip()
+    {
+        var coreEntity = new CoreTrip
+        {
+            Id = Id,
+            UserNumber = UserNumber,
+            UserName = UserName,
+            TripTime = TripTime,
+            IsActiveForToday = IsActiveForToday,
+        };
+
+        if (Route != null)
+        {
+            coreEntity.Route = Route.ToCoreRoute();
+        }
+
+        return coreEntity;
+    }
 }

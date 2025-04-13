@@ -1,5 +1,219 @@
 @{
     Layout = "_DashboardLayout";
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Trips Management";
     ViewBag.ActivePage = "Trips";
+}
+
+<div class="flex-1 overflow-y-auto">
+    <!-- Header -->
+    <div class="p-4 flex items-center justify-between border-b">
+        <div>
+            <h1 class="text-lg font-semibold">Manejo de Viajes</h1>
+            <p class="text-sm text-gray-500 capitalize">@DateTime.Now.ToString("dddd, dd MMM", new System.Globalization.CultureInfo("es-ES"))</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="p-4" x-data="tripsManagement">
+        <!-- Action Bar -->
+        <div class="mb-4 flex justify-between items-center">
+            <div class="text-sm text-gray-500">
+                <span x-text="tripsCount"></span> viajes encontrados
+            </div>
+            <div class="flex space-x-2">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        x-model="searchTerm" 
+                        placeholder="Buscar viaje..." 
+                        class="pl-8 pr-2 py-1 border rounded focus:outline-none focus:ring-1 focus:ring-sidebar"
+                    >
+                    <i class="fas fa-search absolute left-3 top-2 text-gray-400"></i>
+                </div>
+                <button 
+                    x-on:click="openAddModal()" 
+                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex items-center space-x-2"
+                >
+                    <i class="fas fa-plus"></i>
+                    <span>Crear Viaje</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Trips Table -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Número</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ruta</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activo Hoy</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <template x-for="trip in filteredTrips" :key="trip.id">
+                        <tr>
+                            <td class="px-4 py-4 whitespace-nowrap" x-text="trip.id"></td>
+                            <td class="px-4 py-4 whitespace-nowrap" x-text="trip.userName"></td>
+                            <td class="px-4 py-4 whitespace-nowrap" x-text="trip.userNumber"></td>
+                            <td class="px-4 py-4 whitespace-nowrap" x-text="formatTime(trip.tripTime)"></td>
+                            <td class="px-4 py-4 whitespace-nowrap" x-text="getRouteName(trip.routeId)"></td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <span 
+                                    :class="trip.isActiveForToday ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                                    class="px-2 py-1 rounded-full text-xs font-medium"
+                                    x-text="trip.isActiveForToday ? 'Activo' : 'Inactivo'"
+                                ></span>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm space-x-2">
+                                <button 
+                                    x-on:click="openEditModal(trip)"
+                                    class="text-blue-600 hover:text-blue-900"
+                                >
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button 
+                                    x-on:click="deleteTrip(trip.id)"
+                                    class="text-red-600 hover:text-red-900"
+                                >
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button 
+                                    x-on:click="toggleActive(trip)"
+                                    class="text-yellow-600 hover:text-yellow-900"
+                                >
+                                    <i class="fas fa-power-off"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </template>
+                    <tr x-show="filteredTrips.length === 0">
+                        <td colspan="7" class="px-4 py-4 text-center text-gray-500">
+                            No se encontraron viajes. Haz click en "Crear Viaje" para crear uno nuevo.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Add/Edit Modal -->
+        <div 
+            x-cloak
+            x-show="showModal" 
+            class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+        >
+            <div 
+                x-on:click.away="showModal = false"
+                class="bg-white rounded-lg shadow-xl max-w-lg w-full overflow-hidden"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 transform scale-95"
+                x-transition:enter-end="opacity-100 transform scale-100"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 transform scale-100"
+                x-transition:leave-end="opacity-0 transform scale-95"
+            >
+                <div class="border-b px-4 py-3 flex items-center justify-between">
+                    <h3 class="text-lg font-medium" x-text="currentTrip.id ? 'Editar Viaje' : 'Crear Viaje'"></h3>
+                    <button x-on:click="showModal = false" class="text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <form x-on:submit.prevent="saveTrip">
+                    <div class="p-4 space-y-4">
+                        <div>
+                            <label for="userName" class="block text-sm font-medium text-gray-700">Nombre del Conductor</label>
+                            <input 
+                                type="text" 
+                                id="userName" 
+                                x-model="currentTrip.userName" 
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
+                                required
+                            >
+                        </div>
+                        
+                        <div>
+                            <label for="userNumber" class="block text-sm font-medium text-gray-700">Número del Conductor</label>
+                            <input 
+                                type="text" 
+                                id="userNumber" 
+                                x-model="currentTrip.userNumber" 
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
+                                required
+                            >
+                        </div>
+                        
+                        <div>
+                            <label for="tripTime" class="block text-sm font-medium text-gray-700">Hora del Viaje</label>
+                            <input 
+                                type="time" 
+                                id="tripTime" 
+                                x-model="currentTrip.tripTime" 
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
+                                required
+                            >
+                        </div>
+                        
+                        <div>
+                            <label for="routeId" class="block text-sm font-medium text-gray-700">Ruta</label>
+                            <select 
+                                id="routeId" 
+                                x-model="currentTrip.routeId" 
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
+                                required
+                            >
+                                <option value="" disabled selected>Seleccionar ruta</option>
+                                <template x-for="route in routes" :key="route.id">
+                                    <option :value="route.id" x-text="route.name"></option>
+                                </template>
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <input 
+                                type="checkbox" 
+                                id="isActiveForToday"
+                                x-model="currentTrip.isActiveForToday"
+                                class="h-4 w-4 text-sidebar focus:ring-sidebar border-gray-300 rounded"
+                            >
+                            <label for="isActiveForToday" class="ml-2 block text-sm text-gray-900">
+                                Activo para hoy
+                            </label>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 flex justify-end space-x-3 rounded-b-lg">
+                        <button 
+                            type="button"
+                            x-on:click="showModal = false"
+                            class="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sidebar"
+                        >
+                            Cancelar
+                        </button>
+                        <button 
+                            type="submit"
+                            class="bg-sidebar border border-transparent rounded-md shadow-sm py-2 px-4 text-sm font-medium text-white hover:bg-sidebar-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sidebar"
+                            :disabled="saving"
+                        >
+                            <span x-show="!saving">Guardar</span>
+                            <span x-show="saving">Guardando...</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/trips.js"></script>
 }

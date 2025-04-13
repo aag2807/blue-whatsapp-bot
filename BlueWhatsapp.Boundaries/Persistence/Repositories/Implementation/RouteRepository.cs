@@ -17,7 +17,7 @@ public sealed class RouteRepository : BaseRepository<Route>, IRouteRepository
 
     async Task<IEnumerable<CoreRoute>> IRouteRepository.GetAllRoutesAsync()
     {
-        var routes =  await GetAllAsync(false).ConfigureAwait(true);
+        var routes =  await GetAllActiveAsync(false).ConfigureAwait(true);
         return routes.Select(r => new CoreRoute(r.Id, r.Name, r.Description));
     }   
 

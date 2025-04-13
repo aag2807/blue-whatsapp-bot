@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using BlueWhatsapp.Core.Models.Schedule;
 
 namespace BlueWhatsapp.Boundaries.Persistence.Models;
 
@@ -22,4 +23,13 @@ public sealed class Schedule : BaseEntity
     /// Collection of hotel schedules associated with this schedule
     /// </summary>
     public ICollection<HotelSchedule> HotelSchedules { get; set; } = new List<HotelSchedule>();
+
+    /// <summary>
+    /// Converts a Schedule to a CoreSchedule
+    /// </summary>
+    /// <returns></returns>
+    public CoreSchedule ToCoreSchedule()
+    {
+        return new CoreSchedule(Id, Name, Time);
+    }
 }
