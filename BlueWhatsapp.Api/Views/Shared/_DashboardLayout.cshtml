@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var user = @ViewBag.User;
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -6,6 +9,7 @@
     <title>Backoffice</title>
     <link rel="stylesheet" href="~/css/index.css"/>
     <script defer src="~/js/alpine.js"></script>
+    <script defer src="~/js/sweetalert.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.6/signalr.min.js"></script>
     <script defer>
@@ -59,33 +63,41 @@
 
                 <a href="@Url.Action("Trips", "Backoffice")" class="transition flex flex-col items-center cursor-pointer w-full @(ViewBag.ActivePage == "Trips" ? "bg-sidebar-hover" : "hover:bg-sidebar-hover") p-2 rounded">
                     <div class="w-10 h-10 flex items-center justify-center">
-                        <i class="fas fa-clipboard-list"></i>
+                        <i class="fa-solid fa-bus"></i>
                     </div>
                     <span class="text-xs">Viajes</span>
                 </a>
 
                 <a href="@Url.Action("Hotels", "Backoffice")" class="transition flex flex-col items-center cursor-pointer w-full @(ViewBag.ActivePage == "Hotels" ? "bg-sidebar-hover" : "hover:bg-sidebar-hover") p-2 rounded">
                     <div class="w-10 h-10 flex items-center justify-center">
-                        <i class="fas fa-box"></i>
+                         <i class="fa-solid fa-hotel"></i>
                     </div>
                     <span class="text-xs">Hoteles</span>
                 </a>
 
                 <a href="@Url.Action("Schedules", "Backoffice")" class="transition flex flex-col items-center cursor-pointer w-full @(ViewBag.ActivePage == "Schedules" ? "bg-sidebar-hover" : "hover:bg-sidebar-hover") p-2 rounded">
                     <div class="w-10 h-10 flex items-center justify-center">
-                        <i class="fas fa-exclamation-triangle"></i>
+                        <i class="fa-solid fa-clock"></i>
                     </div>
-                    <span class="text-xs">Incidents</span>
+                    <span class="text-xs">Horarios</span>
                 </a>
 
-                <a href="@Url.Action("Settings", "Backoffice")" class="transition flex flex-col items-center cursor-pointer w-full @(ViewBag.ActivePage == "Settings" ? "bg-sidebar-hover" : "hover:bg-sidebar-hover") p-2 rounded mt-auto">
+
+                <a href="@Url.Action("Routes", "Backoffice")" class="transition flex flex-col items-center cursor-pointer w-full @(ViewBag.ActivePage == "Routes" ? "bg-sidebar-hover" : "hover:bg-sidebar-hover") p-2 rounded mt-auto">
                     <div class="w-10 h-10 flex items-center justify-center">
-                        <i class="fas fa-cog"></i>
+                        <i class="fa-solid fa-road"></i>
                     </div>
-                    <span class="text-xs">Settings</span>
+                    <span class="text-xs">Rutas</span>
                 </a>
 
-                <a href="@Url.Action("Index", "Backoffice")" class="transition flex flex-col items-center cursor-pointer w-full hover:bg-sidebar-hover p-2 rounded !mt-auto">
+                <a href="@Url.Action("Reserves", "Backoffice")" class="transition flex flex-col items-center cursor-pointer w-full @(ViewBag.ActivePage == "Reserves" ? "bg-sidebar-hover" : "hover:bg-sidebar-hover") p-2 rounded mt-auto">
+                    <div class="w-10 h-10 flex items-center justify-center">
+                         <i class="fa-solid fa-suitcase-rolling"></i>
+                    </div>
+                    <span class="text-xs">Reservas</span>
+                </a>
+
+                <a href="@Url.Action("Logout", "Backoffice")" class="transition flex flex-col items-center cursor-pointer w-full hover:bg-sidebar-hover p-2 rounded !mt-auto">
                     <div class="w-10 h-10 flex items-center justify-center">
                         <i class="fa-solid fa-right-from-bracket"></i>
                     </div>
@@ -125,23 +137,23 @@
 
             <!-- Bottom Navigation -->
             <div class="bg-white border-t flex justify-between p-2">
-                <a href="@Url.Action("Index", "Dashboard")" class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Dashboard" ? "text-green-500" : "text-gray-500")">
+                <a href="@Url.Action("Dashboard", "Backoffice")" class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Dashboard" ? "text-green-500" : "text-gray-500")">
                     <i class="fas fa-th-large"></i>
                     <span class="text-xs mt-1">Dashboard</span>
                 </a>
-                <a href="@Url.Action("Index", "WorkOrders")" class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "WorkOrders" ? "text-green-500" : "text-gray-500")">
+                <a href="@Url.Action("Trips", "Backoffice")" class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Trips" ? "text-green-500" : "text-gray-500")">
                     <i class="fas fa-clipboard-list"></i>
-                    <span class="text-xs mt-1">Work Orders</span>
+                    <span class="text-xs mt-1">Viajes</span>
                 </a>
-                <a href="@Url.Action("Index", "Inventory")" class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Inventory" ? "text-green-500" : "text-gray-500")">
+                <a href="@Url.Action("Hotels", "Backoffice")" class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Hotels" ? "text-green-500" : "text-gray-500")">
                     <i class="fas fa-box"></i>
-                    <span class="text-xs mt-1">Inventory</span>
+                    <span class="text-xs mt-1">Hoteles</span>
                 </a>
-                <a href="@Url.Action("Index", "Incidents")" class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Incidents" ? "text-green-500" : "text-gray-500")">
+                <a href="@Url.Action("Schedules", "Backoffice")" class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Schedules" ? "text-green-500" : "text-gray-500")">
                     <i class="fas fa-exclamation-triangle"></i>
                     <span class="text-xs mt-1">Incidents</span>
                 </a>
-                <a href="@Url.Action("Index", "Settings")" class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Settings" ? "text-green-500" : "text-gray-500")">
+                <a href="@Url.Action("Settings", "Backoffice")" class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Settings" ? "text-green-500" : "text-gray-500")">
                     <i class="fas fa-cog"></i>
                     <span class="text-xs mt-1">Settings</span>
                 </a>

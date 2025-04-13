@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using BlueWhatsapp.Boundaries.Persistence.Models;
 using BlueWhatsapp.Core.Logger;
 using BlueWhatsapp.Core.Models;
@@ -47,7 +48,22 @@ public sealed class ConversationStateRepository : BaseRepository<ConversationSta
         model.CurrentStep = state.CurrentStep;
         model.IsAdminOverridden = state.IsAdminOverridden;
         model.IsComplete = state.IsComplete;
+        model.ModifiedTime = DateTime.UtcNow;
 
         await _dbContext.SaveChangesAsync().ConfigureAwait(true);
+    }
+
+    /// <inheritdoc>
+    async Task<IEnumerable<CoreConversationState>> IConversationStateRepository.GetAllConversationsAsync()
+    {   
+        List<ConversationState> model = await _dbSet.ToListAsync().ConfigureAwait(true);
+        if(model.Count == 0)
+        {
+            return Enumerable.Empty<CoreConversationState>();
+        }
+
+        return model.Select(m => CoreConversationState.Create(m))
+            .DistinctBy(c => c.UserNumber)
+            .ToList();
     }
 }

@@ -6,6 +6,7 @@ using BlueWhatsapp.Core.Logger;
 using BlueWhatsapp.Api.Utils;
 using BlueWhatsapp.Core.Services;
 using BlueWhatsapp.Core.Models.Users;
+using Microsoft.AspNetCore.Http;
 
 public class BackofficeController : Controller
 {
@@ -25,6 +26,12 @@ public class BackofficeController : Controller
     [LogAction]
     public IActionResult Index()
     {
+        string? userName = HttpContext.Session.GetString("UserName");
+        if (!string.IsNullOrEmpty(userName))
+        {
+            return RedirectToAction("Dashboard");
+        }
+
         return View();
     }
 
@@ -41,6 +48,8 @@ public class BackofficeController : Controller
             CoreUser? user = await VerifyCredentials(model.Email, model.Password).ConfigureAwait(true);
             if (user != null)
             {
+                HttpContext.Session.SetString("UserName", user.Name);
+                HttpContext.Session.SetString("UserEmail", user.Email);
                 return RedirectToAction("Dashboard", "Backoffice");
             }
             else
@@ -58,6 +67,18 @@ public class BackofficeController : Controller
     /// <returns>Returns the Dashboard view.</returns>
     public IActionResult Dashboard()
     {
+        // Retrieve user data from session
+        string? userName = HttpContext.Session.GetString("UserName");
+        if (string.IsNullOrEmpty(userName))
+        {
+            // If no user data is found, redirect to login
+            return RedirectToAction("Index");
+        }
+
+        ViewBag.User = userName;
+        ViewBag.AlpineComponent = "dashboard";
+        ViewBag.ActivePage = "Dashboard";
+        
         return View();
     }
 
@@ -89,10 +110,20 @@ public class BackofficeController : Controller
     }
 
     /// <summary>
-    /// Displays the settings page for managing application configurations and user preferences.
+    /// Displays the reserves page for managing manual reservations and seeing existing ones.
     /// </summary>
-    /// <returns>Returns a view that represents the settings page.</returns>
-    public IActionResult Settings()
+    /// <returns>Returns a view that represents the reserves page.</returns>
+    public IActionResult Reserves()
+    {
+        return View();
+    }
+
+    public IActionResult Referals()
+    {
+        return View();
+    }
+
+    public IActionResult Routes()
     {
         return View();
     }
@@ -103,6 +134,7 @@ public class BackofficeController : Controller
     /// <returns>Redirects to the Index page of the Backoffice controller.</returns>
     public IActionResult Logout()
     {
+        HttpContext.Session.Clear();
         return RedirectToAction("Index", "Backoffice");
     }
 

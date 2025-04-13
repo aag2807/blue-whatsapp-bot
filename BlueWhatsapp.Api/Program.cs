@@ -16,12 +16,21 @@ builder.Services.AddCors(options =>
     });
 });
 
-// builder.ConfigureAutoMapperProfiles();
 builder.Services.AddMvc();
 builder.Services.AddSignalR();
 
-// builder.Services.AddOpenApi();
 builder.Services.AddControllers();
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.Name = ".BlueWhatsapp.Session";
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+
 builder.ConfigureCronSchedulerJobs();
 builder.ConfigurePersistenceServices();
 builder.ConfigureSingletonServices();
@@ -47,8 +56,10 @@ app.ConfigureSwaggerUIOnDevelopment();
 app.UseHttpsRedirection();
 app.UseCors(myAllowSpecificOrigins);
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
+app.UseSession();
 app.MapControllerRoute(name: "default", pattern: "{controller}/{action=Index}/{id?}");
-app.MapHub<MessagesHub>("/messages");
+app.MapHubs();
 
 app.Run();

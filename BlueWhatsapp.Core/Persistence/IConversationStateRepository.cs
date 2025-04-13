@@ -24,4 +24,10 @@ public interface IConversationStateRepository
     /// <param name="state">The conversation state object to be updated.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     public Task UpdateAsync(CoreConversationState state);
+
+    /// <summary>
+    /// Retrieves all conversation states asynchronously.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation, containing an enumerable of all conversation states.</returns>
+    public Task<IEnumerable<CoreConversationState>> GetAllConversationsAsync();
 }

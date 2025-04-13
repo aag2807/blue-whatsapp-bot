@@ -8,13 +8,16 @@ namespace BlueWhatsapp.Api.Hubs;
 public class MessagesHub : Hub
 {
     private readonly IMessageRepository _messageRepository;
+    private readonly IConversationStateRepository _conversationStateRepository;
+
 
     /// <summary>
     /// Hub class facilitating real-time communication between clients and the server for managing and retrieving messages.
     /// </summary>
-    public MessagesHub(IMessageRepository messageRepository)
+    public MessagesHub(IMessageRepository messageRepository, IConversationStateRepository conversationStateRepository)
     {
         _messageRepository = messageRepository;
+        _conversationStateRepository = conversationStateRepository;
     }
 
     /// <summary>
@@ -52,7 +55,6 @@ public class MessagesHub : Hub
     public async Task GetPendingMessages()
     {
         IEnumerable<CoreMessage> openChats = await _messageRepository.GetMessagesByTypeAsync(MessageStatus.Pending).ConfigureAwait(true);
-        
         await Clients.Caller.SendAsync("ReceiveOpenChats", openChats).ConfigureAwait(true);
     }
     
@@ -62,8 +64,13 @@ public class MessagesHub : Hub
     public async Task GetClosedMessages()
     {
         IEnumerable<CoreMessage> completedChats = await _messageRepository.GetMessagesByTypeAsync(MessageStatus.Completed).ConfigureAwait(true);
-        
         await Clients.Caller.SendAsync("ReceiveClosedMessages", completedChats).ConfigureAwait(true);
+    }
+
+    public async Task GetAllConversations()
+    {
+        IEnumerable<Core.Models.CoreConversationState> allConversations = await _conversationStateRepository.GetAllConversationsAsync().ConfigureAwait(true);
+        await Clients.Caller.SendAsync("ReceiveAllConversations", allConversations).ConfigureAwait(true);
     }
     
     /// <summary>
@@ -71,12 +78,6 @@ public class MessagesHub : Hub
     /// </summary>
     public override async Task OnConnectedAsync()
     {
-        // Get counts for dashboard
-        IEnumerable<CoreMessage> openChats = await _messageRepository.GetMessagesByTypeAsync(MessageStatus.Pending).ConfigureAwait(true);
-        int totalMessages = await _messageRepository.CountAsync().ConfigureAwait(true);
-        
-        await Clients.Caller.SendAsync("UpdateDashboardStats", openChats, totalMessages);
-        
         await base.OnConnectedAsync().ConfigureAwait(true);
     }
 }

@@ -25,6 +25,16 @@ public class CoreConversationState : BaseEntity
         public bool IsComplete { get; set; }
 
         /// <summary>
+        /// Gets or sets the date and time when the conversation was created.
+        /// </summary>
+        public DateTime CreatedTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date and time when the conversation was last modified.
+        /// </summary>
+        public DateTime ModifiedTime { get; set; }
+
+        /// <summary>
         /// Creates a new instance of <see cref="CoreConversationState"/> initialized with the specified data.
         /// </summary>
         /// <typeparam name="T">The type of the data object from which to initialize the <see cref="CoreConversationState"/> instance.</typeparam>

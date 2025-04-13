@@ -2,6 +2,7 @@
 Layout = "_DashboardLayout";
 ViewData["Title"] = "Dashboard";
 ViewBag.ActivePage = "Dashboard";
+var user = @ViewBag.User;
 }
 
 @section Styles {
@@ -18,8 +19,8 @@ ViewBag.ActivePage = "Dashboard";
     <!-- Header -->
     <div class="p-4 flex items-center justify-between border-b">
         <div>
-            <h1 class="text-lg font-semibold">Welcome</h1>
-            <p class="text-sm text-gray-500">@DateTime.Now.ToString("dddd, dd MMM")</p>
+            <h1 class="text-lg font-semibold">Bienvenido @user</h1>
+            <p class="text-sm text-gray-500 capitalize">@DateTime.Now.ToString("dddd, dd MMM", new System.Globalization.CultureInfo("es-ES"))</p>
         </div>
 
         <div class="flex items-center">
@@ -70,9 +71,9 @@ ViewBag.ActivePage = "Dashboard";
 
             <!-- Charts Row -->
             <div class="grid grid-cols-2 gap-4">
-                <!-- Customer Satisfaction -->
+                <!-- Converaciones completeadas -->
                 <div class="bg-white rounded-lg shadow p-4">
-                    <h2 class="font-medium mb-4">Customer Satisfaction</h2>
+                    <h2 class="font-medium mb-4">Conversaciones completadas</h2>
                     <div class="flex justify-center">
                         <div class="h-[300px] w-[300px] flex items-center justify-centers">
                             <canvas id="satisfactionChart" width="200" height="200"></canvas>
@@ -82,7 +83,8 @@ ViewBag.ActivePage = "Dashboard";
 
                 <!-- Work Orders Per Day -->
                 <div class="bg-white rounded-lg shadow p-4">
-                    <h2 class="font-medium mb-4">Work Orders / Day</h2>
+                    <h2 class="font-medium mb-4">Conversaciones Totales</h2>
+                    <div class="flex justify-center">0</div>
                 </div>
             </div>
         </div>
@@ -91,32 +93,38 @@ ViewBag.ActivePage = "Dashboard";
         <div class="col-span-4">
             <div class="bg-white rounded-lg shadow">
                 <div class="p-4 border-b">
-                    <h2 class="font-medium">Today's Work Orders</h2>
+                    <h2 class="font-medium">Conversaciones</h2>
                 </div>
 
                 <!-- Work Order List -->
-                <div class="divide-y">
-                    @for (int i = 0; i < 5; i++)
-                    {
+                <div class="divide-y gap-3 pt-5">
+                    <template x-for="conversation in conversations" :key="conversation.userNumber">
+
                         <div class="bg-white p-3 py-5 rounded-lg shadow">
                             <div class="flex space-x-2 mb-1">
                                 <span class="px-2 py-0.5 bg-red-600 text-white rounded-full text-xs">Prioridad</span>
                                 <span class="px-2 py-0.5 bg-yellow-500 text-white rounded-full text-xs">Overdue</span>
                             </div>
-                            <h3 class="font-medium">chat @i</h3>
+                            <h3 class="font-medium" x-text="">
+                                <span x-text="conversation.userNumber"></span>
+                            </h3>
 
                             <div class="flex items-center space-x-4 mt-1">
                                 <div class="flex items-center">
-                                    <i class="fas fa-map-marker-alt text-gray-400 mr-1"></i>
-                                    <span class="text-sm">ubicacion</span>
+                                    <i class="far fa-clock mr-1"></i>
+                                    <span class="text-sm">Creada: 
+                                        <span x-text="mapDateTime(conversation.createdTime)"></span>
+                                    </span>
                                 </div>
                                 <div class="flex items-center ">
                                     <i class="far fa-clock mr-1"></i>
-                                    <span class="text-sm">Horario</span>
+                                    <span class="text-sm">Ultimo mensaje: 
+                                        <span x-text="mapDateTime(conversation.modifiedTime)"></span>
+                                    </span>
                                 </div>
                             </div>
                         </div>
-                    }
+                    </template>
                 </div>
             </div>
         </div>
@@ -134,8 +142,8 @@ ViewBag.ActivePage = "Dashboard";
         <div class="bg-white rounded-lg shadow p-4">
             <div class="flex items-start justify-between">
                 <div>
-                    <h3 class="text-3xl font-bold">3</h3>
-                    <p class="text-sm text-gray-500">Work Orders</p>
+                    <h3 class="text-3xl font-bold" x-text="pendingChatCount">0</h3>
+                    <p class="text-sm text-gray-500">Chats abiertos</p>
                 </div>
                 <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
                     <i class="fas fa-clipboard-list text-orange-500"></i>
@@ -147,8 +155,8 @@ ViewBag.ActivePage = "Dashboard";
         <div class="bg-white rounded-lg shadow p-4">
             <div class="flex items-start justify-between">
                 <div>
-                    <h3 class="text-3xl font-bold">2</h3>
-                    <p class="text-sm text-gray-500">Items</p>
+                    <h3 class="text-3xl font-bold" x-text="closedChatCount">0</h3>
+                    <p class="text-sm text-gray-500">Chats cerrados</p>
                 </div>
                 <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
                     <i class="fas fa-box text-blue-500"></i>
@@ -158,9 +166,30 @@ ViewBag.ActivePage = "Dashboard";
     </div>
 
     <!-- Today's Work Orders -->
-    <h2 class="font-medium mb-2">Today's Work Orders</h2>
+    <h2 class="font-medium mb-2">Converaciones</h2>
     <div class="space-y-2 mb-4">
-     
+        <template x-for="conversation in conversations" :key="conversation.userNumber">
+
+            <div class="bg-white p-3 py-5 rounded-lg shadow">
+                <div class="flex space-x-2 mb-1">
+                    <span class="px-2 py-0.5 bg-red-600 text-white rounded-full text-xs">Prioridad</span>
+                    <span class="px-2 py-0.5 bg-yellow-500 text-white rounded-full text-xs">Overdue</span>
+                </div>
+                <h3 class="font-medium">chat</h3>
+
+                <div class="flex items-center space-x-4 mt-1">
+                    <div class="flex items-center">
+                        <i class="fas fa-map-marker-alt text-gray-400 mr-1"></i>
+                        <span class="text-sm">ubicacion</span>
+                    </div>
+                    <div class="flex items-center ">
+                        <i class="far fa-clock mr-1"></i>
+                        <span class="text-sm">Horario</span>
+                    </div>
+                </div>
+            </div>
+        </template>
+
     </div>
 
     <a href="#" class="w-full bg-green-500 text-white py-2 rounded-md text-center block mb-4">
@@ -169,98 +198,6 @@ ViewBag.ActivePage = "Dashboard";
 </div>
 }
 
-<script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('dashboard', () => ({
-            openChats: 0,
-            totalMessages: 0,
-            recentMessages: [],
-            currentConversation: null,
-            conversationMessages: [],
-            connection: null,
-            
-            pendingChats: [],
-            closedChats: [],
-            
-            get pendingChatCount() {
-                return this.pendingChats.length;
-            },
-            
-            get closedChatCount() {
-                return this.closedChats.length;
-            },
-            
-            init() {
-                this.connection = new signalR.HubConnectionBuilder()
-                    .withUrl("/messages")
-                    .withAutomaticReconnect()
-                    .build();
-
-                this.connection.on('ReceiveOpenChats', (openChats) => {
-                    const mappedPendingChats = openChats.map(m => ({
-                        from: m.from,
-                        timestamp: new Date(m.createdTime).toLocaleString()
-                    }))
-
-                    this.pendingChats = mappedPendingChats
-                })
-
-                this.connection.on('ReceiveClosedMessages', (openChats) => {
-                    const mappedClosedChats = openChats.map(m => ({
-                        from: m.from,
-                        timestamp: new Date(m.createdTime).toLocaleString()
-                    }))
-
-                    this.closedChats = mappedClosedChats
-                })
-
-                // Handle receiving a new message
-                this.connection.on("ReceiveWhatsAppMessage", (from, timestamp) => {
-                    this.connection.invoke("GetPendingMessages")
-                    this.connection.invoke("GetClosedMessages")
-                });
-
-                // Handle receiving recent messages
-                this.connection.on("ReceiveRecentMessages", (messages) => {
-                    this.recentMessages = messages.map(m => ({
-                        from: m.from,
-                        timestamp: new Date(m.createdTime).toLocaleString()
-                    }));
-                });
-
-                // Handle receiving message history for a conversation
-                this.connection.on("ReceiveMessageHistory", (from, messages) => {
-                    this.currentConversation = from;
-                    this.conversationMessages = messages.map(m => ({
-                        from: m.from,
-                        body: m.body,
-                        timestamp: new Date(m.createdTime).toLocaleString()
-                    }));
-                });
-
-                // Start the connection
-                this.connection.start()
-                    .then(() => {
-                        this.connection.invoke("GetPendingMessages");
-                        this.connection.invoke("GetClosedMessages");
-                    })
-                    .catch(err => console.error("SignalR Connection Error: ", err));
-            },
-            // Method to load a conversation
-            loadConversation(from)
-            {
-                this.connection.invoke("GetMessagesByFrom", from);
-            },
-            // Method to show browser notification
-            showNotification(from)
-            {
-                if (Notification.permission === "granted")
-                {
-                    new Notification("New WhatsApp Message", {body: `New message from ${from}`});
-                } else if (Notification.permission !== "denied") {
-                    Notification.requestPermission();
-                }
-            }
-        }));
-    })
-</script>
+@section Scripts {
+    <script src="~/js/dashboard.js"></script>
+}
