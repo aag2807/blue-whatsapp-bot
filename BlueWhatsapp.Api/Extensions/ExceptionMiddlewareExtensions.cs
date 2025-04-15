@@ -35,8 +35,11 @@ internal static class ExceptionMiddlewareExtensions
                     _ => (500, DefaultErrorMessage)
                 };
 
+                appLogger.LogError(new { Message = contextFeature.Error.Message });
+                appLogger.LogError( contextFeature.Error );
+                appLogger.LogError( contextFeature.Error.StackTrace );
+                appLogger.LogError( contextFeature.Error.Message );
                 await BuildResponse(context, statusCode, message, appLogger).ConfigureAwait(false);
-                appLogger.LogError(new { Message = contextFeature.Error.Message, Type = "Exception" });
             });
         });
     }
