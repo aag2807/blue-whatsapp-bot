@@ -20,4 +20,11 @@ public interface IConversationStateService
     /// <param name="number">The phone number of the user for whom the new conversation state is to be created.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the newly created <see cref="CoreConversationState"/>.</returns>
     Task<CoreConversationState> CreateNewConversationState(string number);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="state"></param>
+    /// <returns></returns>
+    Task UpdateConversationState(CoreConversationState state);
 }

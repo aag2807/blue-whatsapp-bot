@@ -36,4 +36,10 @@ public sealed class ConversationStateService : IConversationStateService
         
         return state;
     }
+
+    /// <inheritdoc />
+    async Task IConversationStateService.UpdateConversationState(CoreConversationState state)
+    {
+         await _conversationStateRepository.UpdateAsync(state).ConfigureAwait(true);
+    }
 }

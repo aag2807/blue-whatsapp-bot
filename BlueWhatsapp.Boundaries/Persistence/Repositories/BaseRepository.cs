@@ -92,7 +92,6 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
         if (string.IsNullOrWhiteSpace(value))
         {
             return await _dbSet.ToListAsync();
-
         }
 
         // Get all string properties of the entity

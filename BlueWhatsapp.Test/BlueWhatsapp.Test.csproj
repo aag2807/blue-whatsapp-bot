@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BlueWhatsapp.Boundaries\BlueWhatsapp.Boundaries.csproj" />
     <ProjectReference Include="..\BlueWhatsapp.Core\BlueWhatsapp.Core.csproj" />
   </ItemGroup>
 

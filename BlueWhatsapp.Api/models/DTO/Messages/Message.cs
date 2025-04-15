@@ -5,6 +5,11 @@ public class Message
     /// <summary>
     /// 
     /// </summary>
+    public MessageContext? Context { get; set; }
+    
+    /// <summary>
+    /// 
+    /// </summary>
     public string? From { get; set; }
 
     /// <summary>
@@ -51,7 +56,7 @@ public class Message
             switch (interactiveType.ToUpper())
             {
                 case "LIST_REPLY":
-                    return Interactive.List_Reply.Title;
+                    return Interactive.List_Reply.Id;
                 case "BUTTON_REPLY":
                     return Interactive.Button_Reply.Title;
                 default:

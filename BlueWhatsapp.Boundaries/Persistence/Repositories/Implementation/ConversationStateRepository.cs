@@ -23,8 +23,12 @@ public sealed class ConversationStateRepository : BaseRepository<ConversationSta
     async Task<CoreConversationState?> IConversationStateRepository.GetConversationStateByNumber(string number)
     {
         Arguments.NotEmptyOrWhiteSpaceOnly(number, nameof(number));
-        
-        ConversationState? model = await _dbSet.FirstOrDefaultAsync(cs => cs.UserNumber.Trim() == number.Trim()).ConfigureAwait(true);
+        var today = DateTime.UtcNow.Date;
+
+        ConversationState? model = await _dbSet
+            .Where(e => e.CreatedTime.Date == today)
+            .FirstOrDefaultAsync(cs => cs.UserNumber.Trim() == number.Trim())
+            .ConfigureAwait(true);
         
         return model is null ? null : CoreConversationState.Create(model);
     }
@@ -36,8 +40,6 @@ public sealed class ConversationStateRepository : BaseRepository<ConversationSta
         ConversationState model = ConversationState.FromCore(state);
 
         await AddAsync(model).ConfigureAwait(true);
-        
-        await _dbContext.SaveChangesAsync().ConfigureAwait(true);
     }
 
     /// <inheritdoc>
@@ -49,8 +51,8 @@ public sealed class ConversationStateRepository : BaseRepository<ConversationSta
         model.IsAdminOverridden = state.IsAdminOverridden;
         model.IsComplete = state.IsComplete;
         model.ModifiedTime = DateTime.UtcNow;
-
-        await _dbContext.SaveChangesAsync().ConfigureAwait(true);
+        
+        await UpdateAsync(model).ConfigureAwait(true);
     }
 
     /// <inheritdoc>

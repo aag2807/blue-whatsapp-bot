@@ -6,44 +6,27 @@ public enum ConversationStep
     /// Represents the initial state of a conversation where no step has been initiated or defined.
     /// </summary>
     None = 0,
-
     // Initial states
     Welcome,
     LanguageSelection,
-    ClientTypeSelection,
+    ClientTypeSelection, // not used right now
     
     // Date selection
     DateSelection,
     
     // Location/hotel selection
     ZoneSelection,
+    ZoneUnknown,
     HotelSelection,
-    
-    // Service type states
-    FreeRouteInfo,
-    VipServiceOffer,
-    VipServiceConfirmation,
-    GroupSizeSelection,
+    HotelUnknown,
+    HotelConfirmation,
     
     // Schedule selection
-    TimeSelection,
+    ScheduleSelection,
+    WillTextLater,
     
-    // Personal information collection
-    CollectFullName,
-    CollectRoomNumber,
-    CollectAdultsCount,
-    CollectChildrenCount,
-    CollectPhoneNumber,
-    CollectEmail,
-    
-    // Referrer-specific states
-    ReferrerCodeInput,
-    NewReferrerRegistration,
-    ReferrerPhotoUpload,
-    ReferrerCompanyInfo,
-    ReferrerPersonalInfo,
-    ReferrerPaymentTypeSelection,
-    ReferrerBankInfo,
+    //ask for user information,
+    AskForReservationDetails,
     
     // Completion states
     ReservationComplete,

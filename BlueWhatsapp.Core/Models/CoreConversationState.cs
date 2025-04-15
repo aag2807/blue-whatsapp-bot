@@ -5,6 +5,11 @@ namespace BlueWhatsapp.Core.Models;
 public class CoreConversationState : BaseEntity
 {
         /// <summary>
+        /// 
+        /// </summary>
+        public ConversationFlowEnum Flow { get; set; } = ConversationFlowEnum.None;
+        
+        /// <summary>
         /// Gets or sets the user's phone number associated with the conversation.
         /// </summary>
         public string UserNumber { get; set; } = string.Empty; 
@@ -34,6 +39,36 @@ public class CoreConversationState : BaseEntity
         /// </summary>
         public DateTime ModifiedTime { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public string ZoneId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string HotelId { get; set; }  = string.Empty;
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public string LanguageId { get; set; } = string.Empty;
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public string PickUpDate { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string ReservationDetails { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string ScheduleId { get; set; } = string.Empty;
+        
         /// <summary>
         /// Creates a new instance of <see cref="CoreConversationState"/> initialized with the specified data.
         /// </summary>

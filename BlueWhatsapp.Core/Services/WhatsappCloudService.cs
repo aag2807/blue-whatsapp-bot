@@ -1,5 +1,9 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
+using BlueWhatsapp.Core.Models;
+using BlueWhatsapp.Core.Models.Messages;
+using BlueWhatsapp.Core.Models.Messages.Interactive;
+using BlueWhatsapp.Core.Models.Schedule;
 using Newtonsoft.Json;
 
 namespace BlueWhatsapp.Core.Services;
@@ -10,12 +14,12 @@ public sealed class WhatsappCloudService : IWhatsappCloudService
     /// 
     /// </summary>
     private readonly IWhatsappCloudService _self;
-    
+
     public WhatsappCloudService()
     {
-        _self = this;    
+        _self = this;
     }
-    
+
     /// <inheritdoc />
     async Task<bool> IWhatsappCloudService.SendMessage<T>(T model)
     {

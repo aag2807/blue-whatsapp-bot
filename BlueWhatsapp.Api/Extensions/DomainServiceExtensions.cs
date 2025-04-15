@@ -1,5 +1,7 @@
 ﻿using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Services;
+using BlueWhatsapp.Core.Services.ChatService;
+using BlueWhatsapp.Core.Utils;
 
 namespace BlueWhatsapp.Api.Extensions;
 
@@ -17,10 +19,10 @@ internal static class DomainServiceExtensions
         builder.Services.AddTransient<IWhatsappCloudService, WhatsappCloudService>();
         builder.Services.AddTransient<IMessageService, MessageService>();
         builder.Services.AddTransient<IConversationStateService, ConversationStateService>();
-        builder.Services.AddTransient<IConversationService, ConversationService>();
         builder.Services.AddTransient<IUserService, UserService>();
+        builder.Services.AddTransient<IMessageCreator, MessageCreator>();
+        builder.Services.AddTransient<IChatResponseService, ChatResponseResponseService>();
 
         builder.Services.Configure<ConversationFlowOptions>(builder.Configuration.GetSection("ConversationFlow"));
-        builder.Services.AddTransient<IConversationFlowService, ConversationFlowService>();
     }
 }

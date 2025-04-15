@@ -1,12 +1,15 @@
-﻿using BlueWhatsapp.Api.Hubs;
+﻿    using BlueWhatsapp.Api.Hubs;
 using BlueWhatsapp.Api.models.DTO;
 using BlueWhatsapp.Api.models.DTO.Messages;
 using BlueWhatsapp.Api.Utils;
+using BlueWhatsapp.Core.Enums;
 using BlueWhatsapp.Core.Logger;
 using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
 using BlueWhatsapp.Core.Persistence;
 using BlueWhatsapp.Core.Services;
+using BlueWhatsapp.Core.Services.ChatService;
+using BlueWhatsapp.Core.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Quartz.Util;
@@ -18,11 +21,8 @@ namespace BlueWhatsapp.Api.Controllers;
 public class WhatsappController : ControllerBase
 {
     private readonly IAppLogger _logger;
-    private readonly IWhatsappCloudService _whatsappCloudService;
     private readonly IHubContext<MessagesHub> _hubContext;
-    private readonly IMessageService _messageService;
-    private readonly IConversationStateService _conversationStateService;
-    private readonly IConversationService _conversationService;
+    private readonly IChatResponseService _chatResponseService; 
 
     /// <summary>
     /// Controller responsible for handling API endpoints related to WhatsApp integrations.
@@ -31,21 +31,11 @@ public class WhatsappController : ControllerBase
     /// This controller provides functionalities such as validating tokens, handling incoming messages,
     /// and checking the health status of the service.
     /// </remarks>
-    public WhatsappController(
-        IAppLogger logger, 
-        IWhatsappCloudService whatsappCloudService, 
-        IHubContext<MessagesHub> hubContext, 
-        IMessageService messageService,
-        IConversationStateService conversationStateService,
-        IConversationService conversationService
-        )
+    public WhatsappController(IAppLogger logger, IHubContext<MessagesHub> hubContext, IChatResponseService chatResponseService)
     {
         _logger = logger;
-        _whatsappCloudService = whatsappCloudService;
         _hubContext = hubContext;
-        _messageService = messageService;
-        _conversationStateService = conversationStateService;
-        _conversationService = conversationService;
+        _chatResponseService = chatResponseService;
     }
 
     /// <summary>
@@ -77,86 +67,34 @@ public class WhatsappController : ControllerBase
 
     [HttpPost]
     [LogAction]
-    public async Task<IActionResult> ReceiveMessage([FromBody] object body)
+    public async Task<IActionResult> ReceiveMessage([FromBody] WhatsAppCloudModel body)
     {
         _logger.LogInfo("receive-message");
         _logger.LogInfo(body);
 
-        return Ok("EVENT_RECEIVED");
-        //
-        // try
-        // {
-        //     Message? message = body.GetMessage();
-        //     if (message == null)
-        //     {
-        //         return Ok("EVENT_RECEIVED");
-        //     }
-        //
-        //     string userNumber = message.From!;
-        //     string fromName = body.GetContactProfileName() ?? string.Empty;
-        //     string userText = GetUserText(message);
-        //     string timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-        //     
-        //     CoreConversationState? state = await _conversationStateService.GetConversationStateByNumber(userNumber).ConfigureAwait(true);
-        //     if (state == null)
-        //     {
-        //         state = await _conversationStateService.CreateNewConversationState(userNumber).ConfigureAwait(true);
-        //     }
-        //
-        //     if (state.IsAdminOverridden)
-        //     {
-        //         await _messageService.SaveAsync(fromName, userText, userNumber).ConfigureAwait(true);
-        //         await _hubContext.Clients.All.SendAsync("ReceiveWhatsAppMessage", userNumber, timestamp).ConfigureAwait(true);
-        //         return Ok("EVENT_RECEIVED");
-        //     }
-        //
-        //     string response = await _conversationService.ProcessMessageAsync(userText, userNumber).ConfigureAwait(true);
-        //     if (response != null)
-        //     {
-        //         await _whatsappCloudService.SendMessage(new CoreMessageToSend(response, userNumber)).ConfigureAwait(true);
-        //         await _messageService.SaveAsync(fromName, userText, userNumber).ConfigureAwait(true);
-        //     }
-        //
-        //     await _hubContext.Clients.All.SendAsync("ReceiveWhatsAppMessage", userNumber, timestamp).ConfigureAwait(true);
-        // }
-        // catch (Exception ex)
-        // {
-        //     _logger.LogError(ex);
-        //     return Ok("EVENT_RECEIVED");
-        // }
-        //
-        return Ok("EVENT_RECEIVED");
-    }
-    
-    private string GetUserText(Message message)
-    {
-        string TypeMessage = message.Type;
+        try
+        {
+            Message? message = body.GetMessage();
+            if (message == null)
+            {
+                return Ok("EVENT_RECEIVED");
+            }
+        
+            string userNumber = message.From!;
+            string fromName = body.GetContactProfileName() ?? string.Empty;
+            string userText = message.GetUserText();
+            string timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-        if(TypeMessage.ToUpper() == "TEXT")
-        {
-            return message.Text.Body;
+            await _chatResponseService.Execute(userNumber, fromName, userText).ConfigureAwait(true);
+            await _hubContext.Clients.All.SendAsync("ReceiveWhatsAppMessage", userNumber, timestamp).ConfigureAwait(true);
         }
-        else if (TypeMessage.ToUpper() == "INTERACTIVE")
+        catch (Exception ex)
         {
-            string interactiveType = message.Interactive.Type;
-
-            if(interactiveType.ToUpper() == "LIST_REPLY")
-            {
-                return message.Interactive.List_Reply.Title;
-            }
-            else if (interactiveType.ToUpper() == "BUTTON_REPLY")
-            {
-                return message.Interactive.Button_Reply.Title;
-            }
-            else
-            {
-                return string.Empty;
-            }
+            _logger.LogError(ex);
+            return Ok("EVENT_RECEIVED");
         }
-        else
-        {
-            return string.Empty;
-        }
+        
+        return Ok("EVENT_RECEIVED");
     }
     
     [HttpGet("health")]

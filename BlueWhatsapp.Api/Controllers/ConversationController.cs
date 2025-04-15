@@ -11,18 +11,16 @@ namespace BlueWhatsapp.Api.Controllers;
 [Route("api/[controller]")]
 public class ConversationController : ControllerBase
 {
-    private readonly IConversationService _conversationService;
     private readonly IMessageService _messageService;
     private readonly IWhatsappCloudService _whatsappCloudService;
+
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="conversationService"></param>
     /// <param name="messageService"></param>
     /// <param name="whatsappCloudService"></param>
-    public ConversationController(IConversationService conversationService, IMessageService messageService, IWhatsappCloudService whatsappCloudService)
+    public ConversationController(IMessageService messageService, IWhatsappCloudService whatsappCloudService)
     {
-        _conversationService = conversationService;
         _messageService = messageService;
         _whatsappCloudService = whatsappCloudService;
     }

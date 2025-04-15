@@ -1,4 +1,8 @@
-﻿namespace BlueWhatsapp.Core.Services;
+﻿using BlueWhatsapp.Core.Models;
+using BlueWhatsapp.Core.Models.Messages;
+using BlueWhatsapp.Core.Models.Schedule;
+
+namespace BlueWhatsapp.Core.Services;
 
 public interface IWhatsappCloudService
 {

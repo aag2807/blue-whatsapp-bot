@@ -17,20 +17,26 @@ public sealed class UserService : IUserService
 
     async Task<CoreUser?> IUserService.Login(string email, string password)
     {
-        CoreUser? user = await _userRepository.GetUserByEmailAsync(email).ConfigureAwait(true);
-        if (user == null)
+        try
         {
-            return null;
-        }
+            CoreUser? user = await _userRepository.GetUserByEmailAsync(email).ConfigureAwait(true);
+            if (user == null)
+            {
+                return null;
+            }
         
-        bool isValid = PasswordUtils.VerifyPassword(password, user.Password);
-        if (!isValid)
+            bool isValid = PasswordUtils.VerifyPassword(password, user.Password);
+            if (!isValid)
+            {
+                return null;
+            }
+
+            return user;
+        }
+        catch (Exception e)
         {
             return null;
         }
-
-        return user;
     }
-   
 }
 

@@ -5,7 +5,7 @@ public class Value
     /// <summary>
     /// The messaging product being used, typically "whatsapp"
     /// </summary>
-    public string? Messaging_Product { get; set; }
+    public string? Messaging_Product { get; set; } = string.Empty;
 
     /// <summary>
     /// Metadata about the message
@@ -15,8 +15,8 @@ public class Value
     /// <summary>
     /// The contacts in the conversation
     /// </summary>
-    public List<Contact> Contacts {get; set;} = Enumerable.Empty<Contact>().ToList();
-    
+    public List<Contact> Contacts { get; set; } = Enumerable.Empty<Contact>().ToList();
+
     /// <summary>
     /// The messages in the conversation
     /// </summary>

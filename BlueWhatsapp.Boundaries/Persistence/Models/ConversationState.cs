@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using BlueWhatsapp.Core.Enums;
 using BlueWhatsapp.Core.Models;
@@ -15,6 +16,7 @@ public sealed class ConversationState : BaseEntity
     /// <summary>
     /// Gets or sets the user's phone number associated with the conversation.
     /// </summary>
+    [MaxLength(30)]
     public string UserNumber { get; set; } = string.Empty; 
 
     /// <summary>
@@ -31,6 +33,42 @@ public sealed class ConversationState : BaseEntity
     /// Gets or sets a value indicating whether the conversation process has been completed.
     /// </summary>
     public bool IsComplete { get; set; }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    [MaxLength(120)]
+    public string ZoneId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [MaxLength(120)]
+    public string HotelId { get; set; }  = string.Empty;
+        
+    /// <summary>
+    /// 
+    /// </summary>
+    [MaxLength(120)]
+    public string LanguageId { get; set; } = string.Empty;
+        
+    /// <summary>
+    /// 
+    /// </summary>
+    [MaxLength(120)]
+    public string PickUpDate { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [MaxLength(520)]
+    public string ReservationDetails { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [MaxLength(120)]
+    public string ScheduleId { get; set; } = string.Empty;
 
     /// <summary>
     /// Converts an instance of <see cref="CoreConversationState"/> to an instance of <see cref="ConversationState"/>.
