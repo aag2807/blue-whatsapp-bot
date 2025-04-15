@@ -48,5 +48,18 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
         builder.HasMany(t => t.Reservations)
             .WithOne(r => r.Trip)
             .HasForeignKey(r => r.TripId);
+        
+        builder.HasData(
+            new Trip()
+            {
+                Id = 1,
+                UserNumber = "+19998887777",
+                UserName = "John Doe",
+                TripTime = TimeSpan.Zero,
+                IsActive = true,
+                RouteId = 1,
+                CreatedTime = DateTime.Now,
+            }
+        );
     }
 }
