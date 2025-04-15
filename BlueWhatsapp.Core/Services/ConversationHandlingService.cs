@@ -65,7 +65,8 @@ public sealed class ConversationHandlingService(
 
             if (state.CurrentStep == ConversationStep.ScheduleSelection)
             {
-                return messageCreator.CreateTimeFrameSelectionMessage(state.UserNumber, new CoreHotel(), new List<CoreSchedule>());
+                CoreHotel? hotel = await hotelRepository.GetHotelByIdAsync(int.Parse(state.HotelId)).ConfigureAwait(true);
+                return messageCreator.CreateTimeFrameSelectionMessage(state.UserNumber, hotel, new List<CoreSchedule>());
             }
 
             if (state.CurrentStep == ConversationStep.AskForReservationDetails)

@@ -240,8 +240,15 @@ public sealed class MessageCreator : IMessageCreator
             id = "0",
             title = "Lo voy a analizar y escribiré luego.",
         };
+        
+        Row dummySchedudle = new Row()
+        {
+            id = "1",
+            title = "09:25",
+        };
 
         rowsToAppend.Add(decideLater);
+        rowsToAppend.Add(dummySchedudle);
 
         section.rows.AddRange(rowsToAppend);
 
