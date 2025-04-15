@@ -1,5 +1,6 @@
 ﻿using BlueWhatsapp.Boundaries.Persistence;
 using BlueWhatsapp.Boundaries.Persistence.Repositories.Implementation;
+using BlueWhatsapp.Core.Logger;
 using BlueWhatsapp.Core.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,5 +38,47 @@ internal static class PersistenceServices
         builder.Services.AddTransient<ITripRepository, TripRepository>();
         builder.Services.AddTransient<IHotelRepository, HotelRepository>();
         builder.Services.AddTransient<IReservationRepository, ReservationRepository>();
+    }
+    
+    /// <summary>
+    /// Runs database migrations at application startup.
+    /// </summary>
+    /// <param name="app">The application to configure.</param>
+    internal static void MigrateDatabase(this IApplicationBuilder app)
+    {
+        using (var scope = app.ApplicationServices.CreateScope())
+        {
+            var services = scope.ServiceProvider;
+            try
+            {
+                WhatsappBlueContext context = services.GetRequiredService<WhatsappBlueContext>();
+                
+                context.Database.EnsureCreated();
+                
+                Console.WriteLine("Database migration completed successfully.");
+                
+                try 
+                {
+                    var logger = services.GetRequiredService<IAppLogger>();
+                    logger.LogInfo("Database migration completed successfully.");
+                }
+                catch 
+                {
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while migrating the database: {ex.Message}");
+                
+                try 
+                {
+                    var logger = services.GetRequiredService<IAppLogger>();
+                    logger.LogError($"An error occurred while migrating the database: {ex.Message}");
+                }
+                catch 
+                {
+                }
+            }
+        }
     }
 }

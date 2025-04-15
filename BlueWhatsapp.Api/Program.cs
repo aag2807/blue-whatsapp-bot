@@ -51,6 +51,7 @@ using (IServiceScope? serviceScope = app.Services.CreateScope())
     app.ConfigureExceptionHandler(appLogger);
 }
 
+app.MigrateDatabase();
 app.UseStaticFiles();
 app.ConfigureSwaggerUIOnDevelopment();
 app.UseHttpsRedirection();
