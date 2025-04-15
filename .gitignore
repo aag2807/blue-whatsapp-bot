@@ -393,10 +393,6 @@ FodyWeavers.xsd
 .idea/
 *.sln.iml
 
-# SQLite database files
-*.db-shm
-*.db-wal
-
 # Rider
 .idea/
 *.sln.iml
