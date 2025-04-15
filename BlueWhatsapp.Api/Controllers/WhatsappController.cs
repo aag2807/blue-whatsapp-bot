@@ -77,52 +77,54 @@ public class WhatsappController : ControllerBase
 
     [HttpPost]
     [LogAction]
-    public async Task<IActionResult> ReceiveMessage([FromBody] WhatsAppCloudModel body)
+    public async Task<IActionResult> ReceiveMessage([FromBody] object body)
     {
         _logger.LogInfo("receive-message");
         _logger.LogInfo(body);
-        
-        try
-        {
-            Message? message = body.GetMessage();
-            if (message == null)
-            {
-                return Ok("EVENT_RECEIVED");
-            }
 
-            string userNumber = message.From!;
-            string fromName = body.GetContactProfileName() ?? string.Empty;
-            string userText = GetUserText(message);
-            string timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            
-            CoreConversationState? state = await _conversationStateService.GetConversationStateByNumber(userNumber).ConfigureAwait(true);
-            if (state == null)
-            {
-                state = await _conversationStateService.CreateNewConversationState(userNumber).ConfigureAwait(true);
-            }
-        
-            if (state.IsAdminOverridden)
-            {
-                await _messageService.SaveAsync(fromName, userText, userNumber).ConfigureAwait(true);
-                await _hubContext.Clients.All.SendAsync("ReceiveWhatsAppMessage", userNumber, timestamp).ConfigureAwait(true);
-                return Ok("EVENT_RECEIVED");
-            }
-
-            string response = await _conversationService.ProcessMessageAsync(userText, userNumber).ConfigureAwait(true);
-            if (response != null)
-            {
-                await _whatsappCloudService.SendMessage(new CoreMessageToSend(response, userNumber)).ConfigureAwait(true);
-                await _messageService.SaveAsync(fromName, userText, userNumber).ConfigureAwait(true);
-            }
-        
-            await _hubContext.Clients.All.SendAsync("ReceiveWhatsAppMessage", userNumber, timestamp).ConfigureAwait(true);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex);
-            return Ok("EVENT_RECEIVED");
-        }
-        
+        return Ok("EVENT_RECEIVED");
+        //
+        // try
+        // {
+        //     Message? message = body.GetMessage();
+        //     if (message == null)
+        //     {
+        //         return Ok("EVENT_RECEIVED");
+        //     }
+        //
+        //     string userNumber = message.From!;
+        //     string fromName = body.GetContactProfileName() ?? string.Empty;
+        //     string userText = GetUserText(message);
+        //     string timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+        //     
+        //     CoreConversationState? state = await _conversationStateService.GetConversationStateByNumber(userNumber).ConfigureAwait(true);
+        //     if (state == null)
+        //     {
+        //         state = await _conversationStateService.CreateNewConversationState(userNumber).ConfigureAwait(true);
+        //     }
+        //
+        //     if (state.IsAdminOverridden)
+        //     {
+        //         await _messageService.SaveAsync(fromName, userText, userNumber).ConfigureAwait(true);
+        //         await _hubContext.Clients.All.SendAsync("ReceiveWhatsAppMessage", userNumber, timestamp).ConfigureAwait(true);
+        //         return Ok("EVENT_RECEIVED");
+        //     }
+        //
+        //     string response = await _conversationService.ProcessMessageAsync(userText, userNumber).ConfigureAwait(true);
+        //     if (response != null)
+        //     {
+        //         await _whatsappCloudService.SendMessage(new CoreMessageToSend(response, userNumber)).ConfigureAwait(true);
+        //         await _messageService.SaveAsync(fromName, userText, userNumber).ConfigureAwait(true);
+        //     }
+        //
+        //     await _hubContext.Clients.All.SendAsync("ReceiveWhatsAppMessage", userNumber, timestamp).ConfigureAwait(true);
+        // }
+        // catch (Exception ex)
+        // {
+        //     _logger.LogError(ex);
+        //     return Ok("EVENT_RECEIVED");
+        // }
+        //
         return Ok("EVENT_RECEIVED");
     }
     
