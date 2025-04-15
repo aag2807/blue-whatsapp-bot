@@ -62,4 +62,10 @@ public class AppLogger : IAppLogger
     {
         WriteLog("routes", data);
     }
+
+    /// <inheritdoc />
+    public void LogSteps<T>(T data)
+    {
+        WriteLog("steps", data);
+    }
 }

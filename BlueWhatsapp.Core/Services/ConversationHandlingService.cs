@@ -1,24 +1,25 @@
 using System.Data.SqlTypes;
 using System.Text;
 using BlueWhatsapp.Core.Enums;
+using BlueWhatsapp.Core.Logger;
 using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
+using BlueWhatsapp.Core.Models.Schedule;
+using BlueWhatsapp.Core.Persistence;
 using BlueWhatsapp.Core.Utils;
+using Triplex.Validations;
 
 namespace BlueWhatsapp.Core.Services;
 
-public sealed class ConversationHandlingService : IConversationHandlingService
+public sealed class ConversationHandlingService(
+    IMessageCreator messageCreator,
+    IHotelMatcher hotelMatcher,
+    IScheduleRepository scheduleRepository,
+    IHotelRepository hotelRepository,
+    IAppLogger logger
+) : IConversationHandlingService
 {
-    private readonly IMessageCreator _messageCreator;
-    private readonly IHotelMatcher _hotelMatcher;
-    
-    public ConversationHandlingService(IMessageCreator messageCreator, IHotelMatcher hotelMatcher)
-    {
-        _messageCreator = messageCreator;
-        _hotelMatcher = hotelMatcher;
-    }
-    
-    CoreBaseMessage? IConversationHandlingService.HandleState(CoreConversationState state, string userMessage = "")
+    async Task<CoreBaseMessage?> IConversationHandlingService.HandleState(CoreConversationState state, string userMessage = "")
     {
         if (state.Flow == ConversationFlowEnum.None)
         {
@@ -27,44 +28,90 @@ public sealed class ConversationHandlingService : IConversationHandlingService
 
         if (state.Flow == ConversationFlowEnum.DIRECT_CLIENT_FREE_ROUTE)
         {
-            return HandleDirectClientFreeRoute(state, userMessage);
+            return await HandleDirectClientFreeRoute(state, userMessage).ConfigureAwait(true);
         }
 
         return null;
     }
 
-    private CoreBaseMessage HandleDirectClientFreeRoute(CoreConversationState state, string userMessage)
+    private async Task<CoreBaseMessage> HandleDirectClientFreeRoute(CoreConversationState state, string userMessage)
     {
-        if (state.CurrentStep == ConversationStep.Welcome || state.CurrentStep == ConversationStep.None)
+        try
         {
-            return _messageCreator.CreateWelcomeMessage(state.UserNumber);
-        }
+            if (state.CurrentStep == ConversationStep.Welcome || state.CurrentStep == ConversationStep.None)
+            {
+                return messageCreator.CreateWelcomeMessage(state.UserNumber);
+            }
 
-        if (state.CurrentStep == ConversationStep.LanguageSelection)
-        {
-            return _messageCreator.CreateLanguagePromptMessage(state.UserNumber);
-        }
+            if (state.CurrentStep == ConversationStep.LanguageSelection)
+            {
+                return messageCreator.CreateLanguagePromptMessage(state.UserNumber);
+            }
 
-        if (state.CurrentStep == ConversationStep.DateSelection)
-        {
-            return _messageCreator.CreateDatePromptMessage(state.UserNumber);
-        }
+            if (state.CurrentStep == ConversationStep.DateSelection)
+            {
+                return messageCreator.CreateDatePromptMessage(state.UserNumber);
+            }
 
-        if (state.CurrentStep == ConversationStep.ZoneSelection)
-        {
-            return _messageCreator.CreateSelectHotelZoneLocationMessage(state.UserNumber);
-        }
-    
-        if (state.CurrentStep == ConversationStep.HotelSelection)
-        {
-            return _messageCreator.CreateHotelSelectionMessage(state.UserNumber, new List<CoreHotel>());
-        };
+            if (state.CurrentStep == ConversationStep.ZoneSelection)
+            {
+                return messageCreator.CreateSelectHotelZoneLocationMessage(state.UserNumber);
+            }
 
-        if (state.CurrentStep == ConversationStep.HotelConfirmation)
-        {
+            if (state.CurrentStep == ConversationStep.HotelSelection)
+            {
+                return messageCreator.CreateHotelSelectionMessage(state.UserNumber, new List<CoreHotel>());
+            }
+
+            if (state.CurrentStep == ConversationStep.ScheduleSelection)
+            {
+                return messageCreator.CreateTimeFrameSelectionMessage(state.UserNumber, new CoreHotel(), new List<CoreSchedule>());
+            }
+
+            if (state.CurrentStep == ConversationStep.AskForReservationDetails)
+            {
+                return messageCreator.CreateAskForReservationDetailsMessage(state.UserNumber);
+            }
+
+            if (state.CurrentStep == ConversationStep.ReservationComplete)
+            {
+                CoreHotel? hotel = await hotelRepository.GetHotelByIdAsync(int.Parse(state.HotelId)).ConfigureAwait(true);
+                CoreSchedule? schedule = await scheduleRepository.GetScheduleByIdAsync(int.Parse(state.ScheduleId)).ConfigureAwait(true);
+                string date = state.PickUpDate;
+
+                return messageCreator.CreateReservationConfirmationMessage(state.UserNumber, hotel!, schedule!, date);
+            }
             
+            //states which break the regular flow
+            if (state.CurrentStep == ConversationStep.ZoneUnknown)
+            {
+                
+            }
+            
+            if (state.CurrentStep == ConversationStep.HotelUnknown)
+            {
+                
+            }
+            
+            if (state.CurrentStep == ConversationStep.HotelConfirmation)
+            {
+                
+            }
+            
+            if (state.CurrentStep == ConversationStep.WillTextLater)
+            {
+                
+            }
+
+            return null;
         }
-        
-        return null;
+        catch (Exception ex)
+        {
+            logger.LogError(ex);
+            logger.LogError(ex.Data);
+            logger.LogError(state);
+
+            return null;
+        }
     }
 }

@@ -19,4 +19,9 @@ public interface IAppLogger
     /// Logs into the routing.txt file
     /// </summary>
     void LogRoutes<T>(T data);
+    
+    /// <summary>
+    /// Logs into the steps.txt file
+    /// </summary>
+    void LogSteps<T>(T data);
 }

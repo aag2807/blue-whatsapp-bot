@@ -51,4 +51,20 @@ public interface IMessageCreator
     /// <returns></returns>
     public CoreInteractiveMessage CreateTimeFrameSelectionMessage(string number, CoreHotel hotel, IEnumerable<CoreSchedule> schedules);
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userNumber"></param>
+    /// <returns></returns>
+    public CoreMessageToSend CreateAskForReservationDetailsMessage(string userNumber);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userNumber"></param>
+    /// <param name="hotel"></param>
+    /// <param name="schedule"></param>
+    /// <param name="date"></param>
+    /// <returns></returns>
+    public CoreMessageToSend CreateReservationConfirmationMessage(string userNumber, CoreHotel hotel, CoreSchedule schedule, string date);
 }

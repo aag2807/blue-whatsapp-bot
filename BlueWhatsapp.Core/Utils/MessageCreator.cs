@@ -1,3 +1,4 @@
+using System.Text;
 using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
 using BlueWhatsapp.Core.Models.Messages.Interactive;
@@ -245,6 +246,31 @@ public sealed class MessageCreator : IMessageCreator
         section.rows.AddRange(rowsToAppend);
 
         model.interactive.action.sections.Add(section);
+
+        return model;
+    }
+ 
+    /// <inheritdoc />
+    CoreMessageToSend IMessageCreator.CreateAskForReservationDetailsMessage(string userNumber)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("Para hacer su reserva, indique los siguientes datos:");
+        sb.AppendLine("Indique su nombre completo");
+        sb.AppendLine("Indique su número de habitación");
+        sb.AppendLine("Indique la cantidad de adultos");
+        sb.AppendLine("Indique la cantidad de niños");
+        sb.AppendLine("Indique su número de teléfono");
+        sb.AppendLine("Indique su E-Mail");
+        
+        CoreMessageToSend model = new CoreMessageToSend(sb.ToString(), userNumber);
+
+        return model;
+    }
+
+    public CoreMessageToSend CreateReservationConfirmationMessage(string userNumber, CoreHotel hotel, CoreSchedule schedule, string date)
+    {
+        string message = $"*¡Reserva confirmada para el {date} a las {schedule.Time}*! Su punto de encuentro será en el Lobby del Hotel. Por favor estar puntual.";
+        CoreMessageToSend model = new CoreMessageToSend(message, userNumber);
 
         return model;
     }
