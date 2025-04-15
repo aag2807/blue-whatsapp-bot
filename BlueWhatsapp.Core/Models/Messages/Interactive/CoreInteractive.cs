@@ -6,7 +6,7 @@ public sealed class CoreInteractive
 
     public InteractiveContent header { get; set; } = new();
 
-    public InteractiveContent body { get; set; } = new();
+    public InteractiveBody body { get; set; } = new();
     
     public Action action { get; set; } = new();
 }

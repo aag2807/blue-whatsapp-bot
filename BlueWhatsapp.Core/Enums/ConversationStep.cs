@@ -7,31 +7,31 @@ public enum ConversationStep
     /// </summary>
     None = 0,
     // Initial states
-    Welcome,
-    LanguageSelection,
-    ClientTypeSelection, // not used right now
+    Welcome = 1,
+    LanguageSelection = 2,
+    ClientTypeSelection = 3, // not used right now
     
     // Date selection
-    DateSelection,
+    DateSelection = 4,
     
     // Location/hotel selection
-    ZoneSelection,
-    ZoneUnknown,
-    HotelSelection,
-    HotelUnknown,
-    HotelConfirmation,
+    ZoneSelection = 5 ,
+    ZoneUnknown = 6,
+    HotelSelection = 7,
+    HotelUnknown = 8, 
+    HotelConfirmation = 9,
     
     // Schedule selection
-    ScheduleSelection,
-    WillTextLater,
+    ScheduleSelection = 10,
+    WillTextLater = 11,
     
     //ask for user information,
-    AskForReservationDetails,
+    AskForReservationDetails = 12,
     
     // Completion states
-    ReservationComplete,
-    PendingDecision,
+    ReservationComplete = 13,
+    PendingDecision = 14,
     
     // Admin override state 
-    ManualHandling,
+    ManualHandling = 99,
 }

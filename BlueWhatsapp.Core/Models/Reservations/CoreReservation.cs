@@ -15,6 +15,26 @@ public sealed class CoreReservation : BaseEntity
     public string Username { get; set; } = string.Empty;
 
     /// <summary>
+    /// 
+    /// </summary>
+    public string Details { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// The date of the reservation
+    /// </summary>
+    public string ReservationDate { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string ReserveTime { get; set; }  = string.Empty;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string HotelName { get; set; } = string.Empty;
+
+    /// <summary>
     /// The trip of the reservation
     /// </summary>  
     public CoreTrip Trip { get; set; } = new CoreTrip();

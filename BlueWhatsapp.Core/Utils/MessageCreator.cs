@@ -32,7 +32,6 @@ public sealed class MessageCreator : IMessageCreator
         var model = new CoreInteractiveMessage(number);
         model.interactive.header.type = "text";
         model.interactive.header.text = "Bluemall";
-        model.interactive.body.type = "text";
         model.interactive.body.text = "Elija su idioma: ";
 
         model.interactive.action.button = "Idiomas";
@@ -94,7 +93,6 @@ public sealed class MessageCreator : IMessageCreator
         var model = new CoreInteractiveMessage(number);
         model.interactive.header.type = "text";
         model.interactive.header.text = "Bluemall";
-        model.interactive.body.type = "text";
         model.interactive.body.text = "Elija la zona en la que se encuentra su hotel: ";
 
         model.interactive.action.button = "Idiomas";
@@ -168,37 +166,37 @@ public sealed class MessageCreator : IMessageCreator
         var model = new CoreInteractiveMessage(number);
         model.interactive.header.type = "text";
         model.interactive.header.text = "Bluemall";
-        model.interactive.body.type = "text";
-        model.interactive.body.text = "Elija la zona en la que se encuentra su hotel: ";
+        model.interactive.body.text = "Elija su hotel: ";
 
-        model.interactive.action.button = "Idiomas";
+        model.interactive.action.button = "Hoteles";
         model.interactive.action.sections = new List<Section>();
 
         var section = new Section();
         section.title = "Hoteles";
         section.rows = new List<Row>();
-
-        var rowsToAppend = new List<Row>();
-
-        foreach (CoreHotel hotel in hotels)
+        
+        var hotel1 = new Row()
         {
-            var row = new Row()
-            {
-                id = hotel.Id.ToString(),
-                title = hotel.Name,
-            };
-            rowsToAppend.Add(row);
-        }
-
-        var idontknowRow = new Row()
+            id = "1",
+            title = "SECRET CAP CANA",
+        };
+        var hotel2 = new Row()
         {
-            id = "0",
-            title = "No está en la lista",
+            id = "2",
+            title = "HYATT ZILARA",
+        };
+        var hotel3 = new Row()
+        {
+            id = "3",
+            title = "HYATT ZIVA",
         };
 
-        rowsToAppend.Add(idontknowRow);
-
-        section.rows.AddRange(rowsToAppend);
+        section.rows.AddRange(new List<Row>()
+        {
+            hotel1,
+            hotel2,
+            hotel3,
+        });
 
         model.interactive.action.sections.Add(section);
 
@@ -211,11 +209,8 @@ public sealed class MessageCreator : IMessageCreator
         CoreInteractiveMessage model = new CoreInteractiveMessage(number);
         model.interactive.header.type = "text";
         model.interactive.header.text = "Bluemall";
-        model.interactive.body.type = "text";
+        model.interactive.body.text = $"elija el horarios de su preferencia:";
 
-        string formattedMessage = $"Para su hotel {hotel.Name} tenemos el servicio de traslado gratuito en nuestras rutas fijas con una duración de 2 horas en el Mall. El bus pasa en los siguientes horarios, elija el de su preferencia:";
-
-        model.interactive.body.text = formattedMessage;
         model.interactive.action.button = "Horarios";
         model.interactive.action.sections = new List<Section>();
 
@@ -223,22 +218,10 @@ public sealed class MessageCreator : IMessageCreator
         section.title = "Horarios";
         section.rows = new List<Row>();
 
-        List<Row> rowsToAppend = new List<Row>();
-
-        foreach (CoreSchedule schedule in schedules)
-        {
-            Row row = new Row()
-            {
-                id = schedule.Id.ToString(),
-                title = schedule.Time,
-            };
-            rowsToAppend.Add(row);
-        }
-
         Row decideLater = new Row()
         {
-            id = "0",
-            title = "Lo voy a analizar y escribiré luego.",
+            id = "99",
+            title = "Escribiré luego.",
         };
         
         Row dummySchedudle = new Row()
@@ -247,10 +230,11 @@ public sealed class MessageCreator : IMessageCreator
             title = "09:25",
         };
 
-        rowsToAppend.Add(decideLater);
-        rowsToAppend.Add(dummySchedudle);
-
-        section.rows.AddRange(rowsToAppend);
+        section.rows.AddRange(new List<Row>()
+        {
+            dummySchedudle,
+            decideLater,
+        });
 
         model.interactive.action.sections.Add(section);
 

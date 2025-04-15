@@ -15,6 +15,6 @@ public sealed class CoreInteractiveMessage : CoreBaseMessage
     public CoreInteractiveMessage(string number)
     {
         to = number;
-        type = "InteractiveMessage";
+        type = "interactive";
     }
 }

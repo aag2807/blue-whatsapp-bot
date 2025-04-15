@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
+using BlueWhatsapp.Core.Logger;
 using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
 using BlueWhatsapp.Core.Models.Messages.Interactive;
@@ -8,21 +9,12 @@ using Newtonsoft.Json;
 
 namespace BlueWhatsapp.Core.Services;
 
-public sealed class WhatsappCloudService : IWhatsappCloudService
+public sealed class WhatsappCloudService(IAppLogger logger) : IWhatsappCloudService
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    private readonly IWhatsappCloudService _self;
-
-    public WhatsappCloudService()
-    {
-        _self = this;
-    }
-
     /// <inheritdoc />
     async Task<bool> IWhatsappCloudService.SendMessage<T>(T model)
     {
+        string  json = JsonConvert.SerializeObject(model);
         byte[] byteData = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(model));
         using var client = new HttpClient();
         using var content = new ByteArrayContent(byteData);
@@ -37,7 +29,16 @@ public sealed class WhatsappCloudService : IWhatsappCloudService
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
 
         HttpResponseMessage response = await client.PostAsync(uri, content).ConfigureAwait(true);
+        string responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
 
+        if (responseContent != null)
+        {
+            object data = JsonConvert.DeserializeObject<object>(responseContent);
+            logger.LogInfo("Whatsappp sent message response");
+            logger.LogInfo(data);
+        }
+        
         return response.IsSuccessStatusCode;
     }
+
 }

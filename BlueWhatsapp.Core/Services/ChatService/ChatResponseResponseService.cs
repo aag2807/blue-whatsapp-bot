@@ -2,6 +2,8 @@ using BlueWhatsapp.Core.Enums;
 using BlueWhatsapp.Core.Logger;
 using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
+using BlueWhatsapp.Core.Models.Reservations;
+using BlueWhatsapp.Core.Models.Schedule;
 
 namespace BlueWhatsapp.Core.Services.ChatService;
 
@@ -20,6 +22,7 @@ public sealed class ChatResponseResponseService(
         {
             logger.LogSteps("No state found, being created.");
             state = await conversationStateService.CreateNewConversationState(userNumber).ConfigureAwait(true);
+            state.PersonName = fromName;
         }
 
         if (state.IsAdminOverridden)
@@ -45,14 +48,18 @@ public sealed class ChatResponseResponseService(
             return;
         }
 
-        UpdateConversationContextBasedOnCurrentStep(userText, state);
+        UpdateConversationContextBasedOnCurrentStep(userText, state, fromName);
         CoreBaseMessage? newMessage = await conversationHandling.HandleState(state, userText).ConfigureAwait(true);
-        await conversationStateService.UpdateConversationState(state).ConfigureAwait(true);
+        if (newMessage == null)
+        {
+            return;
+        }
         await whatsappCloudService.SendMessage(newMessage).ConfigureAwait(true);
         await messageService.SaveAsync(fromName, userText, userNumber).ConfigureAwait(true);
+        await conversationStateService.UpdateConversationState(state).ConfigureAwait(true);
     }
 
-    private void UpdateConversationContextBasedOnCurrentStep(string userText, CoreConversationState state)
+    private void UpdateConversationContextBasedOnCurrentStep(string userText, CoreConversationState state, string fromName)
     {
         if (state.CurrentStep == ConversationStep.HotelSelection)
         {
@@ -116,10 +123,8 @@ public sealed class ChatResponseResponseService(
         {
             state.ReservationDetails = userText;
             state.CurrentStep = ConversationStep.ReservationComplete;
+            state.IsComplete = true;
             logger.LogSteps("completed reseration details");
-
-            //TODO: create reservation entity.
-            logger.LogSteps("Reservation created");
         }
 
         logger.LogSteps(state);
@@ -127,7 +132,7 @@ public sealed class ChatResponseResponseService(
 
     private async Task HandleLanguageSelectionMessage(CoreConversationState state, CoreBaseMessage? languageSelectionService, string fromName, string userText, string userNumber)
     {
-        await conversationStateService.UpdateConversationState(state).ConfigureAwait(true);
+        await conversationStateService.AddAsync(state).ConfigureAwait(true);
         await whatsappCloudService.SendMessage(languageSelectionService).ConfigureAwait(true);
         await messageService.SaveAsync(fromName, userText, userNumber).ConfigureAwait(true);
         await messageService.SaveAsync("SYSTEM", "Listado de lenguajes", userNumber).ConfigureAwait(true);

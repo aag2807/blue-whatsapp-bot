@@ -3,6 +3,7 @@ using System;
 using BlueWhatsapp.Boundaries.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlueWhatsapp.Boundaries.Persistence.Migrations
 {
     [DbContext(typeof(WhatsappBlueContext))]
-    partial class WhatsappBlueContextModelSnapshot : ModelSnapshot
+    [Migration("20250415155258_AddedFlowToSavedConversationState")]
+    partial class AddedFlowToSavedConversationState
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.14");
@@ -54,11 +57,6 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("ModifiedTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PersonName")
-                        .IsRequired()
-                        .HasMaxLength(120)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PickUpDate")
@@ -153,7 +151,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -166,7 +164,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -179,7 +177,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -192,7 +190,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -205,7 +203,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -218,7 +216,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 6,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -231,7 +229,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 7,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -244,7 +242,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 8,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -257,7 +255,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 9,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -270,7 +268,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 10,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "BARRERA",
@@ -283,7 +281,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 11,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "BARRERA",
@@ -296,7 +294,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 12,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -309,7 +307,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 13,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -322,7 +320,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 14,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -335,7 +333,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 15,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "BARRERA",
@@ -348,7 +346,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 16,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -361,7 +359,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 17,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -374,7 +372,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 18,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -387,7 +385,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 19,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -400,7 +398,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 20,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY DE GRUPOS",
@@ -413,7 +411,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 21,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "BARRERA",
@@ -426,7 +424,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 22,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "BARRERA",
@@ -439,7 +437,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 23,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -452,7 +450,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 24,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -465,7 +463,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 25,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -478,7 +476,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 26,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "BARRERA",
@@ -491,7 +489,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 27,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -504,7 +502,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 28,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -517,7 +515,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 29,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -530,7 +528,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 30,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -543,7 +541,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 31,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -556,7 +554,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 32,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -569,7 +567,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 33,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -582,7 +580,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 34,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -595,7 +593,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 35,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -608,7 +606,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 36,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "BARRERA",
@@ -621,7 +619,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 37,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -634,7 +632,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 38,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -647,7 +645,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 39,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -660,7 +658,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 40,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -673,7 +671,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 41,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "BARRERA",
@@ -686,7 +684,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 42,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -699,7 +697,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 43,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -712,7 +710,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 44,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -725,7 +723,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 45,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -738,7 +736,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 46,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -751,7 +749,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 47,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -764,7 +762,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 48,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -777,7 +775,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 49,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -790,7 +788,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 50,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "BARRERA",
@@ -803,7 +801,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 51,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -816,7 +814,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 52,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -829,7 +827,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 53,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -842,7 +840,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 54,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -855,7 +853,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 55,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -868,7 +866,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 56,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -881,7 +879,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 57,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "BARRERA",
@@ -894,7 +892,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 58,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -907,7 +905,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 59,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -920,7 +918,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 60,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -933,7 +931,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 61,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -946,7 +944,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 62,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -959,7 +957,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 63,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -972,7 +970,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 64,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -985,7 +983,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 65,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -998,7 +996,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 66,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 536, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 164, DateTimeKind.Utc).AddTicks(8943),
                             Currency = "USD",
                             IsActive = true,
                             MeetingPoint = "LOBBY",
@@ -1054,7 +1052,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 1,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1063,7 +1061,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 1,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1072,7 +1070,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 2,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1081,7 +1079,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 2,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1090,7 +1088,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 3,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1099,7 +1097,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 6,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 3,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1108,7 +1106,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 7,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 4,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1117,7 +1115,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 8,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 4,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1126,7 +1124,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 9,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 5,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1135,7 +1133,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 10,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 5,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1144,7 +1142,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 11,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 6,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1153,7 +1151,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 12,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 6,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1162,7 +1160,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 13,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 7,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1171,7 +1169,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 14,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 7,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1180,7 +1178,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 15,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 8,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1189,7 +1187,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 16,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 8,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1198,7 +1196,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 17,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 9,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1207,7 +1205,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 18,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 9,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1216,7 +1214,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 19,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 10,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1225,7 +1223,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 20,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 10,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1234,7 +1232,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 21,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 11,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1243,7 +1241,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 22,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 11,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1252,7 +1250,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 23,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 12,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1261,7 +1259,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 24,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 12,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1270,7 +1268,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 25,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 13,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1279,7 +1277,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 26,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 13,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1288,7 +1286,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 27,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 14,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1297,7 +1295,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 28,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 14,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1306,7 +1304,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 29,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 14,
                             IsActive = true,
                             RecogidaNumber = 3,
@@ -1315,7 +1313,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 30,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 15,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1324,7 +1322,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 31,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 15,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1333,7 +1331,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 32,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 15,
                             IsActive = true,
                             RecogidaNumber = 3,
@@ -1342,7 +1340,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 33,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 16,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1351,7 +1349,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 34,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 16,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1360,7 +1358,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 35,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 16,
                             IsActive = true,
                             RecogidaNumber = 3,
@@ -1369,7 +1367,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 36,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 17,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1378,7 +1376,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 37,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 17,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1387,7 +1385,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 38,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 17,
                             IsActive = true,
                             RecogidaNumber = 3,
@@ -1396,7 +1394,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 39,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 18,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1405,7 +1403,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 40,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 18,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1414,7 +1412,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 41,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 18,
                             IsActive = true,
                             RecogidaNumber = 3,
@@ -1423,7 +1421,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 42,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 19,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1432,7 +1430,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 43,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 19,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1441,7 +1439,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 44,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 19,
                             IsActive = true,
                             RecogidaNumber = 3,
@@ -1450,7 +1448,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 45,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 20,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1459,7 +1457,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 46,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 20,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1468,7 +1466,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 47,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 21,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1477,7 +1475,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 48,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 21,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1486,7 +1484,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 49,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 21,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1495,7 +1493,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 50,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 22,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1504,7 +1502,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 51,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 22,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1513,7 +1511,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 52,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 22,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1522,7 +1520,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 53,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 23,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1531,7 +1529,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 54,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 23,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1540,7 +1538,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 55,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 23,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1549,7 +1547,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 56,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 24,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1558,7 +1556,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 57,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 24,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1567,7 +1565,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 58,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 24,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1576,7 +1574,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 59,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 25,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1585,7 +1583,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 60,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 25,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1594,7 +1592,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 61,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 25,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1603,7 +1601,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 62,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 26,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1612,7 +1610,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 63,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 26,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1621,7 +1619,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 64,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 26,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1630,7 +1628,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 65,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 27,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1639,7 +1637,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 66,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 27,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1648,7 +1646,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 67,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 27,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1657,7 +1655,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 68,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 28,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1666,7 +1664,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 69,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 28,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1675,7 +1673,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 70,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 28,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1684,7 +1682,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 71,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 29,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1693,7 +1691,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 72,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 29,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1702,7 +1700,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 73,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 29,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1711,7 +1709,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 74,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 30,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1720,7 +1718,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 75,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 30,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1729,7 +1727,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 76,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 30,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1738,7 +1736,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 77,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 31,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1747,7 +1745,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 78,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 31,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1756,7 +1754,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 79,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 32,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1765,7 +1763,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 80,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 32,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1774,7 +1772,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 81,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 33,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1783,7 +1781,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 82,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 33,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1792,7 +1790,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 83,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 34,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1801,7 +1799,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 84,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 34,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1810,7 +1808,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 85,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 35,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1819,7 +1817,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 86,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 35,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1828,7 +1826,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 87,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 36,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1837,7 +1835,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 88,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 36,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1846,7 +1844,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 89,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 37,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1855,7 +1853,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 90,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 37,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1864,7 +1862,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 91,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 38,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1873,7 +1871,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 92,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 38,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1882,7 +1880,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 93,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 39,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1891,7 +1889,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 94,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 39,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1900,7 +1898,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 95,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 40,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1909,7 +1907,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 96,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 40,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1918,7 +1916,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 97,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 41,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1927,7 +1925,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 98,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 41,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1936,7 +1934,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 99,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 42,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1945,7 +1943,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 100,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 42,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1954,7 +1952,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 101,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 43,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1963,7 +1961,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 102,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 43,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1972,7 +1970,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 103,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 44,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -1981,7 +1979,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 104,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 44,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -1990,7 +1988,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 105,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 44,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -1999,7 +1997,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 106,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 45,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2008,7 +2006,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 107,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 45,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2017,7 +2015,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 108,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 45,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -2026,7 +2024,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 109,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 46,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2035,7 +2033,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 110,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 46,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2044,7 +2042,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 111,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 46,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -2053,7 +2051,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 112,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 47,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2062,7 +2060,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 113,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 47,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2071,7 +2069,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 114,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 47,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -2080,7 +2078,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 115,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 48,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2089,7 +2087,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 116,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 48,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2098,7 +2096,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 117,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 48,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -2107,7 +2105,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 118,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 49,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2116,7 +2114,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 119,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 49,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2125,7 +2123,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 120,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 49,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -2134,7 +2132,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 121,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 50,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2143,7 +2141,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 122,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 50,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2152,7 +2150,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 123,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 50,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -2161,7 +2159,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 124,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 51,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2170,7 +2168,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 125,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 51,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2179,7 +2177,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 126,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 51,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -2188,7 +2186,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 127,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 52,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2197,7 +2195,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 128,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 52,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2206,7 +2204,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 129,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 52,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -2215,7 +2213,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 130,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 53,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2224,7 +2222,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 131,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 53,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2233,7 +2231,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 132,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 53,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -2242,7 +2240,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 133,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 54,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2251,7 +2249,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 134,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 54,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2260,7 +2258,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 135,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 54,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -2269,7 +2267,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 136,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 55,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2278,7 +2276,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 137,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 55,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2287,7 +2285,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 138,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 55,
                             IsActive = true,
                             RecogidaNumber = 4,
@@ -2296,7 +2294,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 139,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 56,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2305,7 +2303,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 140,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 56,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2314,7 +2312,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 141,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 57,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2323,7 +2321,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 142,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 57,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2332,7 +2330,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 143,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 58,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2341,7 +2339,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 144,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 58,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2350,7 +2348,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 145,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 59,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2359,7 +2357,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 146,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 59,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2368,7 +2366,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 147,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 60,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2377,7 +2375,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 148,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 60,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2386,7 +2384,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 149,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 61,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2395,7 +2393,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 150,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 61,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2404,7 +2402,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 151,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 62,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2413,7 +2411,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 152,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 62,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2422,7 +2420,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 153,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 63,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2431,7 +2429,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 154,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 63,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2440,7 +2438,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 155,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 64,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2449,7 +2447,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 156,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 64,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2458,7 +2456,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 157,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 65,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2467,7 +2465,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 158,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 65,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2476,7 +2474,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 159,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 66,
                             IsActive = true,
                             RecogidaNumber = 1,
@@ -2485,7 +2483,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 160,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 540, DateTimeKind.Utc).AddTicks(16),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 176, DateTimeKind.Utc).AddTicks(5644),
                             HotelId = 66,
                             IsActive = true,
                             RecogidaNumber = 2,
@@ -2537,16 +2535,6 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Details")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("HotelName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
-
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
@@ -2555,14 +2543,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                     b.Property<DateTime?>("ModifiedTime")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ReservationDate")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ReserveTime")
-                        .IsRequired()
-                        .HasMaxLength(50)
+                    b.Property<DateTime>("ReservationDate")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("TripId")
@@ -2619,7 +2600,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 542, DateTimeKind.Utc).AddTicks(8915),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 181, DateTimeKind.Utc).AddTicks(1699),
                             Description = "Ruta Punta Cana (Cap Cana)",
                             IsActive = true,
                             Name = "RUTA A"
@@ -2627,7 +2608,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 542, DateTimeKind.Utc).AddTicks(8915),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 181, DateTimeKind.Utc).AddTicks(1699),
                             Description = "Ruta La Romana",
                             IsActive = true,
                             Name = "RUTA B"
@@ -2635,7 +2616,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 542, DateTimeKind.Utc).AddTicks(8915),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 181, DateTimeKind.Utc).AddTicks(1699),
                             Description = "Ruta Bávaro Sur",
                             IsActive = true,
                             Name = "RUTA C"
@@ -2643,7 +2624,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 542, DateTimeKind.Utc).AddTicks(8915),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 181, DateTimeKind.Utc).AddTicks(1699),
                             Description = "Ruta Bávaro Norte",
                             IsActive = true,
                             Name = "RUTA D"
@@ -2651,7 +2632,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 542, DateTimeKind.Utc).AddTicks(8915),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 181, DateTimeKind.Utc).AddTicks(1699),
                             Description = "Ruta Bávaro Central - Grupo 1",
                             IsActive = true,
                             Name = "RUTA E1"
@@ -2659,7 +2640,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 6,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 542, DateTimeKind.Utc).AddTicks(8915),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 181, DateTimeKind.Utc).AddTicks(1699),
                             Description = "Ruta Bávaro Central - Grupo 2",
                             IsActive = true,
                             Name = "RUTA E2"
@@ -2667,7 +2648,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 7,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 542, DateTimeKind.Utc).AddTicks(8915),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 181, DateTimeKind.Utc).AddTicks(1699),
                             Description = "Ruta Uvero Alto",
                             IsActive = true,
                             Name = "RUTA F"
@@ -2705,7 +2686,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "09:25",
                             Time = "09:25"
@@ -2713,7 +2694,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "09:30",
                             Time = "09:30"
@@ -2721,7 +2702,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "09:35",
                             Time = "09:35"
@@ -2729,7 +2710,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "09:40",
                             Time = "09:40"
@@ -2737,7 +2718,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "09:45",
                             Time = "09:45"
@@ -2745,7 +2726,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 6,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "09:50",
                             Time = "09:50"
@@ -2753,7 +2734,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 7,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "09:53",
                             Time = "09:53"
@@ -2761,7 +2742,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 8,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "09:55",
                             Time = "09:55"
@@ -2769,7 +2750,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 9,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "10:00",
                             Time = "10:00"
@@ -2777,7 +2758,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 10,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "10:05",
                             Time = "10:05"
@@ -2785,7 +2766,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 11,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "10:10",
                             Time = "10:10"
@@ -2793,7 +2774,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 12,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "10:20",
                             Time = "10:20"
@@ -2801,7 +2782,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 13,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "10:25",
                             Time = "10:25"
@@ -2809,7 +2790,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 14,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "10:40",
                             Time = "10:40"
@@ -2817,7 +2798,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 15,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "10:45",
                             Time = "10:45"
@@ -2825,7 +2806,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 16,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "10:55",
                             Time = "10:55"
@@ -2833,7 +2814,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 17,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "11:00",
                             Time = "11:00"
@@ -2841,7 +2822,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 18,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "11:05",
                             Time = "11:05"
@@ -2849,7 +2830,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 19,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "11:10",
                             Time = "11:10"
@@ -2857,7 +2838,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 20,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "11:15",
                             Time = "11:15"
@@ -2865,7 +2846,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 21,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "11:20",
                             Time = "11:20"
@@ -2873,7 +2854,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 22,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "11:25",
                             Time = "11:25"
@@ -2881,7 +2862,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 23,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "2:10",
                             Time = "2:10"
@@ -2889,7 +2870,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 24,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "2:15",
                             Time = "2:15"
@@ -2897,7 +2878,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 25,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "2:25",
                             Time = "2:25"
@@ -2905,7 +2886,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 26,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "2:30",
                             Time = "2:30"
@@ -2913,7 +2894,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 27,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "2:35",
                             Time = "2:35"
@@ -2921,7 +2902,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 28,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "2:40",
                             Time = "2:40"
@@ -2929,7 +2910,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 29,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "2:45",
                             Time = "2:45"
@@ -2937,7 +2918,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 30,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "2:50",
                             Time = "2:50"
@@ -2945,7 +2926,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 31,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "2:55",
                             Time = "2:55"
@@ -2953,7 +2934,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 32,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "3:10",
                             Time = "3:10"
@@ -2961,7 +2942,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 33,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "3:15",
                             Time = "3:15"
@@ -2969,7 +2950,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 34,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "3:20",
                             Time = "3:20"
@@ -2977,7 +2958,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 35,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "3:25",
                             Time = "3:25"
@@ -2985,7 +2966,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 36,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "3:30",
                             Time = "3:30"
@@ -2993,7 +2974,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 37,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "3:40",
                             Time = "3:40"
@@ -3001,7 +2982,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 38,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "3:45",
                             Time = "3:45"
@@ -3009,7 +2990,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 39,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "3:50",
                             Time = "3:50"
@@ -3017,7 +2998,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 40,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "3:53",
                             Time = "3:53"
@@ -3025,7 +3006,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 41,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "3:55",
                             Time = "3:55"
@@ -3033,7 +3014,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 42,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "4:00",
                             Time = "4:00"
@@ -3041,7 +3022,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 43,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "3:30",
                             Time = "3:30"
@@ -3049,7 +3030,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 44,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "3:35",
                             Time = "3:35"
@@ -3057,7 +3038,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 45,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "3:45",
                             Time = "3:45"
@@ -3065,7 +3046,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 46,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "3:50",
                             Time = "3:50"
@@ -3073,7 +3054,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 47,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "3:55",
                             Time = "3:55"
@@ -3081,7 +3062,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 48,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "4:00",
                             Time = "4:00"
@@ -3089,7 +3070,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 49,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "4:35",
                             Time = "4:35"
@@ -3097,7 +3078,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 50,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "4:40",
                             Time = "4:40"
@@ -3105,7 +3086,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 51,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "4:45",
                             Time = "4:45"
@@ -3113,7 +3094,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 52,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "4:50",
                             Time = "4:50"
@@ -3121,7 +3102,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 53,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "4:55",
                             Time = "4:55"
@@ -3129,7 +3110,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 54,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "5:00",
                             Time = "5:00"
@@ -3137,7 +3118,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 55,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "5:10",
                             Time = "5:10"
@@ -3145,7 +3126,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 56,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "5:15",
                             Time = "5:15"
@@ -3153,7 +3134,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 57,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "5:20",
                             Time = "5:20"
@@ -3161,7 +3142,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 58,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "5:25",
                             Time = "5:25"
@@ -3169,7 +3150,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 59,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "8:45",
                             Time = "8:45"
@@ -3177,7 +3158,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 60,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "8:50",
                             Time = "8:50"
@@ -3185,7 +3166,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 61,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "8:55",
                             Time = "8:55"
@@ -3193,7 +3174,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 62,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "9:00",
                             Time = "9:00"
@@ -3201,7 +3182,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 63,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "9:05",
                             Time = "9:05"
@@ -3209,7 +3190,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 64,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "9:10",
                             Time = "9:10"
@@ -3217,7 +3198,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 65,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "9:15",
                             Time = "9:15"
@@ -3225,7 +3206,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 66,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "9:20",
                             Time = "9:20"
@@ -3233,7 +3214,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 67,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "9:25",
                             Time = "9:25"
@@ -3241,7 +3222,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 68,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "10:40",
                             Time = "10:40"
@@ -3249,7 +3230,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 69,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "10:45",
                             Time = "10:45"
@@ -3257,7 +3238,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 70,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "10:55",
                             Time = "10:55"
@@ -3265,7 +3246,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 71,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "11:00",
                             Time = "11:00"
@@ -3273,7 +3254,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 72,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "11:05",
                             Time = "11:05"
@@ -3281,7 +3262,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                         new
                         {
                             Id = 73,
-                            CreatedTime = new DateTime(2025, 4, 15, 17, 30, 56, 546, DateTimeKind.Utc).AddTicks(1186),
+                            CreatedTime = new DateTime(2025, 4, 15, 15, 52, 57, 184, DateTimeKind.Utc).AddTicks(5980),
                             IsActive = true,
                             Name = "11:10",
                             Time = "11:10"
@@ -3378,7 +3359,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                             Email = "admin@admin.com",
                             IsActive = true,
                             Name = "Admin",
-                            Password = "$2a$11$Wmb4v.XDwc2Xy.qOZPHihOulBDIzAtO3z75xw/RxqjM8rgKL3rEDC"
+                            Password = "$2a$11$51uB2zUuxnrJxb2m/5BnaObG.r.IM22ECDkG9lShYhsOslqRVGjVC"
                         });
                 });
 

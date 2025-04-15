@@ -51,6 +51,15 @@ public sealed class ConversationStateRepository : BaseRepository<ConversationSta
         model.IsAdminOverridden = state.IsAdminOverridden;
         model.IsComplete = state.IsComplete;
         model.ModifiedTime = DateTime.UtcNow;
+        model.LanguageId = state.LanguageId;
+        model.ZoneId = state.ZoneId;
+        model.ScheduleId = state.ScheduleId;
+        model.HotelId = state.HotelId;
+        model.UserNumber = state.UserNumber;
+        model.PersonName = state.PersonName;
+        model.ReservationDetails = state.ReservationDetails;
+        model.PickUpDate = state.PickUpDate;
+        model.Flow = state.Flow;
         
         await UpdateAsync(model).ConfigureAwait(true);
     }

@@ -70,6 +70,11 @@ public class CoreConversationState : BaseEntity
         public string ScheduleId { get; set; } = string.Empty;
         
         /// <summary>
+        /// 
+        /// </summary>
+        public string PersonName { get; set; } = string.Empty;
+        
+        /// <summary>
         /// Creates a new instance of <see cref="CoreConversationState"/> initialized with the specified data.
         /// </summary>
         /// <typeparam name="T">The type of the data object from which to initialize the <see cref="CoreConversationState"/> instance.</typeparam>

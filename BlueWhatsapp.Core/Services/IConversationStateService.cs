@@ -27,4 +27,11 @@ public interface IConversationStateService
     /// <param name="state"></param>
     /// <returns></returns>
     Task UpdateConversationState(CoreConversationState state);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="state"></param>
+    /// <returns></returns>
+    Task AddAsync(CoreConversationState state);
 }

@@ -33,7 +33,8 @@ public sealed class ConversationStateService : IConversationStateService
         state.CurrentStep = ConversationStep.Welcome;
         state.IsAdminOverridden = false;
         state.IsComplete = false;
-        
+        state.Flow = ConversationFlowEnum.DIRECT_CLIENT_FREE_ROUTE;
+
         return state;
     }
 
@@ -41,5 +42,11 @@ public sealed class ConversationStateService : IConversationStateService
     async Task IConversationStateService.UpdateConversationState(CoreConversationState state)
     {
          await _conversationStateRepository.UpdateAsync(state).ConfigureAwait(true);
+    }
+
+    /// <inheritdoc />
+    async Task IConversationStateService.AddAsync(CoreConversationState state)
+    {
+         await _conversationStateRepository.PersistAsync(state).ConfigureAwait(true);
     }
 }

@@ -14,6 +14,11 @@ namespace BlueWhatsapp.Boundaries.Persistence.Models;
 public sealed class ConversationState : BaseEntity
 {
     /// <summary>
+    /// 
+    /// </summary>
+    public ConversationFlowEnum Flow { get; set; } = ConversationFlowEnum.None;
+    
+    /// <summary>
     /// Gets or sets the user's phone number associated with the conversation.
     /// </summary>
     [MaxLength(30)]
@@ -69,6 +74,12 @@ public sealed class ConversationState : BaseEntity
     /// </summary>
     [MaxLength(120)]
     public string ScheduleId { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    [MaxLength(120)]
+    public string PersonName { get; set; } = string.Empty;
 
     /// <summary>
     /// Converts an instance of <see cref="CoreConversationState"/> to an instance of <see cref="ConversationState"/>.

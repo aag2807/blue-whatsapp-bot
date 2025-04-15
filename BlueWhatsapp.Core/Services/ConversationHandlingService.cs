@@ -4,6 +4,7 @@ using BlueWhatsapp.Core.Enums;
 using BlueWhatsapp.Core.Logger;
 using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
+using BlueWhatsapp.Core.Models.Reservations;
 using BlueWhatsapp.Core.Models.Schedule;
 using BlueWhatsapp.Core.Persistence;
 using BlueWhatsapp.Core.Utils;
@@ -16,6 +17,7 @@ public sealed class ConversationHandlingService(
     IHotelMatcher hotelMatcher,
     IScheduleRepository scheduleRepository,
     IHotelRepository hotelRepository,
+    IReservationRepository reservationRepository,
     IAppLogger logger
 ) : IConversationHandlingService
 {
@@ -79,8 +81,18 @@ public sealed class ConversationHandlingService(
                 CoreHotel? hotel = await hotelRepository.GetHotelByIdAsync(int.Parse(state.HotelId)).ConfigureAwait(true);
                 CoreSchedule? schedule = await scheduleRepository.GetScheduleByIdAsync(int.Parse(state.ScheduleId)).ConfigureAwait(true);
                 string date = state.PickUpDate;
-
-                return messageCreator.CreateReservationConfirmationMessage(state.UserNumber, hotel!, schedule!, date);
+                
+                CoreReservation reservation = new CoreReservation();
+                reservation.UserNumber = state.UserNumber;
+                reservation.Username = state.PersonName;
+                reservation.Details = userMessage;
+                reservation.ReservationDate = state.PickUpDate;
+                reservation.HotelName = hotel.Name;
+                reservation.ReserveTime = schedule.Time;
+                
+                var message = messageCreator.CreateReservationConfirmationMessage(state.UserNumber, hotel!, schedule!, date);
+                await reservationRepository.SaveReservation(reservation).ConfigureAwait(true);
+                return message;
             }
             
             //states which break the regular flow

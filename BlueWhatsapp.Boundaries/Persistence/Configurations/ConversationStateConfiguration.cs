@@ -28,6 +28,10 @@ public class ConversationStateConfiguration : IEntityTypeConfiguration<Conversat
             .HasConversion<int>()
             .IsRequired();
 
+        builder.Property(cs => cs.Flow)
+            .HasConversion<int>()
+            .IsRequired();
+
         builder.HasIndex(cs => cs.UserNumber);
     }
 }
