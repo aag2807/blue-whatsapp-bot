@@ -33,16 +33,24 @@ public class AppLogger : IAppLogger
 
     private void WriteLog<T>(string logType, T data)
     {
-        string logFilePath = GetLogFilePath(logType);
-
-        string jsonData = JsonSerializer.Serialize(data, new JsonSerializerOptions
+        try
         {
-            WriteIndented = true
-        });
+            string logFilePath = GetLogFilePath(logType);
 
-        string logMessage = $"[{DateTime.Now}] {jsonData}{Environment.NewLine} {Environment.NewLine}";
+            string jsonData = JsonSerializer.Serialize(data, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
 
-        File.AppendAllText(logFilePath, logMessage);
+            string logMessage = $"[{DateTime.Now}] {jsonData}{Environment.NewLine} {Environment.NewLine}";
+
+            File.AppendAllText(logFilePath, logMessage);
+        }
+        catch (Exception ex)
+        {
+            Type dataType = data.GetType();
+            WriteLog("logger-error", $"logger failed: {dataType.Name}");
+        }
     }
 
     /// <inheritdoc />
