@@ -155,6 +155,24 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
     }
 
     /// <summary>
+    /// Get all active entities
+    /// </summary>
+    /// <param name="filterByToday">Whether to filter by today's date</param>
+    /// <returns>List of all active entities</returns>
+    public virtual System.Linq.IQueryable<TEntity> GetAllActiveQuery(bool filterByToday = true)
+    {
+        var query = _dbSet.Where(e => e.IsActive);
+
+        if (filterByToday)
+        {
+            var today = DateTime.UtcNow.Date;
+            query = query.Where(e => e.CreatedTime.Date == today);
+        }
+
+        return query;
+    }
+
+    /// <summary>
     /// Get all entities (including inactive ones)
     /// </summary>
     /// <param name="filterByToday">Whether to filter by today's date</param>

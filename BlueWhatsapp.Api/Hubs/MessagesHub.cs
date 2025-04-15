@@ -54,7 +54,7 @@ public class MessagesHub : Hub
     /// </summary>
     public async Task GetPendingMessages()
     {
-        IEnumerable<CoreMessage> openChats = await _messageRepository.GetMessagesByTypeAsync(MessageStatus.Pending).ConfigureAwait(true);
+         var openChats = await _conversationStateRepository.GetPendingConversationsFromTodayAync().ConfigureAwait(true);
         await Clients.Caller.SendAsync("ReceiveOpenChats", openChats).ConfigureAwait(true);
     }
     

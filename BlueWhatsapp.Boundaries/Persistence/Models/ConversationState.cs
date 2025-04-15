@@ -10,7 +10,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Models;
 /// Represents the state of an ongoing conversation, including its current step,
 /// associated user, collected data, and other pertinent attributes.
 /// </summary>
-[Table("ConversationStates")]
+[Table("ConversationState")]
 public sealed class ConversationState : BaseEntity
 {
     /// <summary>

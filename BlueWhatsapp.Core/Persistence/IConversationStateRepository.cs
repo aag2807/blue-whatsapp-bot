@@ -30,4 +30,10 @@ public interface IConversationStateRepository
     /// </summary>
     /// <returns>A task representing the asynchronous operation, containing an enumerable of all conversation states.</returns>
     public Task<IEnumerable<CoreConversationState>> GetAllConversationsAsync();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public Task<IEnumerable<CoreConversationState>> GetPendingConversationsFromTodayAync();
 }

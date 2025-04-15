@@ -8,7 +8,7 @@ public class ConversationStateConfiguration : IEntityTypeConfiguration<Conversat
 {
     public void Configure(EntityTypeBuilder<ConversationState> builder)
     {
-        builder.ToTable("ConversationStates");
+        builder.ToTable("ConversationState");
         
         builder.Property(cs => cs.Id)
             .IsRequired()

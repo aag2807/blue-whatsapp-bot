@@ -77,4 +77,15 @@ public sealed class ConversationStateRepository : BaseRepository<ConversationSta
             .DistinctBy(c => c.UserNumber)
             .ToList();
     }
+
+    /// <inheritdoc>
+    async Task<IEnumerable<CoreConversationState>> IConversationStateRepository.GetPendingConversationsFromTodayAync()
+    {
+         List<ConversationState> response =  await GetAllActiveQuery()
+            .Where(cs => cs.IsComplete == false)
+            .ToListAsync()
+            .ConfigureAwait(true);
+         
+         return response.Select(CoreConversationState.Create);
+    }
 }
