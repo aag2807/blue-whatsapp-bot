@@ -22,7 +22,9 @@ internal static class DomainServiceExtensions
         builder.Services.AddTransient<IUserService, UserService>();
         builder.Services.AddTransient<IMessageCreator, MessageCreator>();
         builder.Services.AddTransient<IChatResponseService, ChatResponseResponseService>();
+        builder.Services.AddTransient<IConversationHandlingService, ConversationHandlingService>();
+        builder.Services.AddTransient<IHotelMatcher, HotelMatcher>();
 
-        builder.Services.Configure<ConversationFlowOptions>(builder.Configuration.GetSection("ConversationFlow"));
+        // builder.Services.Configure<ConversationFlowOptions>(builder.Configuration.GetSection("ConversationFlow"));
     }
 }
