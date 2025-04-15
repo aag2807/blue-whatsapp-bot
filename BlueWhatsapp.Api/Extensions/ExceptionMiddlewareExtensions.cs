@@ -36,6 +36,7 @@ internal static class ExceptionMiddlewareExtensions
                 };
 
                 await BuildResponse(context, statusCode, message, appLogger).ConfigureAwait(false);
+                appLogger.LogError(new { Message = contextFeature.Error.Message, Type = "Exception" });
             });
         });
     }
@@ -44,6 +45,6 @@ internal static class ExceptionMiddlewareExtensions
     {
         context.Response.StatusCode = (int)HttpStatusCode.OK;
         await context.Response.WriteAsync("EVENT_RECEIVED");
-        appLogger.LogError(new { Message = message, StatusCode = statusCode });
+        appLogger.LogError(new { Message = message, StatusCode = statusCode, Type = "Response" });
     }
 }
