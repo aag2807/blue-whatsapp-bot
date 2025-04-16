@@ -46,7 +46,6 @@ public sealed class Reservation : BaseEntity
     /// The id of the trip associated with the reservation
     /// </summary>
     [ForeignKey("Trip")]
-    [NotMapped]
     public int TripId { get; set; }
 
     /// <summary>
@@ -71,5 +70,23 @@ public sealed class Reservation : BaseEntity
         model.TripId = 1;
 
         return model;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    public static CoreReservation ToCoreEntity(Reservation entity)
+    {
+        var core = new CoreReservation();
+        core.UserNumber = entity.UserNumber;
+        core.Username = entity.UserName;
+        core.Details = entity.Details;
+        core.ReservationDate = entity.ReservationDate;
+        core.HotelName = entity.HotelName;
+        core.ReserveTime = entity.ReserveTime;
+
+        return core;
     }
 }

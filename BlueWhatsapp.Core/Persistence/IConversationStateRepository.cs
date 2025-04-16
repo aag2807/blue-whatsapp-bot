@@ -32,8 +32,27 @@ public interface IConversationStateRepository
     public Task<IEnumerable<CoreConversationState>> GetAllConversationsAsync();
 
     /// <summary>
+    /// Retrieves the most recent conversation states asynchronously.
+    /// </summary>  
+    /// <param name="count">The number of recent conversations to retrieve.</param>
+    /// <returns>A task representing the asynchronous operation, containing an enumerable of the most recent conversation states.</returns>
+    public Task<IEnumerable<CoreConversationState>> GetRecentConversationsAsync(int count = 20);
+
+    /// <summary>
     /// 
     /// </summary>
     /// <returns></returns>
-    public Task<IEnumerable<CoreConversationState>> GetPendingConversationsFromTodayAync();
+    public Task<IEnumerable<CoreConversationState>> GetPendingConversationsFromTodayAsync();
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public Task<IEnumerable<CoreConversationState>> GetCompletedConversationsFromTodayAsync();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public Task<IEnumerable<CoreConversationState>> GetAllConversationsThisWeekAsync();
 }

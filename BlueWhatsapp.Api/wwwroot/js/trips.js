@@ -49,6 +49,7 @@ document.addEventListener('alpine:init', () => {
                 .build();
 
             this.connection.on('ReceiveTrips', (trips) => {
+                console.log(trips);
                 this.trips = trips;
             });
 

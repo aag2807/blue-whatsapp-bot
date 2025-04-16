@@ -19,7 +19,7 @@ public sealed class ConversationStateRepository : BaseRepository<ConversationSta
     {
     }
 
-    /// <inheritdoc>
+    /// <inheritdoc />
     async Task<CoreConversationState?> IConversationStateRepository.GetConversationStateByNumber(string number)
     {
         Arguments.NotEmptyOrWhiteSpaceOnly(number, nameof(number));
@@ -33,7 +33,7 @@ public sealed class ConversationStateRepository : BaseRepository<ConversationSta
         return model is null ? null : CoreConversationState.Create(model);
     }
 
-    /// <inheritdoc>
+    /// <inheritdoc />
     async Task IConversationStateRepository.PersistAsync(CoreConversationState state)
     {
         Arguments.NotNull(state, nameof(state));
@@ -42,7 +42,7 @@ public sealed class ConversationStateRepository : BaseRepository<ConversationSta
         await AddAsync(model).ConfigureAwait(true);
     }
 
-    /// <inheritdoc>
+    /// <inheritdoc />
     async Task IConversationStateRepository.UpdateAsync(CoreConversationState state)
     {
         ConversationState model = await _dbSet.FirstOrDefaultAsync(cs => cs.UserNumber.Trim() == state.UserNumber.Trim()).ConfigureAwait(true)!;
@@ -64,7 +64,7 @@ public sealed class ConversationStateRepository : BaseRepository<ConversationSta
         await UpdateAsync(model).ConfigureAwait(true);
     }
 
-    /// <inheritdoc>
+    /// <inheritdoc />
     async Task<IEnumerable<CoreConversationState>> IConversationStateRepository.GetAllConversationsAsync()
     {   
         List<ConversationState> model = await _dbSet.ToListAsync().ConfigureAwait(true);
@@ -78,8 +78,8 @@ public sealed class ConversationStateRepository : BaseRepository<ConversationSta
             .ToList();
     }
 
-    /// <inheritdoc>
-    async Task<IEnumerable<CoreConversationState>> IConversationStateRepository.GetPendingConversationsFromTodayAync()
+    /// <inheritdoc />
+    async Task<IEnumerable<CoreConversationState>> IConversationStateRepository.GetPendingConversationsFromTodayAsync()
     {
          List<ConversationState> response =  await GetAllActiveQuery()
             .Where(cs => cs.IsComplete == false)
@@ -88,4 +88,52 @@ public sealed class ConversationStateRepository : BaseRepository<ConversationSta
          
          return response.Select(CoreConversationState.Create);
     }
+    
+    /// <inheritdoc />
+    async Task<IEnumerable<CoreConversationState>> IConversationStateRepository.GetCompletedConversationsFromTodayAsync()
+    {
+        List<ConversationState> response =  await GetAllActiveQuery()
+            .Where(cs => cs.IsComplete == true)
+            .ToListAsync()
+            .ConfigureAwait(true);
+         
+        return response.Select(CoreConversationState.Create);
+    }
+
+    /// <inheritdoc />
+    async Task<IEnumerable<CoreConversationState>> IConversationStateRepository.GetAllConversationsThisWeekAsync()
+    {
+        DateTime today = DateTime.UtcNow.Date;
+        int currentDayOfWeek = (int)today.DayOfWeek;
+        DateTime startOfWeek = today.AddDays(-currentDayOfWeek);
+        DateTime endOfWeek = startOfWeek.AddDays(7); 
+
+        List<ConversationState> response = await _dbSet
+            .Where(cs => cs.CreatedTime.Date >= startOfWeek && cs.CreatedTime.Date < endOfWeek)
+            .ToListAsync()
+            .ConfigureAwait(true);
+
+        if (response.Count == 0)
+        {
+            return Enumerable.Empty<CoreConversationState>();
+        }
+
+        return response
+            .Select(CoreConversationState.Create)
+            .DistinctBy(c => c.UserNumber)
+            .ToList();
+    }
+
+    /// <inheritdoc />
+    async Task<IEnumerable<CoreConversationState>> IConversationStateRepository.GetRecentConversationsAsync(int count = 20)
+    {
+        List<ConversationState> response = await GetAllActiveQuery()
+            .OrderByDescending(cs => cs.CreatedTime)
+            .Take(count)
+            .ToListAsync()
+            .ConfigureAwait(true);
+
+        return response.Select(CoreConversationState.Create);
+    }
+    
 }

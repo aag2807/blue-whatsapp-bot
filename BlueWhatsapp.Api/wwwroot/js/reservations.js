@@ -1,28 +1,15 @@
 /**
  * @typedef {Object} Reservation
- * @property {number} id
- * @property {string} userName
  * @property {string} userNumber
- * @property {number} tripId
- * @property {Trip} trip - The associated Trip object
+ * @property {string} username
+ * @property {string} details
+ * @property {string} reservationDate
+ * @property {string} reserveTime
+ * @property {string} hotelName
  */
 
-/**
- * @typedef {Object} Trip
- * @property {number} id
- * @property {string} userName
- * @property {string} userNumber
- * @property {string} tripTime
- * @property {number} routeId
- * @property {boolean} isActiveForToday
- */
 
-/**
- * @typedef {Object} Route
- * @property {number} id
- * @property {string} name
- * @property {string} description
- */
+
 
 document.addEventListener('alpine:init', () => {
     Alpine.data('reservationsManagement', () => ({
@@ -30,17 +17,6 @@ document.addEventListener('alpine:init', () => {
          * @type {Reservation[]}
          */
         reservations: [],
-        
-        /**
-         * @type {Trip[]}
-         */
-        trips: [],
-        
-        /**
-         * @type {Route[]}
-         */
-        routes: [],
-        
         showModal: false,
         currentTab: 'all',
         currentReservation: { 
@@ -54,6 +30,9 @@ document.addEventListener('alpine:init', () => {
         loading: true,
         error: null,
         connection: null,
+
+        trips: [],
+        routes: [],
         
         init() {
             this.connection = new signalR.HubConnectionBuilder()
@@ -63,6 +42,7 @@ document.addEventListener('alpine:init', () => {
 
             this.connection.on('ReceiveReservations', (reservations) => {
                 this.reservations = reservations;
+                console.log(reservations);
             });
 
             this.connection.on('ReceiveTrips', (trips) => {
@@ -74,148 +54,12 @@ document.addEventListener('alpine:init', () => {
             });
 
             this.connection.start()
-                .then(() => {
-                    this.fetchReservations();
-                    this.fetchTrips();
-                    this.fetchRoutes();
-                })
+                .then(() =>
+                {
+                    this.connection.invoke('GetReservations');
+                } )
                 .catch(err => {
-                    console.error('Error starting connection:', err);
-                    // Fallback to fetch data without SignalR
-                    this.fetchReservationsWithoutSignalR();
-                    this.fetchTripsWithoutSignalR();
-                    this.fetchRoutesWithoutSignalR();
                 });
-        },
-
-        /**
-         * Fallback method to fetch reservations without SignalR
-         */
-        async fetchReservationsWithoutSignalR() {
-            try {
-                const response = await fetch('/api/reservations');
-                if (response.ok) {
-                    this.reservations = await response.json();
-                } else {
-                    console.error('Failed to fetch reservations');
-                    // Provide mock data as a last resort
-                    this.provideMockReservations();
-                }
-            } catch (error) {
-                console.error('Error fetching reservations:', error);
-                // Provide mock data as a last resort
-                this.provideMockReservations();
-            }
-        },
-
-        /**
-         * Fallback method to fetch trips without SignalR
-         */
-        async fetchTripsWithoutSignalR() {
-            try {
-                const response = await fetch('/api/trips');
-                if (response.ok) {
-                    this.trips = await response.json();
-                } else {
-                    console.error('Failed to fetch trips');
-                    // Provide mock data as a last resort
-                    this.provideMockTrips();
-                }
-            } catch (error) {
-                console.error('Error fetching trips:', error);
-                // Provide mock data as a last resort
-                this.provideMockTrips();
-            }
-        },
-
-        /**
-         * Fallback method to fetch routes without SignalR
-         */
-        async fetchRoutesWithoutSignalR() {
-            try {
-                const response = await fetch('/api/routes');
-                if (response.ok) {
-                    this.routes = await response.json();
-                } else {
-                    console.error('Failed to fetch routes');
-                    // Provide mock data as a last resort
-                    this.provideMockRoutes();
-                }
-            } catch (error) {
-                console.error('Error fetching routes:', error);
-                // Provide mock data as a last resort
-                this.provideMockRoutes();
-            }
-        },
-
-        /**
-         * Provides mock reservation data if API calls fail
-         */
-        provideMockReservations() {
-            this.reservations = [
-                {
-                    id: 1,
-                    userName: 'John Doe',
-                    userNumber: '+1234567890',
-                    tripId: 1
-                },
-                {
-                    id: 2,
-                    userName: 'Jane Smith',
-                    userNumber: '+0987654321',
-                    tripId: 2
-                },
-                {
-                    id: 3,
-                    userName: 'Alice Johnson',
-                    userNumber: '+1122334455',
-                    tripId: 3
-                }
-            ];
-        },
-
-        /**
-         * Provides mock trip data if API calls fail
-         */
-        provideMockTrips() {
-            this.trips = [
-                {
-                    id: 1,
-                    userName: 'Juan Pérez',
-                    userNumber: '+1234567890',
-                    tripTime: '09:00',
-                    routeId: 1,
-                    isActiveForToday: true
-                },
-                {
-                    id: 2,
-                    userName: 'María García',
-                    userNumber: '+0987654321',
-                    tripTime: '10:30',
-                    routeId: 2,
-                    isActiveForToday: true
-                },
-                {
-                    id: 3,
-                    userName: 'Carlos Rodríguez',
-                    userNumber: '+1122334455',
-                    tripTime: '14:15',
-                    routeId: 3,
-                    isActiveForToday: false
-                }
-            ];
-        },
-
-        /**
-         * Provides mock route data if API calls fail
-         */
-        provideMockRoutes() {
-            this.routes = [
-                { id: 1, name: 'RUTA A', description: 'Ruta Punta Cana (Cap Cana)' },
-                { id: 2, name: 'RUTA B', description: 'Ruta La Romana' },
-                { id: 3, name: 'RUTA C', description: 'Ruta Bávaro Sur' },
-                { id: 4, name: 'RUTA D', description: 'Ruta Bávaro Norte' }
-            ];
         },
 
         get reservationsCount() {
@@ -223,14 +67,13 @@ document.addEventListener('alpine:init', () => {
         },
 
         get filteredReservations() {
-            // First filter by tab
             let filtered = this.reservations;
             
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             
-            if (this.currentTab === 'today') {
-                // For today's filter, we need to look at the associated trip's schedule
+            if (this.currentTab === 'today')
+            {
                 filtered = filtered.filter(r => {
                     const trip = this.trips.find(t => t.id === r.tripId);
                     return trip && trip.isActiveForToday;
@@ -295,26 +138,6 @@ document.addEventListener('alpine:init', () => {
                 console.error('Error fetching reservations via SignalR:', error);
                 // Fallback to regular fetch
                 this.fetchReservationsWithoutSignalR();
-            }
-        },
-
-        async fetchTrips() {
-            try {
-                await this.connection.invoke('GetTrips');
-            } catch (error) {
-                console.error('Error fetching trips via SignalR:', error);
-                // Fallback to regular fetch
-                this.fetchTripsWithoutSignalR();
-            }
-        },
-
-        async fetchRoutes() {
-            try {
-                await this.connection.invoke('GetRoutes');
-            } catch (error) {
-                console.error('Error fetching routes via SignalR:', error);
-                // Fallback to regular fetch
-                this.fetchRoutesWithoutSignalR();
             }
         },
 

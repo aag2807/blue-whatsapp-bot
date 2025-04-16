@@ -37,9 +37,9 @@ public sealed class CoreTrip : BaseEntity
     /// Indicates whether the trip is active for a specific day
     /// </summary>
     public bool IsActiveForToday { get; set; } = true;
-    //
-    // /// <summary>
-    // /// The reservations for the trip
-    // /// </summary>
-    // public ICollection<CoreReservation> Reservations { get; set; } = new List<CoreReservation>();
+    
+    /// <summary>
+    /// The reservations for the trip
+    /// </summary>
+    public ICollection<CoreReservation> Reservations { get; set; } = new List<CoreReservation>();
 }

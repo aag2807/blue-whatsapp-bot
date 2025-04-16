@@ -5,7 +5,7 @@ namespace BlueWhatsapp.Core.Persistence;
 public interface ITripRepository
 {
     /// <summary>   
-    /// Get all trip    s
+    /// Get all trips   
     /// </summary>
     /// <returns></returns>
     Task<IEnumerable<CoreTrip>> GetAllTripsAsync();

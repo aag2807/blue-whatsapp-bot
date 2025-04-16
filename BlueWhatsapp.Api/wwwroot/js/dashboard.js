@@ -17,6 +17,24 @@
  * @property {string} modifiedTime //  0001-01-01T00:00:00
  */
 
+/**
+ * @typedef {Object} WeeklyConversation
+ * @property {number} flow
+ * @property {string} userNumber
+ * @property {number} currentStep
+ * @property {boolean} isAdminOverridden
+ * @property {boolean} isComplete
+ * @property {string} createdTime //ex  0001-01-01T00:00:00
+ * @property {string} modifiedTime //  0001-01-01T00:00:00
+ * @property {string} zoneId
+ * @property {string} hotelId
+ * @property {string} languageId
+ * @property {string} pickUpDate
+ * @property {string} reservationDetails
+ * @property {string} scheduleId
+ * @property {string} personName
+ */
+
 document.addEventListener('alpine:init', () => {
     Alpine.data('dashboard', () => ({
         openChats: 0,
@@ -38,12 +56,26 @@ document.addEventListener('alpine:init', () => {
          */
         closedChats: [],
 
+        /**
+         * @type {WeeklyConversation[]}
+         */
+        weeklyConversations: [],
+
+        /**
+         * @type {Conversation[]}
+         */
+        recentConversations: [],
+
         get pendingChatCount() {
             return this.pendingChats.length;
         },
 
         get closedChatCount() {
             return this.closedChats.length;
+        },
+
+        get weeklyConversationCount() {
+            return this.weeklyConversations.length;
         },
 
         mapDateTime(dateTime) {
@@ -65,6 +97,11 @@ document.addEventListener('alpine:init', () => {
                 this.pendingChats = mappedPendingChats
             })
 
+            this.connection.on("ReceiveWeeklyConversations", (weeklyConversations) => {
+                this.weeklyConversations = weeklyConversations;
+                this.initCharts(weeklyConversations);
+            })
+
             this.connection.on('ReceiveClosedMessages', (openChats) => {
                 const mappedClosedChats = openChats.map(m => ({
                     from: m.from,
@@ -79,6 +116,7 @@ document.addEventListener('alpine:init', () => {
                 this.connection.invoke("GetPendingMessages")
                 this.connection.invoke("GetClosedMessages")
                 this.connection.invoke("GetAllConversations");
+                this.connection.invoke("GetWeeklyConversations");
             });
 
             this.connection.on("ReceiveAllConversations", (conversations) => {
@@ -103,12 +141,18 @@ document.addEventListener('alpine:init', () => {
                 }));
             });
 
+            this.connection.on("ReceiveRecentConversations", (conversations) => {
+                this.recentConversations = conversations;
+            });
+
             // Start the connection
             this.connection.start()
                 .then(() => {
                     this.connection.invoke("GetPendingMessages");
                     this.connection.invoke("GetClosedMessages");
                     this.connection.invoke("GetAllConversations");
+                    this.connection.invoke("GetWeeklyConversations");
+                    this.connection.invoke("GetRecentConversations", 20);
                 })
                 .catch(err => console.error("SignalR Connection Error: ", err));
         },
@@ -119,10 +163,49 @@ document.addEventListener('alpine:init', () => {
         // Method to show browser notification
         showNotification(from) {
             if (Notification.permission === "granted") {
-                new Notification("New WhatsApp Message", { body: `New message from ${from}` });
+                new Notification("New WhatsApp Message", {body: `New message from ${from}`});
             } else if (Notification.permission !== "denied") {
                 Notification.requestPermission();
             }
+        },
+        initCharts(weeklyConversations) {
+            const ctx = document.getElementById('totalClosedConversationsVsOpen');
+            const openConversations = weeklyConversations.filter(cv => cv.isComplete);
+            const closedConversations = weeklyConversations.filter(cv => !cv.isComplete);
+
+            console.log({openConversations, closedConversations});
+            
+            //chart js donut chart config
+            const data = {
+                labels: ['Abiertas', 'Cerradas'],
+                datasets: [{
+                    data: [openConversations.length, closedConversations.length],
+                    backgroundColor: ['#FF6384', '#36A2EB'],
+                    hoverBackgroundColor: ['#FF6384', '#36A2EB']
+                }]
+            };
+
+            const options = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                }
+            };
+
+            const myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: data,
+                options: options
+            });
         }
+
     }));
 })

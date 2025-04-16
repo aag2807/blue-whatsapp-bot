@@ -1,5 +1,6 @@
 using BlueWhatsapp.Core.Enums;
 using BlueWhatsapp.Core.Models.Messages;
+using BlueWhatsapp.Core.Models.Reservations;
 using BlueWhatsapp.Core.Models.Route;
 using BlueWhatsapp.Core.Persistence;
 using Microsoft.AspNetCore.SignalR;
@@ -15,4 +16,9 @@ public class ReservationsHub : Hub
         _reservationRepository = reservationRepository;
     }
     
+    public async Task GetReservations()
+    {
+        IEnumerable<CoreReservation> reservations = await _reservationRepository.GetAllWeeklyReservationsOrderedByCreationDate().ConfigureAwait(true);
+        await Clients.Caller.SendAsync("ReceiveReservations", reservations).ConfigureAwait(true);
+    }
 }

@@ -1,4 +1,5 @@
 using BlueWhatsapp.Core.Enums;
+using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
 using BlueWhatsapp.Core.Persistence;
 using Microsoft.AspNetCore.SignalR;
@@ -23,12 +24,12 @@ public class MessagesHub : Hub
     /// <summary>
     /// Method that can be called from the client to get recent messages
     /// </summary>
-    public async Task GetRecentMessages(int count = 20)
+    public async Task GetRecentConversations(int count = 20)
     {
-        IEnumerable<CoreMessage> messages = await _messageRepository.GetRecentMessagesAsync(count).ConfigureAwait(true);
+        IEnumerable<CoreConversationState> conversations = await _conversationStateRepository.GetAllConversationsAsync().ConfigureAwait(true);
         
         // Send the messages to the requesting client only
-        await Clients.Caller.SendAsync("ReceiveRecentMessages", messages).ConfigureAwait(true);
+        await Clients.Caller.SendAsync("ReceiveRecentConversations", conversations).ConfigureAwait(true);
     }
     
     /// <summary>
@@ -54,7 +55,7 @@ public class MessagesHub : Hub
     /// </summary>
     public async Task GetPendingMessages()
     {
-         var openChats = await _conversationStateRepository.GetPendingConversationsFromTodayAync().ConfigureAwait(true);
+        IEnumerable<CoreConversationState> openChats = await _conversationStateRepository.GetPendingConversationsFromTodayAsync().ConfigureAwait(true);
         await Clients.Caller.SendAsync("ReceiveOpenChats", openChats).ConfigureAwait(true);
     }
     
@@ -63,14 +64,20 @@ public class MessagesHub : Hub
     /// </summary>
     public async Task GetClosedMessages()
     {
-        IEnumerable<CoreMessage> completedChats = await _messageRepository.GetMessagesByTypeAsync(MessageStatus.Completed).ConfigureAwait(true);
-        await Clients.Caller.SendAsync("ReceiveClosedMessages", completedChats).ConfigureAwait(true);
+        IEnumerable<CoreConversationState> closedChats = await _conversationStateRepository.GetCompletedConversationsFromTodayAsync().ConfigureAwait(true);
+        await Clients.Caller.SendAsync("ReceiveClosedMessages", closedChats).ConfigureAwait(true);
     }
 
     public async Task GetAllConversations()
     {
         IEnumerable<Core.Models.CoreConversationState> allConversations = await _conversationStateRepository.GetAllConversationsAsync().ConfigureAwait(true);
         await Clients.Caller.SendAsync("ReceiveAllConversations", allConversations).ConfigureAwait(true);
+    }
+
+    public async Task GetWeeklyConversations()
+    {
+        IEnumerable<CoreConversationState> weeklyConversations = await _conversationStateRepository.GetAllConversationsThisWeekAsync().ConfigureAwait(true);
+        await Clients.Caller.SendAsync("ReceiveWeeklyConversations", weeklyConversations).ConfigureAwait(true);
     }
     
     /// <summary>

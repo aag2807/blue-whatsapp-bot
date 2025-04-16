@@ -72,20 +72,12 @@
                     <div class="p-4">
                         <div class="flex justify-between">
                             <div>
-                                <h3 class="font-semibold text-lg" x-text="reservation.userName"></h3>
+                                <h3 class="font-semibold text-lg" x-text="reservation.username"></h3>
                                 <p class="text-gray-600" x-text="reservation.userNumber"></p>
                             </div>
                         </div>
                         
                         <div class="mt-3 space-y-2">
-                            <div class="flex">
-                                <div class="w-24 flex-shrink-0 text-gray-500">Viaje:</div>
-                                <div x-text="getTripInfo(reservation.tripId)"></div>
-                            </div>
-                            <div class="flex">
-                                <div class="w-24 flex-shrink-0 text-gray-500">Ruta:</div>
-                                <div x-text="getRouteInfo(reservation.tripId)"></div>
-                            </div>
                             <div class="flex">
                                 <div class="w-24 flex-shrink-0 text-gray-500">Fecha:</div>
                                 <div x-text="formatDate(reservation.trip?.tripDate || new Date())"></div>
@@ -166,7 +158,7 @@
                                 <input 
                                     type="text" 
                                     id="userName" 
-                                    x-model="currentReservation.userName" 
+                                    x-model="currentReservation.username" 
                                     class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
                                     required
                                 >

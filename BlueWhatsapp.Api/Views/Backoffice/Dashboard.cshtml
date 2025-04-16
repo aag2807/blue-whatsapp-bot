@@ -75,8 +75,8 @@ var user = @ViewBag.User;
                 <div class="bg-white rounded-lg shadow p-4">
                     <h2 class="font-medium mb-4">Conversaciones completadas</h2>
                     <div class="flex justify-center">
-                        <div class="h-[300px] w-[300px] flex items-center justify-centers">
-                            <canvas id="satisfactionChart" width="200" height="200"></canvas>
+                        <div class=" flex items-center justify-centers">
+                            <canvas id="totalClosedConversationsVsOpen"></canvas>
                         </div>
                     </div>
                 </div>
@@ -84,7 +84,7 @@ var user = @ViewBag.User;
                 <!-- Work Orders Per Day -->
                 <div class="bg-white rounded-lg shadow p-4">
                     <h2 class="font-medium mb-4">Conversaciones Totales</h2>
-                    <div class="flex justify-center">0</div>
+                    <div class="flex justify-center items-center text-[80px] mt-[60px]" x-text="weeklyConversationCount">0</div>
                 </div>
             </div>
         </div>
@@ -98,13 +98,16 @@ var user = @ViewBag.User;
 
                 <!-- Work Order List -->
                 <div class="divide-y gap-3 pt-5">
-                    <template x-for="conversation in conversations" :key="conversation.userNumber">
+                    <template x-for="conversation in recentConversations" :key="conversation.userNumber">
 
                         <div class="bg-white p-3 py-5 rounded-lg shadow">
                             <div class="flex space-x-2 mb-1">
-                                <span class="px-2 py-0.5 bg-red-600 text-white rounded-full text-xs">Prioridad</span>
-                                <span class="px-2 py-0.5 bg-yellow-500 text-white rounded-full text-xs">Overdue</span>
+                                <span x-show="conversation.isComplete" class="px-2 py-0.5 bg-green-600 text-white rounded-full text-xs">Completada</span>
+                                <span x-show="!conversation.isComplete" class="px-2 py-0.5 bg-yellow-500 text-white rounded-full text-xs">En curso</span>
                             </div>
+                            <h3 class="font-medium">
+                                <span x-text="conversation.personName"></span>
+                            </h3>
                             <h3 class="font-medium">
                                 <span x-text="conversation.userNumber"></span>
                             </h3>
