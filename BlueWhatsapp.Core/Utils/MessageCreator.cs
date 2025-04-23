@@ -103,17 +103,8 @@ public sealed class MessageCreator : IMessageCreator
         section.title = "Zonas";
         section.rows = new List<Row>();
         
-        List<Row> tempRows = new List<Row>();
+        List<Row> tempRows = routes.Select(route => new Row() { id = route.Id.ToString(), title = route.Description, }).ToList();
 
-        foreach (var route in routes)
-        {
-            Row row = new Row()
-            {
-                id = route.Id.ToString(),
-                title = route.Description,
-            };
-            tempRows.Add(row);
-        }
         Row iDontKnowRow = new Row()
         {
             id = "0",
