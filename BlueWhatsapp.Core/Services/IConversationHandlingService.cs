@@ -7,5 +7,4 @@ namespace BlueWhatsapp.Core.Services;
 public interface IConversationHandlingService
 {
     public Task<CoreBaseMessage?> HandleState(CoreConversationState state, string userMessage = "");
-
 }

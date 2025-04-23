@@ -57,8 +57,12 @@ public sealed class ConversationStateRepository : BaseRepository<ConversationSta
         model.HotelId = state.HotelId;
         model.UserNumber = state.UserNumber;
         model.PersonName = state.PersonName;
-        model.ReservationDetails = state.ReservationDetails;
         model.PickUpDate = state.PickUpDate;
+        model.FullName = state.FullName;
+        model.RoomNumber = state.RoomNumber;
+        model.Email = state.Email;
+        model.Adults = state.Adults;
+        model.Children = state.Children;
         model.Flow = state.Flow;
         
         await UpdateAsync(model).ConfigureAwait(true);

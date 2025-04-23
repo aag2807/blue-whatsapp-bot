@@ -14,7 +14,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Models;
 public sealed class ConversationState : BaseEntity
 {
     /// <summary>
-    /// 
+    /// Gets or sets the conversation flow type that determines the path of interaction.
     /// </summary>
     public ConversationFlowEnum Flow { get; set; } = ConversationFlowEnum.None;
     
@@ -40,43 +40,68 @@ public sealed class ConversationState : BaseEntity
     public bool IsComplete { get; set; }
     
     /// <summary>
-    /// 
+    /// Gets or sets the identifier for the zone or area related to the conversation.
     /// </summary>
     [MaxLength(120)]
     public string ZoneId { get; set; } = string.Empty;
 
     /// <summary>
-    /// 
+    /// Gets or sets the identifier for the hotel associated with the conversation.
     /// </summary>
     [MaxLength(120)]
     public string HotelId { get; set; }  = string.Empty;
         
     /// <summary>
-    /// 
+    /// Gets or sets the identifier for the language preference of the user.
     /// </summary>
     [MaxLength(120)]
     public string LanguageId { get; set; } = string.Empty;
         
     /// <summary>
-    /// 
+    /// Gets or sets the selected date for pick-up or service.
     /// </summary>
     [MaxLength(120)]
     public string PickUpDate { get; set; } = string.Empty;
 
     /// <summary>
-    /// 
+    /// Gets or sets the full name of the user or customer.
     /// </summary>
-    [MaxLength(520)]
-    public string ReservationDetails { get; set; } = string.Empty;
+    [MaxLength(60)]
+    public string FullName { get; set; } = string.Empty;
 
     /// <summary>
-    /// 
+    /// Gets or sets the room number where the user is staying.
+    /// </summary>
+    [MaxLength(60)]
+    public string RoomNumber { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Gets or sets the email address of the user for communication purposes.
+    /// </summary>
+    [MaxLength(60)]
+    public string Email { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the number of adults included in the reservation or service.
+    /// </summary>
+    [Column("Adults")]
+    public int Adults { get; set; } = 0;
+    
+    /// <summary>
+    /// Gets or sets the number of children included in the reservation or service.
+    /// </summary>
+    [Column("Children")]
+
+    public int Children { get; set; } = 0;
+
+    /// <summary>
+    /// Gets or sets the identifier for the selected schedule or time slot.
     /// </summary>
     [MaxLength(120)]
     public string ScheduleId { get; set; } = string.Empty;
     
     /// <summary>
-    /// 
+    /// Gets or sets the name of the contact person if different from the user.
     /// </summary>
     [MaxLength(120)]
     public string PersonName { get; set; } = string.Empty;

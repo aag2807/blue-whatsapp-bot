@@ -7,19 +7,9 @@ namespace BlueWhatsapp.Boundaries.Persistence.Models;
 public sealed class Trip : BaseEntity
 {
     /// <summary>
-    /// The number of the user
-    /// </summary>
-    public string UserNumber { get; set; } = string.Empty;
-
-    /// <summary>
     /// The name of the user    
     /// </summary>
-    public string UserName { get; set; } = string.Empty;
-    
-    /// <summary>
-    /// The time of the trip
-    /// </summary>
-    public TimeSpan TripTime { get; set; } = TimeSpan.Zero;
+    public string TripName { get; set; } = string.Empty;
 
     /// <summary>
     /// Indicates whether the trip is active for today  
@@ -27,11 +17,16 @@ public sealed class Trip : BaseEntity
     public bool IsActiveForToday { get; set; } = true;
 
     /// <summary>
+    /// The capacity of the trip
+    /// </summary>
+    public int Capacity { get; set; } = 30;
+
+    /// <summary>
     /// The id of the route associated with the trip
     /// </summary>
     [ForeignKey("Route")]
     public int RouteId { get; set; }
-    
+
     /// <summary>
     /// The route of the trip
     /// </summary>
@@ -39,10 +34,15 @@ public sealed class Trip : BaseEntity
     public Route? Route { get; set; }
 
     /// <summary>
+    /// The schedules of the trip
+    /// </summary>
+    public ICollection<Schedule> Schedule { get; set; } = new List<Schedule>();
+
+    /// <summary>
     /// The reservations for the trip
     /// </summary>
     public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
-    
+
     /// <summary>
     /// Converts the current entity to a CoreTrip
     /// </summary>
@@ -52,9 +52,7 @@ public sealed class Trip : BaseEntity
         var coreEntity = new CoreTrip
         {
             Id = Id,
-            UserNumber = UserNumber,
-            UserName = UserName,
-            TripTime = TripTime,
+            TripName = TripName,
             IsActiveForToday = IsActiveForToday,
         };
 

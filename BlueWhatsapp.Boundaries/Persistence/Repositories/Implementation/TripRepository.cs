@@ -36,9 +36,7 @@ public sealed class TripRepository : BaseRepository<Trip>, ITripRepository
     {
         Trip newTrip = new Trip
         {
-            UserNumber = trip.UserNumber,
-            UserName = trip.UserName,
-            TripTime = trip.TripTime,
+            TripName = trip.TripName,
             IsActiveForToday = trip.IsActiveForToday
         };
 
@@ -51,8 +49,7 @@ public sealed class TripRepository : BaseRepository<Trip>, ITripRepository
     async Task ITripRepository.UpdateTripAsync(CoreTrip trip)
     {
         Arguments.NotNull(trip, nameof(trip));
-        Arguments.NotEmptyOrWhiteSpaceOnly(trip.UserNumber, nameof(trip.UserNumber));
-        Arguments.NotEmptyOrWhiteSpaceOnly(trip.UserName, nameof(trip.UserName));
+        Arguments.NotEmptyOrWhiteSpaceOnly(trip.TripName, nameof(trip.TripName));
         
         Trip? existingTrip = await GetByIdAsync(trip.Id).ConfigureAwait(true);
 
@@ -61,9 +58,7 @@ public sealed class TripRepository : BaseRepository<Trip>, ITripRepository
             throw new InvalidOperationException("Trip not found");
         }
 
-        existingTrip.UserNumber = trip.UserNumber;
-        existingTrip.UserName = trip.UserName;
-        existingTrip.TripTime = trip.TripTime;
+        existingTrip.TripName = trip.TripName;
         existingTrip.IsActiveForToday = trip.IsActiveForToday;
 
         await UpdateAsync(existingTrip).ConfigureAwait(true);

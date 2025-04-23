@@ -20,12 +20,12 @@ public abstract class BaseEntity
     /// Timestamp when the entity was created
     /// </summary>
     [Required]
-    public DateTime CreatedTime { get; set; }
+    public DateTime CreatedTime { get; set; } = DateTime.UtcNow;
         
     /// <summary>
     /// Timestamp when the entity was last modified
     /// </summary>
-    public DateTime? ModifiedTime { get; set; }
+    public DateTime? ModifiedTime { get; set; } = DateTime.UtcNow;
         
     /// <summary>
     /// Flag to indicate if the entity is active or soft-deleted

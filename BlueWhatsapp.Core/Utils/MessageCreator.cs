@@ -2,6 +2,7 @@ using System.Text;
 using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
 using BlueWhatsapp.Core.Models.Messages.Interactive;
+using BlueWhatsapp.Core.Models.Route;
 using BlueWhatsapp.Core.Models.Schedule;
 
 namespace BlueWhatsapp.Core.Utils;
@@ -88,7 +89,7 @@ public sealed class MessageCreator : IMessageCreator
     }
 
     /// <inheritdoc />
-    CoreInteractiveMessage IMessageCreator.CreateSelectHotelZoneLocationMessage(string number)
+    CoreInteractiveMessage IMessageCreator.CreateSelectHotelZoneLocationMessage(string number, IEnumerable<CoreRoute> routes)
     {
         var model = new CoreInteractiveMessage(number);
         model.interactive.header.type = "text";
@@ -101,59 +102,27 @@ public sealed class MessageCreator : IMessageCreator
         var section = new Section();
         section.title = "Zonas";
         section.rows = new List<Row>();
+        
+        List<Row> tempRows = new List<Row>();
 
-        var bavaroRow = new Row()
+        foreach (var route in routes)
         {
-            id = "1",
-            title = "Bávaro",
-        };
-        var puntaCana = new Row()
+            Row row = new Row()
+            {
+                id = route.Id.ToString(),
+                title = route.Name,
+            };
+            tempRows.Add(row);
+        }
+        Row iDontKnowRow = new Row()
         {
-            id = "2",
-            title = "Punta Cana",
-        };
-        var capCana = new Row()
-        {
-            id = "3",
-            title = "Cap Cana",
-        };
-        var cabezaDeToro = new Row()
-        {
-            id = "4",
-            title = "Cabeza de Toro",
-        };
-        var uveroAltoRow = new Row()
-        {
-            id = "5",
-            title = "Uvero Alto",
-        };
-        var bayahibeRow = new Row()
-        {
-            id = "6",
-            title = "Bayahíbe",
-        };
-        var romanaRow = new Row()
-        {
-            id = "7",
-            title = "La Romana",
-        };
-        var idontknowRow = new Row()
-        {
-            id = "8",
+            id = "-1",
             title = "No lo sé",
         };
 
-        section.rows.AddRange(new List<Row>()
-        {
-            bavaroRow,
-            puntaCana,
-            capCana,
-            cabezaDeToro,
-            uveroAltoRow,
-            bayahibeRow,
-            romanaRow,
-            idontknowRow
-        });
+        tempRows.Add(iDontKnowRow);
+
+        section.rows.AddRange(tempRows);
 
         model.interactive.action.sections.Add(section);
 

@@ -5,6 +5,7 @@ using BlueWhatsapp.Core.Logger;
 using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
 using BlueWhatsapp.Core.Models.Reservations;
+using BlueWhatsapp.Core.Models.Route;
 using BlueWhatsapp.Core.Models.Schedule;
 using BlueWhatsapp.Core.Persistence;
 using BlueWhatsapp.Core.Utils;
@@ -18,7 +19,8 @@ public sealed class ConversationHandlingService(
     IScheduleRepository scheduleRepository,
     IHotelRepository hotelRepository,
     IReservationRepository reservationRepository,
-    IAppLogger logger
+    IAppLogger logger,
+    IRouteRepository routeRepository
 ) : IConversationHandlingService
 {
     async Task<CoreBaseMessage?> IConversationHandlingService.HandleState(CoreConversationState state, string userMessage = "")
@@ -57,7 +59,8 @@ public sealed class ConversationHandlingService(
 
             if (state.CurrentStep == ConversationStep.ZoneSelection)
             {
-                return messageCreator.CreateSelectHotelZoneLocationMessage(state.UserNumber);
+                IEnumerable<CoreRoute> routes = await routeRepository.GetAllRoutesAsync().ConfigureAwait(true);
+                return messageCreator.CreateSelectHotelZoneLocationMessage(state.UserNumber, routes);
             }
 
             if (state.CurrentStep == ConversationStep.HotelSelection)

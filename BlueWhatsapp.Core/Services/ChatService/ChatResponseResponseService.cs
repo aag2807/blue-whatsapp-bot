@@ -4,6 +4,8 @@ using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
 using BlueWhatsapp.Core.Models.Reservations;
 using BlueWhatsapp.Core.Models.Schedule;
+using BlueWhatsapp.Core.Persistence;
+using BlueWhatsapp.Core.Utils;
 
 namespace BlueWhatsapp.Core.Services.ChatService;
 
@@ -15,6 +17,8 @@ public sealed class ChatResponseResponseService(
     IConversationHandlingService conversationHandling
 ) : IChatResponseService
 {
+    private readonly DateParser _dateParser = new();  
+    
     async Task IChatResponseService.Execute(string userNumber, string fromName, string userText)
     {
         CoreConversationState? state = await conversationStateService.GetConversationStateByNumber(userNumber).ConfigureAwait(true);
@@ -85,7 +89,7 @@ public sealed class ChatResponseResponseService(
         }
         else if (state.CurrentStep == ConversationStep.DateSelection)
         {
-            state.PickUpDate = userText;
+            state.PickUpDate = _dateParser.TryParseDate(userText);
             state.CurrentStep = ConversationStep.ZoneSelection;
             logger.LogSteps("selected pick up date");
         }
@@ -115,16 +119,43 @@ public sealed class ChatResponseResponseService(
             else
             {
                 state.ScheduleId = userText;
-                state.CurrentStep = ConversationStep.AskForReservationDetails;
+                state.CurrentStep = ConversationStep.AskForFullName;
                 logger.LogSteps("selected schedule");
             }
         }
-        else if (state.CurrentStep == ConversationStep.AskForReservationDetails)
+        else if (state.CurrentStep == ConversationStep.AskForFullName)
         {
-            state.ReservationDetails = userText;
+            state.FullName = userText;
+            state.CurrentStep = ConversationStep.AskForRoomNumber;
+            logger.LogSteps("provided name");
+        }
+        else if (state.CurrentStep == ConversationStep.AskForRoomNumber)
+        {
+            state.RoomNumber = userText;
+            state.CurrentStep = ConversationStep.AskForAdults;
+            logger.LogSteps("provided room number");
+        }
+        else if (state.CurrentStep == ConversationStep.AskForAdults)
+        {
+            int.TryParse(userText, out var parsedValue);
+            state.Adults = parsedValue;
+            state.CurrentStep = ConversationStep.AskForChildren;
+            logger.LogSteps("provided adults");
+        }
+        else if (state.CurrentStep == ConversationStep.AskForChildren)
+        {
+            int.TryParse(userText, out var parsedValue);
+            state.Children = parsedValue;
+            state.CurrentStep = ConversationStep.AskForEmail;
+            logger.LogSteps("provided children");
+        }
+        else if (state.CurrentStep == ConversationStep.AskForEmail)
+        {
+            state.Email = userText;
             state.CurrentStep = ConversationStep.ReservationComplete;
             state.IsComplete = true;
-            logger.LogSteps("completed reseration details");
+            logger.LogSteps("provided email");
+            logger.LogSteps("reservation complete");
         }
 
         logger.LogSteps(state);

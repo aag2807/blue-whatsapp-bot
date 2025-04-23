@@ -52,7 +52,7 @@ public class RouteConfiguration : IEntityTypeConfiguration<Route>
             {
                 Id = 1,
                 Name = "RUTA A",
-                Description = "Ruta Punta Cana (Cap Cana)",
+                Description = "Cap Cana",
                 CreatedTime = currentTime,
                 IsActive = true
             },
@@ -60,7 +60,7 @@ public class RouteConfiguration : IEntityTypeConfiguration<Route>
             {
                 Id = 2,
                 Name = "RUTA B",
-                Description = "Ruta La Romana",
+                Description = "Punta Cana",
                 CreatedTime = currentTime,
                 IsActive = true
             },
@@ -68,7 +68,7 @@ public class RouteConfiguration : IEntityTypeConfiguration<Route>
             {
                 Id = 3,
                 Name = "RUTA C",
-                Description = "Ruta Bávaro Sur",
+                Description = "Cabeza de Toro",
                 CreatedTime = currentTime,
                 IsActive = true
             },
@@ -76,7 +76,7 @@ public class RouteConfiguration : IEntityTypeConfiguration<Route>
             {
                 Id = 4,
                 Name = "RUTA D",
-                Description = "Ruta Bávaro Norte",
+                Description = "Bávaro (Arena Gorda)",
                 CreatedTime = currentTime,
                 IsActive = true
             },
@@ -84,7 +84,7 @@ public class RouteConfiguration : IEntityTypeConfiguration<Route>
             {
                 Id = 5,
                 Name = "RUTA E1",
-                Description = "Ruta Bávaro Central - Grupo 1",
+                Description = "Bávaro (Cortecito)",
                 CreatedTime = currentTime,
                 IsActive = true
             },
@@ -92,7 +92,7 @@ public class RouteConfiguration : IEntityTypeConfiguration<Route>
             {
                 Id = 6,
                 Name = "RUTA E2",
-                Description = "Ruta Bávaro Central - Grupo 2",
+                Description = "Bávaro (White Sands)",
                 CreatedTime = currentTime,
                 IsActive = true
             },
@@ -100,7 +100,7 @@ public class RouteConfiguration : IEntityTypeConfiguration<Route>
             {
                 Id = 7,
                 Name = "RUTA F",
-                Description = "Ruta Uvero Alto",
+                Description = "Uvero Alto",
                 CreatedTime = currentTime,
                 IsActive = true
             }

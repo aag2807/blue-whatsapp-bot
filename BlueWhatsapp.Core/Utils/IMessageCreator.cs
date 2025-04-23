@@ -1,5 +1,6 @@
 using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
+using BlueWhatsapp.Core.Models.Route;
 using BlueWhatsapp.Core.Models.Schedule;
 
 namespace BlueWhatsapp.Core.Utils;
@@ -32,7 +33,7 @@ public interface IMessageCreator
     /// </summary>
     /// <param name="number">The destination</param>
     /// <returns>A valid <see cref="CoreInteractiveMessage"/></returns>
-    public CoreInteractiveMessage CreateSelectHotelZoneLocationMessage(string number);
+    public CoreInteractiveMessage CreateSelectHotelZoneLocationMessage(string number, IEnumerable<CoreRoute> routes);
 
     /// <summary>
     /// 

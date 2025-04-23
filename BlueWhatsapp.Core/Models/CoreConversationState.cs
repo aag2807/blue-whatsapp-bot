@@ -62,7 +62,27 @@ public class CoreConversationState : BaseEntity
         /// <summary>
         /// 
         /// </summary>
-        public string ReservationDetails { get; set; } = string.Empty;
+        public string FullName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string RoomNumber { get; set; } = string.Empty;
+    
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Email { get; set; } = string.Empty;
+    
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Adults { get; set; }
+    
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Children { get; set; }
 
         /// <summary>
         /// 

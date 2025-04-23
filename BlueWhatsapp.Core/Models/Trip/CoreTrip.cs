@@ -1,6 +1,7 @@
 using BlueWhatsapp.Core.Enums;
 using BlueWhatsapp.Core.Models.Reservations;
 using BlueWhatsapp.Core.Models.Route;
+using BlueWhatsapp.Core.Models.Schedule;
 using System;
 using System.Collections.Generic;
 
@@ -14,14 +15,9 @@ public sealed class CoreTrip : BaseEntity
     public int Id { get; set; }
 
     /// <summary>
-    /// The number of the user
-    /// </summary>
-    public string UserNumber { get; set; } = string.Empty;
-
-    /// <summary>
     /// The name of the user
     /// </summary>
-    public string UserName { get; set; } = string.Empty;
+    public string TripName { get; set; } = string.Empty;
 
     /// <summary>
     /// The route of the trip   
@@ -29,9 +25,9 @@ public sealed class CoreTrip : BaseEntity
     public CoreRoute? Route { get; set; }
     
     /// <summary>
-    /// Time of day when the trip occurs (same time every day)
+    /// The schedule of the trip
     /// </summary>
-    public TimeSpan TripTime { get; set; } = TimeSpan.Zero;
+    public CoreSchedule? Schedule { get; set; }
 
     /// <summary>
     /// Indicates whether the trip is active for a specific day
