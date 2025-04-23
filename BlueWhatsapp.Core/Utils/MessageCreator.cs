@@ -96,7 +96,7 @@ public sealed class MessageCreator : IMessageCreator
         model.interactive.header.text = "Bluemall";
         model.interactive.body.text = "Elija la zona en la que se encuentra su hotel: ";
 
-        model.interactive.action.button = "Idiomas";
+        model.interactive.action.button = "Zonas";
         model.interactive.action.sections = new List<Section>();
 
         var section = new Section();
@@ -110,13 +110,13 @@ public sealed class MessageCreator : IMessageCreator
             Row row = new Row()
             {
                 id = route.Id.ToString(),
-                title = route.Name,
+                title = route.Description,
             };
             tempRows.Add(row);
         }
         Row iDontKnowRow = new Row()
         {
-            id = "-1",
+            id = "0",
             title = "No lo sé",
         };
 
@@ -143,29 +143,9 @@ public sealed class MessageCreator : IMessageCreator
         var section = new Section();
         section.title = "Hoteles";
         section.rows = new List<Row>();
-        
-        var hotel1 = new Row()
-        {
-            id = "1",
-            title = "SECRET CAP CANA",
-        };
-        var hotel2 = new Row()
-        {
-            id = "2",
-            title = "HYATT ZILARA",
-        };
-        var hotel3 = new Row()
-        {
-            id = "3",
-            title = "HYATT ZIVA",
-        };
+        List<Row> temRows = hotels.Select(hotel => new Row() { id = hotel.Id.ToString(), title = hotel.Name, }).ToList();
 
-        section.rows.AddRange(new List<Row>()
-        {
-            hotel1,
-            hotel2,
-            hotel3,
-        });
+        section.rows.AddRange(temRows);
 
         model.interactive.action.sections.Add(section);
 

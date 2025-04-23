@@ -65,7 +65,9 @@ public sealed class ConversationHandlingService(
 
             if (state.CurrentStep == ConversationStep.HotelSelection)
             {
-                return messageCreator.CreateHotelSelectionMessage(state.UserNumber, new List<CoreHotel>());
+                int.TryParse(state.ZoneId, out int id);
+                IEnumerable<CoreHotel> hotels = await hotelRepository.GetHotelsByRouteIdAsync(id).ConfigureAwait(true);
+                return messageCreator.CreateHotelSelectionMessage(state.UserNumber, hotels);
             }
 
             if (state.CurrentStep == ConversationStep.ScheduleSelection)
