@@ -20,7 +20,7 @@
         "purpose": "any maskable"
       }
     ],
-    "scope": "/",
+    "scope": "/Backoffice",
     "orientation": "portrait",
     "categories": ["productivity"]
   }
