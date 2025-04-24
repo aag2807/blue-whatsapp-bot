@@ -1,8 +1,8 @@
 {
     "name": "Manejador de Transporte",
-    "short_name": "BlueWA",
-    "description": "Manejador de Transporte",
-    "start_url": "/",
+    "short_name": "Manejador de Transporte",
+    "description": "Manejador de Transporte con integracion de Whatsapp",
+    "start_url": "/Backoffice",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#003869",
@@ -20,7 +20,7 @@
         "purpose": "any maskable"
       }
     ],
-    "scope": "/Backoffice",
+    "scope": "/",
     "orientation": "portrait",
     "categories": ["productivity"]
   }
