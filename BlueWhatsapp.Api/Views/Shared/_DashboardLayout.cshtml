@@ -186,8 +186,10 @@
     @RenderSection("Scripts", required: false)
     <script>
         if ('serviceWorker' in navigator) {
+            console.log('ServiceWorker checking');
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
+                console.log('ServiceWorker loading');
+                navigator.serviceWorker.register('~/js/service-worker.js')
                     .then(registration => {
                         console.log('ServiceWorker registration successful with scope: ', registration.scope);
                     })
