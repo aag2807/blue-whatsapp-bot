@@ -53,4 +53,11 @@ public interface IScheduleRepository
     /// </summary>
     /// <returns>Returns a task that represents the asynchronous operation, containing the total number of schedules.</returns> 
     Task<int> GetTotalSchedulesAsync();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    Task<IEnumerable<CoreSchedule>> GetSchedulesByHotelId(int id);
 }

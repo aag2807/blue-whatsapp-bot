@@ -72,13 +72,36 @@ public sealed class ConversationHandlingService(
 
             if (state.CurrentStep == ConversationStep.ScheduleSelection)
             {
-                CoreHotel? hotel = await hotelRepository.GetHotelByIdAsync(int.Parse(state.HotelId)).ConfigureAwait(true);
-                return messageCreator.CreateTimeFrameSelectionMessage(state.UserNumber, hotel, new List<CoreSchedule>());
+                int.TryParse(state.HotelId, out int hotelId);
+                CoreHotel? hotel = await hotelRepository.GetHotelByIdAsync(hotelId).ConfigureAwait(true);
+                IEnumerable<CoreSchedule> schedules = await scheduleRepository.GetSchedulesByHotelId(hotelId).ConfigureAwait(true);
+
+                return messageCreator.CreateTimeFrameSelectionMessage(state.UserNumber, hotel!, schedules);
             }
 
-            if (state.CurrentStep == ConversationStep.AskForReservationDetails)
+            if (state.CurrentStep == ConversationStep.AskForFullName)
             {
-                return messageCreator.CreateAskForReservationDetailsMessage(state.UserNumber);
+                return messageCreator.CreateAskingForNameMessage(state.UserNumber);
+            }
+
+            if (state.CurrentStep == ConversationStep.AskForRoomNumber)
+            {
+                return messageCreator.CreateAskingForRoomNumberMessage(state.UserNumber);
+            }
+
+            if (state.CurrentStep == ConversationStep.AskForAdults)
+            {
+                return messageCreator.CreateAskingForAdultsMessage(state.UserNumber);
+            }
+
+            if (state.CurrentStep == ConversationStep.AskForChildren)
+            {
+                return messageCreator.CreateAskingForAdultsMessage(state.UserNumber);
+            }
+
+            if (state.CurrentStep == ConversationStep.AskForEmail)
+            {
+                return messageCreator.CreateAskingEmailMessage(state.UserNumber);
             }
 
             if (state.CurrentStep == ConversationStep.ReservationComplete)
@@ -92,8 +115,8 @@ public sealed class ConversationHandlingService(
                 reservation.Username = state.PersonName;
                 reservation.Details = userMessage;
                 reservation.ReservationDate = state.PickUpDate;
-                reservation.HotelName = hotel.Name;
-                reservation.ReserveTime = schedule.Time;
+                reservation.HotelName = hotel!.Name;
+                reservation.ReserveTime = schedule!.Time;
                 
                 var message = messageCreator.CreateReservationConfirmationMessage(state.UserNumber, hotel!, schedule!, date);
                 await reservationRepository.SaveReservation(reservation).ConfigureAwait(true);
@@ -103,22 +126,18 @@ public sealed class ConversationHandlingService(
             //states which break the regular flow
             if (state.CurrentStep == ConversationStep.ZoneUnknown)
             {
-                
             }
             
             if (state.CurrentStep == ConversationStep.HotelUnknown)
             {
-                
             }
             
             if (state.CurrentStep == ConversationStep.HotelConfirmation)
             {
-                
             }
             
             if (state.CurrentStep == ConversationStep.WillTextLater)
             {
-                
             }
 
             return null;

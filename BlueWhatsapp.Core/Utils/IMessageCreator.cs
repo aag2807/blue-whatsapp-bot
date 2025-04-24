@@ -68,4 +68,39 @@ public interface IMessageCreator
     /// <param name="date"></param>
     /// <returns></returns>
     public CoreMessageToSend CreateReservationConfirmationMessage(string userNumber, CoreHotel hotel, CoreSchedule schedule, string date);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userNumber"></param>
+    /// <returns></returns>
+    public CoreMessageToSend CreateAskingForNameMessage(string userNumber);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userNumber"></param>
+    /// <returns></returns>
+    public CoreMessageToSend CreateAskingForRoomNumberMessage(string userNumber);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userNumber"></param>
+    /// <returns></returns>
+    public CoreInteractiveMessage CreateAskingForAdultsMessage(string userNumber);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userNumber"></param>
+    /// <returns></returns>
+    public CoreInteractiveMessage CreateAskingAskingForChildrenMessage(string userNumber);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userNumber"></param>
+    /// <returns></returns>
+    public CoreMessageToSend CreateAskingEmailMessage(string userNumber);
 }

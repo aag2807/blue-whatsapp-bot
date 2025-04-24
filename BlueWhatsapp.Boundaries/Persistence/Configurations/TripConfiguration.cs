@@ -24,6 +24,10 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
         builder.Property(t => t.IsActive)
             .IsRequired()
             .HasDefaultValue(true);
+            
+        // Add TripName configuration
+        builder.Property(t => t.TripName)
+            .IsRequired();
 
         builder.Property(t => t.RouteId)
             .IsRequired();
@@ -31,7 +35,8 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
         builder.Property(t => t.IsActiveForToday)
             .IsRequired()
             .HasDefaultValue(true);
-
+            
+        // Configure relationships
         builder.HasOne(t => t.Route);
 
         builder.HasMany(t => t.Reservations)

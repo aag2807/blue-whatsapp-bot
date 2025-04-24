@@ -157,24 +157,12 @@ public sealed class MessageCreator : IMessageCreator
         Section section = new Section();
         section.title = "Horarios";
         section.rows = new List<Row>();
-
-        Row decideLater = new Row()
-        {
-            id = "99",
-            title = "Escribiré luego.",
-        };
         
-        Row dummySchedudle = new Row()
-        {
-            id = "1",
-            title = "09:25",
-        };
+        List<Row> tempRows = schedules.Select(schedule => new Row() { id = schedule.Id.ToString(), title = schedule.Time, }).ToList();
 
-        section.rows.AddRange(new List<Row>()
-        {
-            dummySchedudle,
-            decideLater,
-        });
+        tempRows.Add(new Row() {  id = "0", title = "Escribiré luego.", });
+
+        section.rows.AddRange( tempRows );
 
         model.interactive.action.sections.Add(section);
 
@@ -198,7 +186,97 @@ public sealed class MessageCreator : IMessageCreator
         return model;
     }
 
-    public CoreMessageToSend CreateReservationConfirmationMessage(string userNumber, CoreHotel hotel, CoreSchedule schedule, string date)
+    /// <inheritdoc />
+    CoreMessageToSend IMessageCreator.CreateAskingForNameMessage(string userNumber)
+    {
+        string message = $"Indique su nombre completo";
+        CoreMessageToSend model = new CoreMessageToSend(message, userNumber);
+
+        return model;
+    }
+    
+    /// <inheritdoc />
+    CoreMessageToSend IMessageCreator.CreateAskingForRoomNumberMessage(string userNumber)
+    {
+        string message = $"Indique su número de habitación";
+        CoreMessageToSend model = new CoreMessageToSend(message, userNumber);
+
+        return model;
+    }
+    
+    /// <inheritdoc />
+    CoreInteractiveMessage IMessageCreator.CreateAskingForAdultsMessage(string userNumber)
+    {
+        var model = new CoreInteractiveMessage(userNumber);
+        model.interactive.header.type = "text";
+        model.interactive.header.text = "Bluemall";
+        model.interactive.body.text = "Indique la cantidad de adultos";
+
+        model.interactive.action.button = "Cantidad";
+        model.interactive.action.sections = new List<Section>();
+
+        var section = new Section();
+        section.title = "Cantidad";
+        section.rows = new List<Row>();
+        var tempRows = new List<Row>();
+        for (int i = 0; i < 9; i++)
+        {
+            var row = new Row()
+            {
+                id = i.ToString(),
+                title = $"{i}",
+            };
+            tempRows.Add(row);
+        }
+
+        section.rows.AddRange( tempRows );
+        model.interactive.action.sections.Add(section);
+
+        return model;
+    }
+    
+    /// <inheritdoc />
+    CoreInteractiveMessage IMessageCreator.CreateAskingAskingForChildrenMessage(string userNumber)
+    {
+        var model = new CoreInteractiveMessage(userNumber);
+        model.interactive.header.type = "text";
+        model.interactive.header.text = "Bluemall";
+        model.interactive.body.text = "Indique la cantidad de niños";
+
+        model.interactive.action.button = "Cantidad";
+        model.interactive.action.sections = new List<Section>();
+
+        var section = new Section();
+        section.title = "Cantidad";
+        section.rows = new List<Row>();
+        var tempRows = new List<Row>();
+        for (int i = 0; i < 9; i++)
+        {
+            var row = new Row()
+            {
+                id = i.ToString(),
+                title = $"{i}",
+            };
+            tempRows.Add(row);
+        }
+
+        section.rows.AddRange( tempRows );
+        model.interactive.action.sections.Add(section);
+
+        return model;
+    }
+
+    /// <inheritdoc />
+    CoreMessageToSend IMessageCreator.CreateAskingEmailMessage(string userNumber)
+    {
+        string message = $"Indique su E-Mail";
+        CoreMessageToSend model = new CoreMessageToSend(message, userNumber);
+
+        return model;
+    }
+
+    /// <inheritdoc />
+    CoreMessageToSend IMessageCreator.CreateReservationConfirmationMessage(string userNumber, CoreHotel hotel, CoreSchedule schedule, string date)
     {
         string message = $"*¡Reserva confirmada para el {date} a las {schedule.Time}*! Su punto de encuentro será en el Lobby del Hotel. Por favor estar puntual.";
         CoreMessageToSend model = new CoreMessageToSend(message, userNumber);

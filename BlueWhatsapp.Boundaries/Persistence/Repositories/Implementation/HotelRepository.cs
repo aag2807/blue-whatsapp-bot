@@ -3,6 +3,7 @@ using BlueWhatsapp.Core.Enums;
 using BlueWhatsapp.Core.Logger;
 using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
+using BlueWhatsapp.Core.Models.Route;
 using BlueWhatsapp.Core.Persistence;
 using Microsoft.EntityFrameworkCore;
 

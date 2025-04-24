@@ -89,4 +89,17 @@ public sealed class ScheduleRepository : BaseRepository<Schedule>, IScheduleRepo
     {
         return await CountAsync(null, false, false).ConfigureAwait(true);
     }
+
+    /// <inheritdoc/>
+    async Task<IEnumerable<CoreSchedule>> IScheduleRepository.GetSchedulesByHotelId(int id)
+    {
+        List<Schedule> results = await _dbContext.HotelSchedules
+            .Where( hs => hs.HotelId == id)
+            .Include( hs => hs.Schedule)
+            .Select( hs => hs.Schedule)
+            .ToListAsync()
+            .ConfigureAwait(true);
+        
+        return results.Select(schedule => new CoreSchedule(schedule.Id, schedule.Name, schedule.Time));
+    }
 }

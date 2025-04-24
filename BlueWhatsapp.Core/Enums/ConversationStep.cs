@@ -26,16 +26,15 @@ public enum ConversationStep
     WillTextLater = 11,
 
     //ask for user information,
-    AskForReservationDetails = 91,
-
     AskForFullName = 12,
     AskForRoomNumber = 13,
     AskForAdults = 14,
     AskForChildren = 15,
     AskForEmail = 16,
 
+    // Conversation ending states
     ReservationComplete = 17,
-    PendingDecision = 20,
+    PendingDecision = 18,
 
     // Admin override state 
     ManualHandling = 99,

@@ -17,11 +17,6 @@ public sealed class Trip : BaseEntity
     public bool IsActiveForToday { get; set; } = true;
 
     /// <summary>
-    /// The capacity of the trip
-    /// </summary>
-    public int Capacity { get; set; } = 30;
-
-    /// <summary>
     /// The id of the route associated with the trip
     /// </summary>
     [ForeignKey("Route")]
@@ -36,8 +31,13 @@ public sealed class Trip : BaseEntity
     /// <summary>
     /// The schedules of the trip
     /// </summary>
-    public ICollection<Schedule> Schedule { get; set; } = new List<Schedule>();
-
+    public ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
+    
+    /// <summary>
+    /// The schedules of the trip
+    /// </summary>
+    public ICollection<Hotel> Hotels { get; set; } = new List<Hotel>();
+    
     /// <summary>
     /// The reservations for the trip
     /// </summary>
