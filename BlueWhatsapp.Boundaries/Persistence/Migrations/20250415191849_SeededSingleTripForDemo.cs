@@ -2153,10 +2153,10 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                 column: "CreatedTime",
                 value: new DateTime(2025, 4, 15, 19, 18, 47, 758, DateTimeKind.Utc).AddTicks(6234));
 
-            migrationBuilder.InsertData(
-                table: "Trips",
-                columns: new[] { "Id", "CreatedTime", "IsActive", "IsActiveForToday", "ModifiedTime", "RouteId", "TripTime", "UserName", "UserNumber" },
-                values: new object[] { 1, new DateTime(2025, 4, 15, 15, 18, 47, 760, DateTimeKind.Local).AddTicks(135), true, true, null, 1, new TimeSpan(0, 0, 0, 0, 0), "John Doe", "+19998887777" });
+            // migrationBuilder.InsertData(
+            //     table: "Trips",
+            //     columns: new[] { "Id", "CreatedTime", "IsActive", "IsActiveForToday", "ModifiedTime", "RouteId", "TripTime", "UserName", "UserNumber" },
+            //     values: new object[] { 1, new DateTime(2025, 4, 15, 15, 18, 47, 760, DateTimeKind.Local).AddTicks(135), true, true, null, 1, new TimeSpan(0, 0, 0, 0, 0), "John Doe", "+19998887777" });
 
             migrationBuilder.UpdateData(
                 table: "Users",

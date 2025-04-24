@@ -20,7 +20,7 @@ public class TripHub : Hub
 
     public async Task GetTrips()
     {
-        var trips = await _tripRepository.GetAllTripsAsync().ConfigureAwait(true);
+        IEnumerable<CoreTrip> trips = await _tripRepository.GetAllTripsAsync().ConfigureAwait(true);
         await Clients.All.SendAsync("ReceiveTrips", trips).ConfigureAwait(true);
     }
 

@@ -1,11 +1,11 @@
 /**
  * @typedef {Object} Trip
- * @property {number} id
- * @property {string} userName
- * @property {string} userNumber
- * @property {string} tripTime - Time in HH:MM format
- * @property {number} routeId
- * @property {boolean} isActiveForToday
+ * @property {number} Id
+ * @property {string} TripName
+ * @property {boolean} IsActiveForToday
+ * @property {Route} Route
+ * @property {Schedule} Schedule
+ * @property {Reservation[]} Reservations
  */
 
 /**
@@ -29,14 +29,15 @@ document.addEventListener('alpine:init', () => {
         
         showModal: false,
         currentTrip: { 
-            id: 0, 
-            userName: '', 
-            userNumber: '', 
-            tripTime: '', 
-            routeId: '', 
-            isActiveForToday: true
+            id: 0,
+            tripName: '',
+            isActiveForToday: true,
+            route: null,
+            schedule: null,
+            reservations: []
         },
         searchTerm: '',
+        debounceTimeout: null,
         saving: false,
         loading: true,
         error: null,
@@ -49,8 +50,9 @@ document.addEventListener('alpine:init', () => {
                 .build();
 
             this.connection.on('ReceiveTrips', (trips) => {
-                console.log(trips);
                 this.trips = trips;
+                this.loading = false;
+                console.log(trips);
             });
 
             this.connection.on('ReceiveRoutes', (routes) => {
@@ -64,55 +66,12 @@ document.addEventListener('alpine:init', () => {
                 })
                 .catch(err => {
                     console.error('Error starting connection:', err);
+                    this.error = 'Error al conectar con el servidor';
                 });
         },
 
-        /**
-         * Provides mock trip data if API calls fail
-         */
-        provideMockTrips() {
-            this.trips = [
-                {
-                    id: 1,
-                    userName: 'Juan Pérez',
-                    userNumber: '+1234567890',
-                    tripTime: '09:00',
-                    routeId: 1,
-                    isActiveForToday: true
-                },
-                {
-                    id: 2,
-                    userName: 'María García',
-                    userNumber: '+0987654321',
-                    tripTime: '10:30',
-                    routeId: 2,
-                    isActiveForToday: true
-                },
-                {
-                    id: 3,
-                    userName: 'Carlos Rodríguez',
-                    userNumber: '+1122334455',
-                    tripTime: '14:15',
-                    routeId: 3,
-                    isActiveForToday: false
-                }
-            ];
-        },
-
-        /**
-         * Provides mock route data if API calls fail
-         */
-        provideMockRoutes() {
-            this.routes = [
-                { id: 1, name: 'RUTA A', description: 'Ruta Punta Cana (Cap Cana)' },
-                { id: 2, name: 'RUTA B', description: 'Ruta La Romana' },
-                { id: 3, name: 'RUTA C', description: 'Ruta Bávaro Sur' },
-                { id: 4, name: 'RUTA D', description: 'Ruta Bávaro Norte' }
-            ];
-        },
-
         get tripsCount() {
-            return this.trips.length;
+            return this.filteredTrips.length;
         },
 
         get filteredTrips() {
@@ -122,15 +81,35 @@ document.addEventListener('alpine:init', () => {
             
             const search = this.searchTerm.toLowerCase();
             return this.trips.filter(trip => 
-                (trip.userName && trip.userName.toLowerCase().includes(search)) ||
-                (trip.userNumber && trip.userNumber.toLowerCase().includes(search)) ||
-                (this.getRouteName(trip.routeId) && this.getRouteName(trip.routeId).toLowerCase().includes(search))
+                (trip.tripName && trip.tripName.toLowerCase().includes(search)) ||
+                (trip.route?.name && trip.route.name.toLowerCase().includes(search)) ||
+                (trip.route?.description && trip.route.description.toLowerCase().includes(search)) ||
+                (trip.schedule?.name && trip.schedule.name.toLowerCase().includes(search))
             );
         },
 
-        async searchForTrips()
-        {
-            await this.connection.invoke('SearchTrips', this.searchTerm);
+        handleSearch() {
+            // Clear previous timeout
+            if (this.debounceTimeout) {
+                clearTimeout(this.debounceTimeout);
+            }
+
+            // Set new timeout
+            this.debounceTimeout = setTimeout(() => {
+                this.searchForTrips();
+            }, 300); // 300ms debounce
+        },
+
+        async searchForTrips() {
+            try {
+                this.loading = true;
+                await this.connection.invoke('SearchTrips', this.searchTerm);
+            } catch (error) {
+                console.error('Error searching trips:', error);
+                this.error = 'Error al buscar viajes';
+            } finally {
+                this.loading = false;
+            }
         },
 
         formatTime(time) {
@@ -157,7 +136,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         async fetchTrips() {
-                await this.connection.invoke('GetTrips');
+            await this.connection.invoke('GetTrips');
         },
 
         async fetchRoutes() {
@@ -166,12 +145,12 @@ document.addEventListener('alpine:init', () => {
 
         openAddModal() {
             this.currentTrip = { 
-                id: 0, 
-                userName: '', 
-                userNumber: '', 
-                tripTime: '', 
-                routeId: '', 
-                isActiveForToday: true
+                Id: 0,
+                TripName: '',
+                IsActiveForToday: true,
+                Route: null,
+                Schedule: null,
+                Reservations: []
             };
             this.showModal = true;
         },

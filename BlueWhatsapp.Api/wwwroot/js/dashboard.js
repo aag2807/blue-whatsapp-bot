@@ -113,10 +113,11 @@ document.addEventListener('alpine:init', () => {
 
             // Handle receiving a new message
             this.connection.on("ReceiveWhatsAppMessage", (from, timestamp) => {
-                this.connection.invoke("GetPendingMessages")
-                this.connection.invoke("GetClosedMessages")
+                this.connection.invoke("GetPendingMessages");
+                this.connection.invoke("GetClosedMessages");
                 this.connection.invoke("GetAllConversations");
                 this.connection.invoke("GetWeeklyConversations");
+                this.connection.invoke("GetRecentConversations", 20);
             });
 
             this.connection.on("ReceiveAllConversations", (conversations) => {

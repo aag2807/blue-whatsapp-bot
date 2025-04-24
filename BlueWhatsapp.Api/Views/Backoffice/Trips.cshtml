@@ -19,16 +19,29 @@
         <div class="mb-4 flex justify-between items-center">
             <div class="text-sm text-gray-500">
                 <span x-text="tripsCount"></span> viajes encontrados
+                <span x-show="loading" class="ml-2 text-gray-400">
+                    <i class="fas fa-spinner fa-spin"></i> Buscando...
+                </span>
+                <span x-show="error" class="ml-2 text-red-500" x-text="error"></span>
             </div>
             <div class="flex space-x-2">
                 <div class="relative">
                     <input 
                         type="text" 
                         x-model="searchTerm" 
-                        placeholder="Buscar viaje..." 
-                        class="pl-8 pr-2 py-2 border rounded focus:outline-none focus:ring-1 focus:ring-sidebar"
+                        x-on:input.debounce.300ms="handleSearch"
+                        placeholder="Buscar por nombre, ruta o horario..." 
+                        class="pl-8 pr-2 py-2 border rounded focus:outline-none focus:ring-1 focus:ring-sidebar w-64"
+                        :class="{ 'border-red-500': error }"
                     >
                     <i class="fas fa-search absolute left-3 top-[50%] -translate-y-1/2 text-gray-400"></i>
+                    <button 
+                        x-show="searchTerm"
+                        x-on:click="searchTerm = ''; handleSearch()"
+                        class="absolute right-2 top-[50%] -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
                 <button 
                     x-on:click="openAddModal()" 
@@ -46,11 +59,11 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Número</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre del Viaje</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ruta</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activo Hoy</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Horario</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reservaciones</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                     </tr>
                 </thead>
@@ -58,10 +71,22 @@
                     <template x-for="trip in filteredTrips" :key="trip.id">
                         <tr>
                             <td class="px-4 py-4 whitespace-nowrap" x-text="trip.id"></td>
-                            <td class="px-4 py-4 whitespace-nowrap" x-text="trip.userName"></td>
-                            <td class="px-4 py-4 whitespace-nowrap" x-text="trip.userNumber"></td>
-                            <td class="px-4 py-4 whitespace-nowrap" x-text="formatTime(trip.tripTime)"></td>
-                            <td class="px-4 py-4 whitespace-nowrap" x-text="getRouteName(trip.routeId)"></td>
+                            <td class="px-4 py-4 whitespace-nowrap" x-text="trip.tripName"></td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <div x-text="trip.route?.name"></div>
+                                <div class="text-xs text-gray-500" x-text="trip.route?.description"></div>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <div x-text="trip.schedule?.name || '-'"></div>
+                                <div class="text-xs text-gray-500" x-text="trip.schedule?.time ? formatTime(trip.schedule.time) : '-'"></div>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                    :class="trip.reservations?.length > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
+                                    <span x-text="trip.reservations?.length || 0"></span>
+                                    <span class="ml-1">reservaciones</span>
+                                </span>
+                            </td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <span 
                                     :class="trip.isActiveForToday ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
@@ -73,18 +98,21 @@
                                 <button 
                                     x-on:click="openEditModal(trip)"
                                     class="text-blue-600 hover:text-blue-900"
+                                    title="Editar viaje"
                                 >
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <button 
                                     x-on:click="deleteTrip(trip.id)"
                                     class="text-red-600 hover:text-red-900"
+                                    title="Eliminar viaje"
                                 >
                                     <i class="fas fa-trash"></i>
                                 </button>
                                 <button 
                                     x-on:click="toggleActive(trip)"
                                     class="text-yellow-600 hover:text-yellow-900"
+                                    :title="trip.isActiveForToday ? 'Desactivar viaje' : 'Activar viaje'"
                                 >
                                     <i class="fas fa-power-off"></i>
                                 </button>
@@ -132,36 +160,18 @@
                 <form x-on:submit.prevent="saveTrip">
                     <div class="p-4 space-y-4">
                         <div>
-                            <label for="userName" class="block text-sm font-medium text-gray-700">Nombre del Conductor</label>
+                            <label for="tripName" class="block text-sm font-medium text-gray-700">Nombre del Viaje</label>
                             <input 
                                 type="text" 
-                                id="userName" 
-                                x-model="currentTrip.userName" 
+                                id="tripName" 
+                                x-model="currentTrip.tripName" 
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
+                                placeholder="Ej: Viaje a Cancún"
                                 required
+                                minlength="3"
+                                maxlength="100"
                             >
-                        </div>
-                        
-                        <div>
-                            <label for="userNumber" class="block text-sm font-medium text-gray-700">Número del Conductor</label>
-                            <input 
-                                type="text" 
-                                id="userNumber" 
-                                x-model="currentTrip.userNumber" 
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
-                                required
-                            >
-                        </div>
-                        
-                        <div>
-                            <label for="tripTime" class="block text-sm font-medium text-gray-700">Hora del Viaje</label>
-                            <input 
-                                type="time" 
-                                id="tripTime" 
-                                x-model="currentTrip.tripTime" 
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
-                                required
-                            >
+                            <p class="mt-1 text-sm text-gray-500">Ingrese un nombre descriptivo para el viaje</p>
                         </div>
                         
                         <div>
@@ -177,6 +187,71 @@
                                     <option :value="route.id" x-text="route.name"></option>
                                 </template>
                             </select>
+                            <p class="mt-1 text-sm text-gray-500">Seleccione la ruta para este viaje</p>
+                        </div>
+                        
+                        <div>
+                            <label for="scheduleId" class="block text-sm font-medium text-gray-700">Horario</label>
+                            <select 
+                                id="scheduleId" 
+                                x-model="currentTrip.scheduleId" 
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
+                            >
+                                <option value="" selected>Sin horario</option>
+                                <template x-for="schedule in schedules" :key="schedule.id">
+                                    <option :value="schedule.id" x-text="schedule.name"></option>
+                                </template>
+                            </select>
+                            <p class="mt-1 text-sm text-gray-500">Opcional: Asigne un horario específico al viaje</p>
+                        </div>
+
+                        <div>
+                            <label for="tripTime" class="block text-sm font-medium text-gray-700">Hora del Viaje</label>
+                            <input 
+                                type="time" 
+                                id="tripTime" 
+                                x-model="currentTrip.tripTime" 
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
+                                required
+                            >
+                            <p class="mt-1 text-sm text-gray-500">Seleccione la hora de salida del viaje</p>
+                        </div>
+
+                        <div>
+                            <label for="maxPassengers" class="block text-sm font-medium text-gray-700">Máximo de Pasajeros</label>
+                            <input 
+                                type="number" 
+                                id="maxPassengers" 
+                                x-model="currentTrip.maxPassengers" 
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
+                                min="1"
+                                max="50"
+                                required
+                            >
+                            <p class="mt-1 text-sm text-gray-500">Ingrese el número máximo de pasajeros permitidos</p>
+                        </div>
+
+                        <div>
+                            <label for="price" class="block text-sm font-medium text-gray-700">Precio del Viaje</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">$</span>
+                                </div>
+                                <input 
+                                    type="number" 
+                                    id="price" 
+                                    x-model="currentTrip.price" 
+                                    class="block w-full pl-7 pr-12 border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
+                                    placeholder="0.00"
+                                    min="0"
+                                    step="0.01"
+                                    required
+                                >
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">MXN</span>
+                                </div>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-500">Ingrese el precio del viaje en pesos mexicanos</p>
                         </div>
                         
                         <div class="flex items-center">
@@ -189,6 +264,36 @@
                             <label for="isActiveForToday" class="ml-2 block text-sm text-gray-900">
                                 Activo para hoy
                             </label>
+                        </div>
+
+                        <div class="flex items-center">
+                            <input 
+                                type="checkbox" 
+                                id="isRecurring"
+                                x-model="currentTrip.isRecurring"
+                                class="h-4 w-4 text-sidebar focus:ring-sidebar border-gray-300 rounded"
+                            >
+                            <label for="isRecurring" class="ml-2 block text-sm text-gray-900">
+                                Viaje recurrente
+                            </label>
+                        </div>
+
+                        <div x-show="currentTrip.isRecurring" class="space-y-2">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Días de la semana</label>
+                                <div class="mt-2 flex flex-wrap gap-2">
+                                    <template x-for="(day, index) in ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']" :key="index">
+                                        <label class="inline-flex items-center">
+                                            <input 
+                                                type="checkbox" 
+                                                x-model="currentTrip.recurringDays[index]"
+                                                class="h-4 w-4 text-sidebar focus:ring-sidebar border-gray-300 rounded"
+                                            >
+                                            <span class="ml-2 text-sm text-gray-700" x-text="day"></span>
+                                        </label>
+                                    </template>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="bg-gray-50 px-4 py-3 flex justify-end space-x-3 rounded-b-lg">
@@ -205,7 +310,10 @@
                             :disabled="saving"
                         >
                             <span x-show="!saving">Guardar</span>
-                            <span x-show="saving">Guardando...</span>
+                            <span x-show="saving" class="flex items-center">
+                                <i class="fas fa-spinner fa-spin mr-2"></i>
+                                Guardando...
+                            </span>
                         </button>
                     </div>
                 </form>
@@ -227,16 +335,29 @@
         <div class="mb-4 space-y-3">
             <div class="text-sm text-gray-500">
                 <span x-text="tripsCount"></span> viajes encontrados
+                <span x-show="loading" class="ml-2 text-gray-400">
+                    <i class="fas fa-spinner fa-spin"></i> Buscando...
+                </span>
+                <span x-show="error" class="ml-2 text-red-500" x-text="error"></span>
             </div>
             <div class="space-y-2">
                 <div class="relative">
                     <input 
                         type="text" 
                         x-model="searchTerm" 
-                        placeholder="Buscar viaje..." 
-                        class="w-full pl-8 pr-2 py-2 border rounded focus:outline-none focus:ring-1 focus:ring-sidebar"
+                        x-on:input.debounce.300ms="handleSearch"
+                        placeholder="Buscar por nombre, ruta o horario..." 
+                        class="w-full pl-8 pr-8 py-2 border rounded focus:outline-none focus:ring-1 focus:ring-sidebar"
+                        :class="{ 'border-red-500': error }"
                     >
                     <i class="fas fa-search absolute left-3 top-[50%] -translate-y-1/2 text-gray-400"></i>
+                    <button 
+                        x-show="searchTerm"
+                        x-on:click="searchTerm = ''; handleSearch()"
+                        class="absolute right-2 top-[50%] -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
                 <button 
                     x-on:click="openAddModal()" 
@@ -254,40 +375,60 @@
                 <div class="bg-white rounded-lg shadow p-4">
                     <div class="flex justify-between items-start mb-2">
                         <div>
-                            <h3 class="font-medium" x-text="trip.userName"></h3>
-                            <p class="text-sm text-gray-500" x-text="trip.userNumber"></p>
+                            <h3 class="font-medium" x-text="trip.tripName"></h3>
+                            <p class="text-sm text-gray-500" x-text="trip.route?.name"></p>
                         </div>
                         <div class="flex space-x-2">
                             <button 
                                 x-on:click="openEditModal(trip)"
                                 class="text-blue-600 hover:text-blue-900"
+                                title="Editar viaje"
                             >
                                 <i class="fas fa-edit"></i>
                             </button>
                             <button 
                                 x-on:click="deleteTrip(trip.id)"
                                 class="text-red-600 hover:text-red-900"
+                                title="Eliminar viaje"
                             >
                                 <i class="fas fa-trash"></i>
                             </button>
                             <button 
                                 x-on:click="toggleActive(trip)"
                                 class="text-yellow-600 hover:text-yellow-900"
+                                :title="trip.isActiveForToday ? 'Desactivar viaje' : 'Activar viaje'"
                             >
                                 <i class="fas fa-power-off"></i>
                             </button>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-2 text-sm">
-                        <div>
-                            <span class="text-gray-500">Hora:</span>
-                            <span x-text="formatTime(trip.tripTime)"></span>
-                        </div>
-                        <div>
+                    
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
                             <span class="text-gray-500">Ruta:</span>
-                            <span x-text="getRouteName(trip.routeId)"></span>
+                            <span x-text="trip.route?.description"></span>
                         </div>
-                        <div class="col-span-2">
+                        
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Horario:</span>
+                            <span x-text="trip.schedule?.name || '-'"></span>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Hora:</span>
+                            <span x-text="trip.schedule?.time ? formatTime(trip.schedule.time) : '-'"></span>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Reservaciones:</span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                :class="trip.reservations?.length > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
+                                <span x-text="trip.reservations?.length || 0"></span>
+                                <span class="ml-1">reservaciones</span>
+                            </span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
                             <span class="text-gray-500">Estado:</span>
                             <span 
                                 :class="trip.isActiveForToday ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
@@ -335,36 +476,18 @@
                 <form x-on:submit.prevent="saveTrip">
                     <div class="p-4 space-y-4">
                         <div>
-                            <label for="userName" class="block text-sm font-medium text-gray-700">Nombre del Conductor</label>
+                            <label for="tripName" class="block text-sm font-medium text-gray-700">Nombre del Viaje</label>
                             <input 
                                 type="text" 
-                                id="userName" 
-                                x-model="currentTrip.userName" 
+                                id="tripName" 
+                                x-model="currentTrip.tripName" 
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
+                                placeholder="Ej: RUTA X"
                                 required
+                                minlength="3"
+                                maxlength="100"
                             >
-                        </div>
-                        
-                        <div>
-                            <label for="userNumber" class="block text-sm font-medium text-gray-700">Número del Conductor</label>
-                            <input 
-                                type="text" 
-                                id="userNumber" 
-                                x-model="currentTrip.userNumber" 
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
-                                required
-                            >
-                        </div>
-                        
-                        <div>
-                            <label for="tripTime" class="block text-sm font-medium text-gray-700">Hora del Viaje</label>
-                            <input 
-                                type="time" 
-                                id="tripTime" 
-                                x-model="currentTrip.tripTime" 
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
-                                required
-                            >
+                            <p class="mt-1 text-sm text-gray-500">Ingrese un nombre descriptivo para el viaje</p>
                         </div>
                         
                         <div>
@@ -380,6 +503,71 @@
                                     <option :value="route.id" x-text="route.name"></option>
                                 </template>
                             </select>
+                            <p class="mt-1 text-sm text-gray-500">Seleccione la ruta para este viaje</p>
+                        </div>
+                        
+                        <div>
+                            <label for="scheduleId" class="block text-sm font-medium text-gray-700">Horario</label>
+                            <select 
+                                id="scheduleId" 
+                                x-model="currentTrip.scheduleId" 
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
+                            >
+                                <option value="" selected>Sin horario</option>
+                                <template x-for="schedule in schedules" :key="schedule.id">
+                                    <option :value="schedule.id" x-text="schedule.name"></option>
+                                </template>
+                            </select>
+                            <p class="mt-1 text-sm text-gray-500">Opcional: Asigne un horario específico al viaje</p>
+                        </div>
+
+                        <div>
+                            <label for="tripTime" class="block text-sm font-medium text-gray-700">Hora del Viaje</label>
+                            <input 
+                                type="time" 
+                                id="tripTime" 
+                                x-model="currentTrip.tripTime" 
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
+                                required
+                            >
+                            <p class="mt-1 text-sm text-gray-500">Seleccione la hora de salida del viaje</p>
+                        </div>
+
+                        <div>
+                            <label for="maxPassengers" class="block text-sm font-medium text-gray-700">Máximo de Pasajeros</label>
+                            <input 
+                                type="number" 
+                                id="maxPassengers" 
+                                x-model="currentTrip.maxPassengers" 
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
+                                min="1"
+                                max="50"
+                                required
+                            >
+                            <p class="mt-1 text-sm text-gray-500">Ingrese el número máximo de pasajeros permitidos</p>
+                        </div>
+
+                        <div>
+                            <label for="price" class="block text-sm font-medium text-gray-700">Precio del Viaje</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">$</span>
+                                </div>
+                                <input 
+                                    type="number" 
+                                    id="price" 
+                                    x-model="currentTrip.price" 
+                                    class="block w-full pl-7 pr-12 border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
+                                    placeholder="0.00"
+                                    min="0"
+                                    step="0.01"
+                                    required
+                                >
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">MXN</span>
+                                </div>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-500">Ingrese el precio del viaje en pesos mexicanos</p>
                         </div>
                         
                         <div class="flex items-center">
@@ -392,6 +580,36 @@
                             <label for="isActiveForToday" class="ml-2 block text-sm text-gray-900">
                                 Activo para hoy
                             </label>
+                        </div>
+
+                        <div class="flex items-center">
+                            <input 
+                                type="checkbox" 
+                                id="isRecurring"
+                                x-model="currentTrip.isRecurring"
+                                class="h-4 w-4 text-sidebar focus:ring-sidebar border-gray-300 rounded"
+                            >
+                            <label for="isRecurring" class="ml-2 block text-sm text-gray-900">
+                                Viaje recurrente
+                            </label>
+                        </div>
+
+                        <div x-show="currentTrip.isRecurring" class="space-y-2">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Días de la semana</label>
+                                <div class="mt-2 flex flex-wrap gap-2">
+                                    <template x-for="(day, index) in ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']" :key="index">
+                                        <label class="inline-flex items-center">
+                                            <input 
+                                                type="checkbox" 
+                                                x-model="currentTrip.recurringDays[index]"
+                                                class="h-4 w-4 text-sidebar focus:ring-sidebar border-gray-300 rounded"
+                                            >
+                                            <span class="ml-2 text-sm text-gray-700" x-text="day"></span>
+                                        </label>
+                                    </template>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="bg-gray-50 px-4 py-3 flex justify-end space-x-3 rounded-b-lg">
@@ -408,7 +626,10 @@
                             :disabled="saving"
                         >
                             <span x-show="!saving">Guardar</span>
-                            <span x-show="saving">Guardando...</span>
+                            <span x-show="saving" class="flex items-center">
+                                <i class="fas fa-spinner fa-spin mr-2"></i>
+                                Guardando...
+                            </span>
                         </button>
                     </div>
                 </form>

@@ -1,7 +1,7 @@
 using BlueWhatsapp.Boundaries.Persistence.Models;
-using BlueWhatsapp.Core.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
 
 namespace BlueWhatsapp.Boundaries.Persistence.Configurations;
 
@@ -25,7 +25,6 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
             .IsRequired()
             .HasDefaultValue(true);
             
-        // Add TripName configuration
         builder.Property(t => t.TripName)
             .IsRequired();
 
@@ -42,7 +41,9 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
         builder.HasMany(t => t.Reservations)
             .WithOne(r => r.Trip)
             .HasForeignKey(r => r.TripId);
-
+            
+        var currentTime = DateTime.UtcNow;
+        
         builder.HasData(
             new Trip()
             {
@@ -50,6 +51,8 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 TripName = "Ruta A (Recogida 1)",
                 IsActive = true,
                 RouteId = 1,
+                IsActiveForToday = true,
+                CreatedTime = currentTime
             },
             new Trip()
             {
@@ -57,6 +60,8 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 TripName = "Ruta A (Recogida 2)",
                 IsActive = true,
                 RouteId = 1,
+                IsActiveForToday = true,
+                CreatedTime = currentTime
             },
             new Trip()
             {
@@ -64,6 +69,8 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 TripName = "Ruta B (Recogida 1)",
                 IsActive = true,
                 RouteId = 2,
+                IsActiveForToday = true,
+                CreatedTime = currentTime
             },
             new Trip()
             {
@@ -71,6 +78,8 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 TripName = "Ruta B (Recogida 2)",
                 IsActive = true,
                 RouteId = 2,
+                IsActiveForToday = true,
+                CreatedTime = currentTime
             },
             new Trip()
             {
@@ -78,6 +87,8 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 TripName = "Ruta C (Recogida 1)",
                 IsActive = true,
                 RouteId = 3,
+                IsActiveForToday = true,
+                CreatedTime = currentTime
             },
             new Trip()
             {
@@ -85,6 +96,8 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 TripName = "Ruta C (Recogida 2)",
                 IsActive = true,
                 RouteId = 3,
+                IsActiveForToday = true,
+                CreatedTime = currentTime
             },
             new Trip()
             {
@@ -92,6 +105,8 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 TripName = "Ruta D (Recogida 1)",
                 IsActive = true,
                 RouteId = 4,
+                IsActiveForToday = true,
+                CreatedTime = currentTime
             },
             new Trip()
             {
@@ -99,6 +114,8 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 TripName = "Ruta D (Recogida 2)",
                 IsActive = true,
                 RouteId = 4,
+                IsActiveForToday = true,
+                CreatedTime = currentTime
             },
             new Trip()
             {
@@ -106,6 +123,8 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 TripName = "Ruta D (Recogida 3)",
                 IsActive = true,
                 RouteId = 4,
+                IsActiveForToday = true,
+                CreatedTime = currentTime
             },
             new Trip()
             {
@@ -113,6 +132,8 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 TripName = "Ruta E1 (Recogida 1)",
                 IsActive = true,
                 RouteId = 5,
+                IsActiveForToday = true,
+                CreatedTime = currentTime
             },
             new Trip()
             {
@@ -120,6 +141,8 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 TripName = "Ruta E1 (Recogida 2)",
                 IsActive = true,
                 RouteId = 5,
+                IsActiveForToday = true,
+                CreatedTime = currentTime
             },
             new Trip()
             {
@@ -127,6 +150,8 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 TripName = "Ruta E1 (Recogida 3)",
                 IsActive = true,
                 RouteId = 5,
+                IsActiveForToday = true,
+                CreatedTime = currentTime
             },
             new Trip()
             {
@@ -134,13 +159,17 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 TripName = "Ruta E2 (Recogida 1)",
                 IsActive = true,
                 RouteId = 6,
+                IsActiveForToday = true,
+                CreatedTime = currentTime
             },
             new Trip()
             {
                 Id = 14,
                 TripName = "Ruta E2 (Recogida 2)",
                 IsActive = true,
-                RouteId = 6,    
+                RouteId = 6,
+                IsActiveForToday = true,
+                CreatedTime = currentTime
             },
             new Trip()
             {
@@ -148,6 +177,8 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 TripName = "Ruta E2 (Recogida 3)",
                 IsActive = true,
                 RouteId = 6,
+                IsActiveForToday = true,
+                CreatedTime = currentTime
             },
             new Trip()
             {
@@ -155,6 +186,8 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 TripName = "Ruta F (Recogida 1)",
                 IsActive = true,
                 RouteId = 7,
+                IsActiveForToday = true,
+                CreatedTime = currentTime
             },
             new Trip()
             {
@@ -162,6 +195,8 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 TripName = "Ruta F (Recogida 2)",
                 IsActive = true,
                 RouteId = 7,
+                IsActiveForToday = true,
+                CreatedTime = currentTime
             }
         );
     }

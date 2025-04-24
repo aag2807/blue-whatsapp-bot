@@ -3334,19 +3334,6 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                     b.HasIndex("RouteId");
 
                     b.ToTable("Trips", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedTime = new DateTime(2025, 4, 15, 15, 18, 47, 760, DateTimeKind.Local).AddTicks(135),
-                            IsActive = true,
-                            IsActiveForToday = true,
-                            RouteId = 1,
-                            TripTime = new TimeSpan(0, 0, 0, 0, 0),
-                            UserName = "John Doe",
-                            UserNumber = "+19998887777"
-                        });
                 });
 
             modelBuilder.Entity("BlueWhatsapp.Boundaries.Persistence.Models.User", b =>

@@ -2421,12 +2421,12 @@ namespace BlueWhatsapp.Boundaries.Persistence.Migrations
                 columns: new[] { "CreatedTime", "ModifiedTime" },
                 values: new object[] { new DateTime(2025, 4, 15, 19, 39, 4, 35, DateTimeKind.Utc).AddTicks(9851), null });
 
-            migrationBuilder.UpdateData(
-                table: "Trips",
-                keyColumn: "Id",
-                keyValue: 1,
-                columns: new[] { "CreatedTime", "ModifiedTime", "TripTime", "UserName", "UserNumber" },
-                values: new object[] { new DateTime(2025, 4, 15, 15, 39, 4, 37, DateTimeKind.Local).AddTicks(720), null, new TimeSpan(0, 0, 0, 0, 0), "John Doe", "+19998887777" });
+            // migrationBuilder.UpdateData(
+            //     table: "Trips",
+            //     keyColumn: "Id",
+            //     keyValue: 1,
+            //     columns: new[] { "CreatedTime", "ModifiedTime", "TripTime", "UserName", "UserNumber" },
+            //     values: new object[] { new DateTime(2025, 4, 15, 15, 39, 4, 37, DateTimeKind.Local).AddTicks(720), null, new TimeSpan(0, 0, 0, 0, 0), "John Doe", "+19998887777" });
 
             migrationBuilder.UpdateData(
                 table: "Users",

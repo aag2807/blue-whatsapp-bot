@@ -18,7 +18,12 @@ public sealed class TripRepository : BaseRepository<Trip>, ITripRepository
     /// <inheritdoc/>
     async Task<IEnumerable<CoreTrip>> ITripRepository.GetAllTripsAsync()
     {
-        IReadOnlyList<Trip> models = await GetAllAsync(false).ConfigureAwait(true);
+        IEnumerable<Trip> models = await GetAllActiveQuery(false)
+            .Include(t => t.Route)
+            .Include(t => t.Schedules)
+            .Include(t => t.Reservations)
+            .ToListAsync()
+            .ConfigureAwait(true);
 
         return models.Select(m => m.ToCoreTrip());
     }
