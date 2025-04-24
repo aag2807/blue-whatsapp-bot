@@ -250,6 +250,241 @@
     </div>
 </div>
 
+@section MobileContent
+{
+    <div class="p-4" x-data="schedulesManagement">
+        <!-- Header -->
+        <div class="mb-4">
+            <h1 class="text-lg font-semibold">Manejo de horarios</h1>
+            <p class="text-sm text-gray-500 capitalize">@DateTime.Now.ToString("dddd, dd MMM", new System.Globalization.CultureInfo("es-ES"))</p>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="mb-4 space-y-3">
+            <div class="text-sm text-gray-500">
+                <span x-text="schedulesCount"></span> horarios encontrados
+            </div>
+            <button 
+                x-on:click="openAddModal()" 
+                class="w-full bg-sidebar hover:bg-sidebar-hover text-white px-4 py-2 rounded flex items-center justify-center space-x-2"
+            >
+                <i class="fas fa-plus"></i>
+                <span>Agregar nuevo horario</span>
+            </button>
+        </div>
+
+        <!-- Schedules Cards -->
+        <div class="space-y-4">
+            <template x-for="schedule in schedules" :key="schedule.id">
+                <div class="bg-white rounded-lg shadow p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h3 class="font-medium" x-text="schedule.name"></h3>
+                            <p class="text-sm text-gray-500" x-text="schedule.time"></p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button 
+                                x-on:click="openEditModal(schedule)"
+                                class="text-blue-600 hover:text-blue-900"
+                            >
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button 
+                                x-on:click="deleteSchedule(schedule.id)"
+                                class="text-red-600 hover:text-red-900"
+                            >
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button 
+                                x-on:click="openHotelsModal(schedule)"
+                                class="text-green-600 hover:text-green-900"
+                            >
+                                <i class="fas fa-hotel"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-sm">
+                        <span class="text-gray-500">Hoteles asignados:</span>
+                        <span x-text="schedule.hotelSchedules ? schedule.hotelSchedules.length : 0"></span>
+                    </div>
+                </div>
+            </template>
+            <div x-show="schedules.length === 0" class="text-center text-gray-500 p-4">
+                No horarios encontrados. Haz click en "Agregar nuevo horario" para crear uno.
+            </div>
+        </div>
+
+        <!-- Add/Edit Modal -->
+        <div 
+            x-cloak
+            x-show="showModal" 
+            class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+        >
+            <div 
+                x-on:click.away="showModal = false"
+                class="bg-white rounded-lg shadow-xl w-full mx-4 overflow-hidden"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 transform scale-95"
+                x-transition:enter-end="opacity-100 transform scale-100"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 transform scale-100"
+                x-transition:leave-end="opacity-0 transform scale-95"
+            >
+                <div class="border-b px-4 py-3 flex items-center justify-between">
+                    <h3 class="text-lg font-medium" x-text="currentSchedule.id ? 'Editar horario' : 'Agregar nuevo horario'"></h3>
+                    <button x-on:click="showModal = false" class="text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <form x-on:submit.prevent="saveSchedule">
+                    <div class="p-4 space-y-4">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Nombre del horario</label>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                x-model="currentSchedule.name" 
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
+                                required
+                            >
+                        </div>
+                        <div>
+                            <label for="time" class="block text-sm font-medium text-gray-700">Hora (HH:MM)</label>
+                            <input 
+                                type="time" 
+                                id="time" 
+                                x-model="currentSchedule.time" 
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
+                                required
+                            >
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 flex justify-end space-x-3 rounded-b-lg">
+                        <button 
+                            type="button"
+                            x-on:click="showModal = false"
+                            class="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sidebar"
+                        >
+                            Cancelar
+                        </button>
+                        <button 
+                            type="submit"
+                            class="bg-sidebar border border-transparent rounded-md shadow-sm py-2 px-4 text-sm font-medium text-white hover:bg-sidebar-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sidebar"
+                            :disabled="saving"
+                        >
+                            <span x-show="!saving">Guardar</span>
+                            <span x-show="saving">Guardando...</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Hotel Assignment Modal -->
+        <div 
+            x-show="showHotelsModal" 
+            class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+        >
+            <div 
+                x-on:click.away="showHotelsModal = false"
+                class="bg-white rounded-lg shadow-xl w-full mx-4 overflow-hidden"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 transform scale-95"
+                x-transition:enter-end="opacity-100 transform scale-100"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 transform scale-100"
+                x-transition:leave-end="opacity-0 transform scale-95"
+            >
+                <div class="border-b px-4 py-3 flex items-center justify-between">
+                    <h3 class="text-lg font-medium">Manejar hoteles para el horario: <span x-text="selectedSchedule.name"></span></h3>
+                    <button x-on:click="showHotelsModal = false" class="text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="p-4 max-h-96 overflow-y-auto">
+                    <div class="mb-4">
+                        <label for="hotelSearch" class="block text-sm font-medium text-gray-700">Buscar hoteles</label>
+                        <input 
+                            type="text" 
+                            id="hotelSearch" 
+                            x-model="hotelSearch" 
+                            placeholder="Escribe para buscar hoteles..."
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-sidebar focus:border-sidebar"
+                        >
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <template x-for="hotel in filteredHotels" :key="hotel.id">
+                            <div class="flex flex-col p-3 border rounded-md">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <span class="font-medium" x-text="hotel.name"></span>
+                                        <span class="text-sm text-gray-500 ml-2" x-text="hotel.meetingPoint"></span>
+                                    </div>
+                                    <button 
+                                        x-on:click="toggleHotelAssignment(hotel)"
+                                        :class="isHotelAssigned(hotel.id) ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'" 
+                                        class="text-white px-3 py-1 rounded text-sm"
+                                    >
+                                        <span x-text="isHotelAssigned(hotel.id) ? 'Remove' : 'Add'"></span>
+                                    </button>
+                                </div>
+                                <div x-show="isHotelAssigned(hotel.id)" class="mt-2">
+                                    <span class="text-sm text-gray-600">Pickup #</span>
+                                    <input 
+                                        type="number" 
+                                        min="1" 
+                                        max="5" 
+                                        x-model="getHotelSchedule(hotel.id).recogidaNumber" 
+                                        class="w-16 border border-gray-300 rounded-md shadow-sm py-1 px-2 text-sm focus:outline-none focus:ring-sidebar focus:border-sidebar"
+                                    >
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <div x-show="filteredHotels.length === 0" class="text-center text-gray-500 py-4">
+                            No hoteles encontrados que coincidan con tu búsqueda.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 px-4 py-3 flex justify-end space-x-3 rounded-b-lg">
+                    <button 
+                        type="button"
+                        x-on:click="showHotelsModal = false"
+                        class="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sidebar"
+                    >
+                        Cancelar
+                    </button>
+                    <button 
+                        type="button"
+                        x-on:click="saveHotelAssignments"
+                        class="bg-sidebar border border-transparent rounded-md shadow-sm py-2 px-4 text-sm font-medium text-white hover:bg-sidebar-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sidebar"
+                        :disabled="savingAssignments"
+                    >
+                        <span x-show="!savingAssignments">Guardar asignaciones</span>
+                        <span x-show="savingAssignments">Guardando...</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @section Scripts {
     <script src="~/js/schedules.js"></script>
 }

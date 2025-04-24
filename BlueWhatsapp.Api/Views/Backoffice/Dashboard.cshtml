@@ -1,8 +1,8 @@
 ﻿@{
-Layout = "_DashboardLayout";
-ViewData["Title"] = "Dashboard";
-ViewBag.ActivePage = "Dashboard";
-var user = @ViewBag.User;
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Dashboard";
+    ViewBag.ActivePage = "Dashboard";
+    var user = @ViewBag.User;
 }
 
 @section Styles {
@@ -20,7 +20,8 @@ var user = @ViewBag.User;
     <div class="p-4 flex items-center justify-between border-b">
         <div>
             <h1 class="text-lg font-semibold">Bienvenido @user</h1>
-            <p class="text-sm text-gray-500 capitalize">@DateTime.Now.ToString("dddd, dd MMM", new System.Globalization.CultureInfo("es-ES"))</p>
+            <p class="text-sm text-gray-500 capitalize">@DateTime.Now.ToString("dddd, dd MMM", new
+                System.Globalization.CultureInfo("es-ES"))</ p >
         </div>
 
         <div class="flex items-center">
@@ -30,7 +31,8 @@ var user = @ViewBag.User;
             </div>
 
             <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center ml-4">
-                <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" class="w-8 h-8 rounded-full" alt="Profile">
+                <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+                    class="w-8 h-8 rounded-full" alt="Profile">
             </div>
         </div>
     </div>
@@ -41,7 +43,7 @@ var user = @ViewBag.User;
         <div class="col-span-8 space-y-4">
             <!-- Stats Row -->
             <div class="grid grid-cols-2 gap-4">
-                
+
                 <!-- Work Orders Stat -->
                 <div class="bg-white rounded-lg shadow p-4 py-8">
                     <div class="flex items-start justify-between">
@@ -84,7 +86,8 @@ var user = @ViewBag.User;
                 <!-- Work Orders Per Day -->
                 <div class="bg-white rounded-lg shadow p-4">
                     <h2 class="font-medium mb-4">Conversaciones Totales</h2>
-                    <div class="flex justify-center items-center text-[80px] mt-[60px]" x-text="weeklyConversationCount">0</div>
+                    <div class="flex justify-center items-center text-[80px] mt-[60px]"
+                        x-text="weeklyConversationCount">0</div>
                 </div>
             </div>
         </div>
@@ -102,8 +105,10 @@ var user = @ViewBag.User;
 
                         <div class="bg-white p-3 py-5 rounded-lg shadow">
                             <div class="flex space-x-2 mb-1">
-                                <span x-show="conversation.isComplete" class="px-2 py-0.5 bg-green-600 text-white rounded-full text-xs">Completada</span>
-                                <span x-show="!conversation.isComplete" class="px-2 py-0.5 bg-yellow-500 text-white rounded-full text-xs">En curso</span>
+                                <span x-show="conversation.isComplete"
+                                    class="px-2 py-0.5 bg-green-600 text-white rounded-full text-xs">Completada</span>
+                                <span x-show="!conversation.isComplete"
+                                    class="px-2 py-0.5 bg-yellow-500 text-white rounded-full text-xs">En curso</span>
                             </div>
                             <h3 class="font-medium">
                                 <span x-text="conversation.personName"></span>
@@ -115,13 +120,13 @@ var user = @ViewBag.User;
                             <div class="flex items-center space-x-4 mt-1">
                                 <div class="flex items-center">
                                     <i class="far fa-clock mr-1"></i>
-                                    <span class="text-sm">Creada: 
+                                    <span class="text-sm">Creada:
                                         <span x-text="mapDateTime(conversation.createdTime)"></span>
                                     </span>
                                 </div>
                                 <div class="flex items-center ">
                                     <i class="far fa-clock mr-1"></i>
-                                    <span class="text-sm">Ultimo mensaje: 
+                                    <span class="text-sm">Ultimo mensaje:
                                         <span x-text="mapDateTime(conversation.modifiedTime)"></span>
                                     </span>
                                 </div>
@@ -136,69 +141,103 @@ var user = @ViewBag.User;
 
 @section MobileContent
 {
-<div class="p-4">
-    <h1 class="text-lg font-semibold mb-3">Dashboard</h1>
+    <div class="p-4">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h1 class="text-lg font-semibold">Bienvenido @user</h1>
+                <p class="text-sm text-gray-500 capitalize">@DateTime.Now.ToString("dddd, dd MMM", new System.Globalization.CultureInfo("es-ES"))</p>
+            </div>
+        </div>
 
-    <!-- Stats Row -->
-    <div class="grid grid-cols-2 gap-4 mb-4">
-        <!-- Work Orders Stat -->
-        <div class="bg-white rounded-lg shadow p-4">
-            <div class="flex items-start justify-between">
-                <div>
-                    <h3 class="text-3xl font-bold" x-text="pendingChatCount">0</h3>
-                    <p class="text-sm text-gray-500">Chats abiertos</p>
+        <!-- Stats Row -->
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <!-- Work Orders Stat -->
+            <div class="bg-white rounded-lg shadow p-4 py-8">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-3xl font-bold" x-text="pendingChatCount">0</h3>
+                        <p class="text-sm text-gray-500">Chats abiertos</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                        <i class="fas fa-clipboard-list text-orange-500"></i>
+                    </div>
                 </div>
-                <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
-                    <i class="fas fa-clipboard-list text-orange-500"></i>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-4 py-8">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-3xl font-bold" x-text="closedChatCount">0</h3>
+                        <p class="text-sm text-gray-500">Chats cerrados</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                        <i class="fas fa-box text-blue-500"></i>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Items to Pick Up Stat -->
-        <div class="bg-white rounded-lg shadow p-4">
-            <div class="flex items-start justify-between">
-                <div>
-                    <h3 class="text-3xl font-bold" x-text="closedChatCount">0</h3>
-                    <p class="text-sm text-gray-500">Chats cerrados</p>
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 gap-4 mb-4">
+            <!-- Converaciones completeadas -->
+            <div class="bg-white rounded-lg shadow p-4">
+                <h2 class="font-medium mb-4">Conversaciones completadas</h2>
+                <div class="flex justify-center">
+                    <div class="flex items-center justify-centers">
+                        <canvas id="totalClosedConversationsVsOpen"></canvas>
+                    </div>
                 </div>
-                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                    <i class="fas fa-box text-blue-500"></i>
-                </div>
+            </div>
+
+            <!-- Work Orders Per Day -->
+            <div class="bg-white rounded-lg shadow p-4">
+                <h2 class="font-medium mb-4">Conversaciones Totales</h2>
+                <div class="flex justify-center items-center text-[80px] mt-[60px]"
+                    x-text="weeklyConversationCount">0</div>
+            </div>
+        </div>
+
+        <!-- Conversations List -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="p-4 border-b">
+                <h2 class="font-medium">Conversaciones</h2>
+            </div>
+
+            <div class="divide-y gap-3 pt-5">
+                <template x-for="conversation in recentConversations" :key="conversation.userNumber">
+                    <div class="bg-white p-3 py-5 rounded-lg shadow">
+                        <div class="flex space-x-2 mb-1">
+                            <span x-show="conversation.isComplete"
+                                class="px-2 py-0.5 bg-green-600 text-white rounded-full text-xs">Completada</span>
+                            <span x-show="!conversation.isComplete"
+                                class="px-2 py-0.5 bg-yellow-500 text-white rounded-full text-xs">En curso</span>
+                        </div>
+                        <h3 class="font-medium">
+                            <span x-text="conversation.personName"></span>
+                        </h3>
+                        <h3 class="font-medium">
+                            <span x-text="conversation.userNumber"></span>
+                        </h3>
+
+                        <div class="flex items-center space-x-4 mt-1">
+                            <div class="flex items-center">
+                                <i class="far fa-clock mr-1"></i>
+                                <span class="text-sm">Creada:
+                                    <span x-text="mapDateTime(conversation.createdTime)"></span>
+                                </span>
+                            </div>
+                            <div class="flex items-center ">
+                                <i class="far fa-clock mr-1"></i>
+                                <span class="text-sm">Ultimo mensaje:
+                                    <span x-text="mapDateTime(conversation.modifiedTime)"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </template>
             </div>
         </div>
     </div>
-
-    <!-- Today's Work Orders -->
-    <h2 class="font-medium mb-2">Converaciones</h2>
-    <div class="space-y-2 mb-4">
-        <template x-for="conversation in conversations" :key="conversation.userNumber">
-
-            <div class="bg-white p-3 py-5 rounded-lg shadow">
-                <div class="flex space-x-2 mb-1">
-                    <span class="px-2 py-0.5 bg-red-600 text-white rounded-full text-xs">Prioridad</span>
-                    <span class="px-2 py-0.5 bg-yellow-500 text-white rounded-full text-xs">Overdue</span>
-                </div>
-                <h3 class="font-medium">chat</h3>
-
-                <div class="flex items-center space-x-4 mt-1">
-                    <div class="flex items-center">
-                        <i class="fas fa-map-marker-alt text-gray-400 mr-1"></i>
-                        <span class="text-sm">ubicacion</span>
-                    </div>
-                    <div class="flex items-center ">
-                        <i class="far fa-clock mr-1"></i>
-                        <span class="text-sm">Horario</span>
-                    </div>
-                </div>
-            </div>
-        </template>
-
-    </div>
-
-    <a href="#" class="w-full bg-green-500 text-white py-2 rounded-md text-center block mb-4">
-        View All Work Orders
-    </a>
-</div>
 }
 
 @section Scripts {

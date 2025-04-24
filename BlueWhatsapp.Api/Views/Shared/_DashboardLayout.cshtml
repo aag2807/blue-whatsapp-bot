@@ -131,14 +131,14 @@
             <!-- Header -->
             <div class="bg-white p-4 flex items-center justify-between border-b">
                 <div class="flex items-center">
-                    <div class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center mr-2">
+                    <div class="w-8 h-8 rounded-full bg-sidebar flex items-center justify-center mr-2">
                         <i class="fa-solid fa-taxi text-white text-sm"></i>
                     </div>
                     <span class="font-medium">Transporte</span>
                 </div>
                 <div class="flex items-center space-x-2">
                     <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                        <i class="fas fa-bell text-green-500 text-sm"></i>
+                        <i class="fas fa-bell text-sidebar text-sm"></i>
                     </div>
                     <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
                         <i class="fas fa-user text-gray-500 text-sm"></i>
@@ -152,31 +152,32 @@
                 @RenderSection("MobileContent", required: false)
 
                 <!-- Bottom Navigation -->
-                <div class="bg-white border-t flex justify-between p-2">
+                <div class="bg-white border-t flex justify-between p-2 mt-auto">
                     <a href="@Url.Action("Dashboard", "Backoffice")"
-                        class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Dashboard" ? "text-green-500" : "text-gray-500")">
+                        class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Dashboard" ? "text-sidebar" : "text-gray-500")">
                         <i class="fas fa-th-large"></i>
                         <span class="text-xs mt-1">Dashboard</span>
                     </a>
                     <a href="@Url.Action("Trips", "Backoffice")"
-                        class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Trips" ? "text-green-500" : "text-gray-500")">
+                        class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Trips" ? "text-sidebar" : "text-gray-500")">
                         <i class="fas fa-clipboard-list"></i>
                         <span class="text-xs mt-1">Viajes</span>
                     </a>
                     <a href="@Url.Action("Hotels", "Backoffice")"
-                        class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Hotels" ? "text-green-500" : "text-gray-500")">
+                        class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Hotels" ? "text-sidebar" : "text-gray-500")">
                         <i class="fas fa-box"></i>
                         <span class="text-xs mt-1">Hoteles</span>
                     </a>
                     <a href="@Url.Action("Schedules", "Backoffice")"
-                        class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Schedules" ? "text-green-500" : "text-gray-500")">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span class="text-xs mt-1">Incidents</span>
+                        class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Schedules" ? "text-sidebar" : "text-gray-500")">
+                        <i class="fa-solid fa-clock"></i>
+
+                        <span class="text-xs">Horarios</span>
                     </a>
-                    <a href="@Url.Action("Settings", "Backoffice")"
-                        class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Settings" ? "text-green-500" : "text-gray-500")">
-                        <i class="fas fa-cog"></i>
-                        <span class="text-xs mt-1">Settings</span>
+                    <a href="@Url.Action("Logout", "Backoffice")"
+                        class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Settings" ? "text-sidebar" : "text-gray-500")">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span class="text-xs mt-1">Cerrar</span>
                     </a>
                 </div>
             </div>
