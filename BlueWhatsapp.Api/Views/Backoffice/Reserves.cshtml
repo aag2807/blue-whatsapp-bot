@@ -24,21 +24,21 @@
                 <div class="flex space-x-2">
                     <button 
                         x-on:click="changeTab('all')" 
-                        class="px-3 py-1 rounded" 
+                        class="px-3 py-1 rounded transition" 
                         :class="currentTab === 'all' ? 'bg-sidebar text-white' : 'bg-gray-200 text-gray-700'"
                     >
                         Todas
                     </button>
                     <button 
                         x-on:click="changeTab('today')" 
-                        class="px-3 py-1 rounded" 
+                        class="px-3 py-1 rounded transition" 
                         :class="currentTab === 'today' ? 'bg-sidebar text-white' : 'bg-gray-200 text-gray-700'"
                     >
                         Hoy
                     </button>
                     <button 
                         x-on:click="changeTab('upcoming')" 
-                        class="px-3 py-1 rounded" 
+                        class="px-3 py-1 rounded transition" 
                         :class="currentTab === 'upcoming' ? 'bg-sidebar text-white' : 'bg-gray-200 text-gray-700'"
                     >
                         Próximas
@@ -51,13 +51,13 @@
                         type="text" 
                         x-model="searchTerm" 
                         placeholder="Buscar reservación..." 
-                        class="pl-8 pr-2 py-1 border rounded focus:outline-none focus:ring-1 focus:ring-sidebar"
+                        class="pl-8 pr-2 py-2 border rounded focus:outline-none focus:ring-1 focus:ring-sidebar"
                     >
-                    <i class="fas fa-search absolute left-3 top-2 text-gray-400"></i>
+                    <i class="fas fa-search absolute left-3 top-[50%] -translate-y-1/2 text-gray-400"></i>
                 </div>
                 <button 
                     x-on:click="openAddModal()" 
-                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex items-center space-x-2"
+                    class="bg-sidebar hover:bg-sidebar-hover text-white px-4 py-2 rounded flex items-center space-x-2"
                 >
                     <i class="fas fa-plus"></i>
                     <span>Crear Reservación</span>

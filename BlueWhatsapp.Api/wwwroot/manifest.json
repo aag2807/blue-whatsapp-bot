@@ -1,0 +1,26 @@
+{
+    "name": "Manejador de Transporte",
+    "short_name": "BlueWA",
+    "description": "Manejador de Transporte",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#003869",
+    "icons": [
+      {
+        "src": "/img/android-chrome-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png",
+        "purpose": "any maskable"
+      },
+      {
+        "src": "/img/android-chrome-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any maskable"
+      }
+    ],
+    "scope": "/",
+    "orientation": "portrait",
+    "categories": ["productivity"]
+  }

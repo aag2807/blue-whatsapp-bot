@@ -1,10 +1,12 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="utf-8" />
     <title>Backoffice</title>
-    <link rel="stylesheet" href="~/css/index.css"/>
+    <link rel="icon" type="image/x-icon" href="~/img/favicon.ico">
+    <link rel="stylesheet" href="~/css/index.css" />
+    <link rel="manifest" href="~/manifest.json">
     <script defer src="~/js/alpine.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer>
@@ -12,9 +14,9 @@
             theme: {
                 extend: {
                     colors: {
-                        'sidebar': '#0d5c46',
-                        'sidebar-hover': '#0a4e3b',
-                        'accent': '#10b981',
+                        'sidebar': '#003869',
+                        'sidebar-hover': '#044389',
+                        'accent': '#s003869',
                         'map-dark': '#1a202c',
                         'priority-1': '#ef4444',
                         'priority-2': '#f59e0b',
@@ -44,10 +46,31 @@
             background-position: center;
         }
     </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#003869">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="BlueWhatsApp Bot">
 </head>
+
 <body>
     @RenderBody()
 
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
+    </script>
 </body>
+
 </html>
