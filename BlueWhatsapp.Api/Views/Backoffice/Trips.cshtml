@@ -29,7 +29,6 @@
                     <input 
                         type="text" 
                         x-model="searchTerm" 
-                        x-on:input.debounce.300ms="handleSearch"
                         placeholder="Buscar por nombre, ruta o horario..." 
                         class="pl-8 pr-2 py-2 border rounded focus:outline-none focus:ring-1 focus:ring-sidebar w-64"
                         :class="{ 'border-red-500': error }"
@@ -37,7 +36,7 @@
                     <i class="fas fa-search absolute left-3 top-[50%] -translate-y-1/2 text-gray-400"></i>
                     <button 
                         x-show="searchTerm"
-                        x-on:click="searchTerm = ''; handleSearch()"
+                        x-on:click="searchTerm = ''"
                         class="absolute right-2 top-[50%] -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
                         <i class="fas fa-times"></i>
@@ -345,7 +344,6 @@
                     <input 
                         type="text" 
                         x-model="searchTerm" 
-                        x-on:input.debounce.300ms="handleSearch"
                         placeholder="Buscar por nombre, ruta o horario..." 
                         class="w-full pl-8 pr-8 py-2 border rounded focus:outline-none focus:ring-1 focus:ring-sidebar"
                         :class="{ 'border-red-500': error }"
@@ -353,7 +351,7 @@
                     <i class="fas fa-search absolute left-3 top-[50%] -translate-y-1/2 text-gray-400"></i>
                     <button 
                         x-show="searchTerm"
-                        x-on:click="searchTerm = ''; handleSearch()"
+                        x-on:click="searchTerm = ''"
                         class="absolute right-2 top-[50%] -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
                         <i class="fas fa-times"></i>

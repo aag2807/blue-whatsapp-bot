@@ -35,7 +35,7 @@ public sealed class HotelRepository : BaseRepository<Hotel>, IHotelRepository
     /// <inheritdoc/>
     async Task<IEnumerable<CoreHotel>> IHotelRepository.GetAllHotelsAsync()
     {
-        IReadOnlyList<Hotel> hotels = await GetAllActiveAsync().ConfigureAwait(true);
+        IReadOnlyList<Hotel> hotels = await GetAllActiveAsync(false).ConfigureAwait(true);
 
         return hotels.Select(h => h.ToCoreHotel());
     }
@@ -43,7 +43,7 @@ public sealed class HotelRepository : BaseRepository<Hotel>, IHotelRepository
     /// <inheritdoc/>
     async Task<CoreHotel?> IHotelRepository.GetHotelByIdAsync(int id)
     {
-        Hotel? hotel = await GetByIdAsync(id).ConfigureAwait(true);
+        Hotel? hotel = await GetByIdAsync(id, false).ConfigureAwait(true);
 
         return hotel?.ToCoreHotel();
     }
@@ -51,7 +51,7 @@ public sealed class HotelRepository : BaseRepository<Hotel>, IHotelRepository
     /// <inheritdoc/>
     async Task<IEnumerable<CoreHotel>> IHotelRepository.GetHotelsByRouteIdAsync(int routeId)
     {
-        IReadOnlyList<Hotel> hotels = await GetAllActiveAsync().ConfigureAwait(true);
+        IReadOnlyList<Hotel> hotels = await GetAllActiveAsync(false).ConfigureAwait(true);
 
         return hotels.Where(h => h.RouteId == routeId).Select(h => h.ToCoreHotel());
     }

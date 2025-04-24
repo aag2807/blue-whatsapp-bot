@@ -21,14 +21,14 @@ document.addEventListener('alpine:init', () => {
          * @type {Trip[]}
          */
         trips: [],
-        
+
         /**
          * @type {Route[]}
          */
         routes: [],
-        
+
         showModal: false,
-        currentTrip: { 
+        currentTrip: {
             id: 0,
             tripName: '',
             isActiveForToday: true,
@@ -42,7 +42,7 @@ document.addEventListener('alpine:init', () => {
         loading: true,
         error: null,
         connection: null,
-        
+
         init() {
             this.connection = new signalR.HubConnectionBuilder()
                 .withUrl("/trips")
@@ -75,58 +75,53 @@ document.addEventListener('alpine:init', () => {
         },
 
         get filteredTrips() {
-            if (!this.searchTerm.trim()) {
+            if (!this.searchTerm?.trim()) {
                 return this.trips;
             }
-            
-            const search = this.searchTerm.toLowerCase();
-            return this.trips.filter(trip => 
-                (trip.tripName && trip.tripName.toLowerCase().includes(search)) ||
-                (trip.route?.name && trip.route.name.toLowerCase().includes(search)) ||
-                (trip.route?.description && trip.route.description.toLowerCase().includes(search)) ||
-                (trip.schedule?.name && trip.schedule.name.toLowerCase().includes(search))
-            );
-        },
 
-        handleSearch() {
-            // Clear previous timeout
-            if (this.debounceTimeout) {
-                clearTimeout(this.debounceTimeout);
+            // Split search terms and clean them
+            const searchTerms = this.searchTerm.toLowerCase()
+                .split(' ')
+                .filter(term => term.length > 0);
+
+            // If no valid search terms after cleaning, return all trips
+            if (searchTerms.length === 0) {
+                return this.trips;
             }
 
-            // Set new timeout
-            this.debounceTimeout = setTimeout(() => {
-                this.searchForTrips();
-            }, 300); // 300ms debounce
-        },
+            return this.trips.filter(trip => {
+                // Create a single string of all searchable content
+                const searchableContent = [
+                    trip.tripName,
+                    trip.route?.name,
+                    trip.route?.description,
+                    trip.schedule?.name,
+                    trip.date ? new Date(trip.date).toLocaleDateString() : '',
+                    trip.status,
+                    trip.driver?.name,
+                    trip.vehicle?.plate
+                ]
+                    .filter(Boolean) // Remove null/undefined values
+                    .join(' ')
+                    .toLowerCase();
 
-        async searchForTrips() {
-            try {
-                this.loading = true;
-                await this.connection.invoke('SearchTrips', this.searchTerm);
-            } catch (error) {
-                console.error('Error searching trips:', error);
-                this.error = 'Error al buscar viajes';
-            } finally {
-                this.loading = false;
-            }
+                // Check if ALL search terms are found in the content
+                return searchTerms.every(term => searchableContent.includes(term));
+            });
         },
 
         formatTime(time) {
-            // If time is a string in HH:MM format, return it as is
             if (typeof time === 'string' && time.includes(':')) {
                 return time;
             }
-            
-            // If time is a TimeSpan from C# (represented as a string like "01:30:00"),
-            // format it to show only hours and minutes
+
             if (typeof time === 'string') {
                 const parts = time.split(':');
                 if (parts.length >= 2) {
                     return `${parts[0]}:${parts[1]}`;
                 }
             }
-            
+
             return time || '';
         },
 
@@ -144,7 +139,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         openAddModal() {
-            this.currentTrip = { 
+            this.currentTrip = {
                 Id: 0,
                 TripName: '',
                 IsActiveForToday: true,
@@ -157,7 +152,7 @@ document.addEventListener('alpine:init', () => {
 
         openEditModal(trip) {
             this.currentTrip = { ...trip };
-            
+
             // Ensure tripTime is in the correct format for the time input (HH:MM)
             if (typeof trip.tripTime === 'string' && trip.tripTime.includes(':')) {
                 const parts = trip.tripTime.split(':');
@@ -165,13 +160,13 @@ document.addEventListener('alpine:init', () => {
                     this.currentTrip.tripTime = `${parts[0]}:${parts[1]}`;
                 }
             }
-            
+
             this.showModal = true;
         },
 
         toggleActive(trip) {
             const updatedTrip = { ...trip, isActiveForToday: !trip.isActiveForToday };
-            
+
             // Send update to server
             this.updateTripStatus(updatedTrip);
         },
@@ -179,7 +174,7 @@ document.addEventListener('alpine:init', () => {
         async updateTripStatus(trip) {
             try {
                 await this.connection.invoke('UpdateTripStatus', trip);
-                
+
                 const { Swal } = window;
                 if (Swal) {
                     Swal.fire({
@@ -191,7 +186,7 @@ document.addEventListener('alpine:init', () => {
                 }
             } catch (error) {
                 console.error('Error updating trip status:', error);
-                
+
                 const { Swal } = window;
                 if (Swal) {
                     Swal.fire({
@@ -206,12 +201,12 @@ document.addEventListener('alpine:init', () => {
 
         async saveTrip() {
             this.saving = true;
-            
+
             try {
                 await this.connection.invoke('SaveTrip', this.currentTrip);
             } catch (error) {
                 console.error('Error saving trip:', error);
-                
+
                 const { Swal } = window;
                 if (Swal) {
                     Swal.fire({
@@ -231,8 +226,8 @@ document.addEventListener('alpine:init', () => {
 
         async deleteTrip(tripId) {
             const { Swal } = window;
-            
-            const confirmDelete = Swal 
+
+            const confirmDelete = Swal
                 ? new Promise(resolve => {
                     Swal.fire({
                         title: '¿Estás seguro?',
@@ -246,14 +241,13 @@ document.addEventListener('alpine:init', () => {
                     }).then(result => resolve(result.isConfirmed));
                 })
                 : Promise.resolve(confirm('¿Estás seguro de que quieres eliminar este viaje? Esta acción no se puede deshacer.'));
-            
+
             const isConfirmed = await confirmDelete;
-            if (!isConfirmed)
-            {
+            if (!isConfirmed) {
                 this.showModal = false;
                 return;
             };
-            
+
             await this.connection.invoke('DeleteTrip', tripId);
         }
     }));

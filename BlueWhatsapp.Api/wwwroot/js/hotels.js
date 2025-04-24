@@ -79,6 +79,8 @@ document.addEventListener('alpine:init', () => {
                 .build();
 
             this.connection.on('ReceiveHotels', (hotels) => {
+                console.log(hotels);
+                
                 this.hotels = hotels;
             });
 

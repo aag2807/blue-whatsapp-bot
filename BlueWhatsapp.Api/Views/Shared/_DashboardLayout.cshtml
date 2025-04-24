@@ -127,7 +127,7 @@
         </div>
 
         <!-- Mobile View -->
-        <div class="md:hidden bg-white h-full w-full">
+        <div class="md:hidden bg-white h-full w-full flex flex-col">
             <!-- Header -->
             <div class="bg-white p-4 flex items-center justify-between border-b">
                 <div class="flex items-center">
@@ -147,39 +147,38 @@
             </div>
 
             <!-- Content -->
-            <div class="flex flex-col h-[calc(100%-60px)]">
+            <div class="flex-1 overflow-y-auto pb-20">
                 <!-- Mobile Content -->
                 @RenderSection("MobileContent", required: false)
+            </div>
 
-                <!-- Bottom Navigation -->
-                <div class="bg-white border-t flex justify-between p-2 mt-auto">
-                    <a href="@Url.Action("Dashboard", "Backoffice")"
-                        class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Dashboard" ? "text-sidebar" : "text-gray-500")">
-                        <i class="fas fa-th-large"></i>
-                        <span class="text-xs mt-1">Dashboard</span>
-                    </a>
-                    <a href="@Url.Action("Trips", "Backoffice")"
-                        class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Trips" ? "text-sidebar" : "text-gray-500")">
-                        <i class="fas fa-clipboard-list"></i>
-                        <span class="text-xs mt-1">Viajes</span>
-                    </a>
-                    <a href="@Url.Action("Hotels", "Backoffice")"
-                        class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Hotels" ? "text-sidebar" : "text-gray-500")">
-                        <i class="fas fa-box"></i>
-                        <span class="text-xs mt-1">Hoteles</span>
-                    </a>
-                    <a href="@Url.Action("Schedules", "Backoffice")"
-                        class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Schedules" ? "text-sidebar" : "text-gray-500")">
-                        <i class="fa-solid fa-clock"></i>
-
-                        <span class="text-xs">Horarios</span>
-                    </a>
-                    <a href="@Url.Action("Logout", "Backoffice")"
-                        class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Settings" ? "text-sidebar" : "text-gray-500")">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                        <span class="text-xs mt-1">Cerrar</span>
-                    </a>
-                </div>
+            <!-- Bottom Navigation -->
+            <div class="bg-white border-t flex justify-between p-2 fixed bottom-0 left-0 right-0">
+                <a href="@Url.Action("Dashboard", "Backoffice")"
+                    class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Dashboard" ? "text-sidebar" : "text-gray-500")">
+                    <i class="fas fa-th-large"></i>
+                    <span class="text-xs mt-1">Dashboard</span>
+                </a>
+                <a href="@Url.Action("Trips", "Backoffice")"
+                    class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Trips" ? "text-sidebar" : "text-gray-500")">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span class="text-xs mt-1">Viajes</span>
+                </a>
+                <a href="@Url.Action("Hotels", "Backoffice")"
+                    class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Hotels" ? "text-sidebar" : "text-gray-500")">
+                    <i class="fas fa-box"></i>
+                    <span class="text-xs mt-1">Hoteles</span>
+                </a>
+                <a href="@Url.Action("Schedules", "Backoffice")"
+                    class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Schedules" ? "text-sidebar" : "text-gray-500")">
+                    <i class="fa-solid fa-clock"></i>
+                    <span class="text-xs">Horarios</span>
+                </a>
+                <a href="@Url.Action("Logout", "Backoffice")"
+                    class="flex flex-col items-center p-2 @(ViewBag.ActivePage == "Settings" ? "text-sidebar" : "text-gray-500")">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="text-xs mt-1">Cerrar</span>
+                </a>
             </div>
         </div>
     </div>
