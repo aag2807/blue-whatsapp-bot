@@ -27,86 +27,39 @@ document.addEventListener('alpine:init', () => {
          */
         routes: [],
 
+        /**
+         * @type {Schedule[]}
+         */
+        schedules: [],
+
         showModal: false,
         currentTrip: {
             id: 0,
             tripName: '',
-            isActiveForToday: true,
-            route: null,
-            schedule: null,
-            reservations: []
+            routeId: '',
+            scheduleIds: [],
+            isActiveForToday: true
         },
         searchTerm: '',
         debounceTimeout: null,
         saving: false,
-        loading: true,
+        loading: false,
         error: null,
         connection: null,
-
-        init() {
-            this.connection = new signalR.HubConnectionBuilder()
-                .withUrl("/trips")
-                .withAutomaticReconnect()
-                .build();
-
-            this.connection.on('ReceiveTrips', (trips) => {
-                this.trips = trips;
-                this.loading = false;
-                console.log(trips);
-            });
-
-            this.connection.on('ReceiveRoutes', (routes) => {
-                this.routes = routes;
-            });
-
-            this.connection.start()
-                .then(() => {
-                    this.fetchTrips();
-                    this.fetchRoutes();
-                })
-                .catch(err => {
-                    console.error('Error starting connection:', err);
-                    this.error = 'Error al conectar con el servidor';
-                });
-        },
 
         get tripsCount() {
             return this.filteredTrips.length;
         },
 
         get filteredTrips() {
-            if (!this.searchTerm?.trim()) {
-                return this.trips;
-            }
-
-            // Split search terms and clean them
-            const searchTerms = this.searchTerm.toLowerCase()
-                .split(' ')
-                .filter(term => term.length > 0);
-
-            // If no valid search terms after cleaning, return all trips
-            if (searchTerms.length === 0) {
-                return this.trips;
-            }
-
+            if (!this.searchTerm) return this.trips;
+            
+            const searchLower = this.searchTerm.toLowerCase();
             return this.trips.filter(trip => {
-                // Create a single string of all searchable content
-                const searchableContent = [
-                    trip.tripName,
-                    trip.route?.name,
-                    trip.route?.description,
-                    trip.schedule?.name,
-                    trip.date ? new Date(trip.date).toLocaleDateString() : '',
-                    trip.status,
-                    trip.driver?.name,
-                    trip.vehicle?.plate
-                ]
-                    .filter(Boolean) // Remove null/undefined values
-                    .join(' ')
-                    .toLowerCase();
-
-                // Check if ALL search terms are found in the content
-                return searchTerms.every(term => searchableContent.includes(term));
+                const tripNameMatch = trip.tripName.toLowerCase().includes(searchLower);
+                const routeMatch = trip.route?.name.toLowerCase().includes(searchLower);
+                const scheduleMatch = trip.schedules?.some(s => s.name.toLowerCase().includes(searchLower));
+                return tripNameMatch || routeMatch || scheduleMatch;
             });
         },
 
@@ -130,80 +83,81 @@ document.addEventListener('alpine:init', () => {
             return route ? route.name : '';
         },
 
-        async fetchTrips() {
-            await this.connection.invoke('GetTrips');
-        },
+        async init() {
+            this.loading = true;
+            try {
+                // Create SignalR connection
+                this.connection = new signalR.HubConnectionBuilder()
+                    .withUrl("/trips")
+                    .withAutomaticReconnect()
+                    .build();
 
-        async fetchRoutes() {
-            await this.connection.invoke('GetRoutes');
+                // Set up handlers
+                this.connection.on('ReceiveTrips', (trips) => {
+                    console.log(trips)
+                    this.trips = trips;
+                });
+
+                this.connection.on('ReceiveRoutes', (routes) => {
+                    this.routes = routes;
+                });
+
+                this.connection.on('ReceiveSchedules', (schedules) => {
+                    this.schedules = schedules;
+                });
+
+                // Start connection
+                await this.connection.start();
+
+                // Get initial data
+                await this.connection.invoke('GetTrips');
+                await this.connection.invoke('GetRoutes');
+                await this.connection.invoke('GetSchedules');
+
+            } catch (err) {
+                console.error('Error:', err);
+                this.error = 'Error al conectar con el servidor';
+            } finally {
+                this.loading = false;
+            }
         },
 
         openAddModal() {
             this.currentTrip = {
-                Id: 0,
-                TripName: '',
-                IsActiveForToday: true,
-                Route: null,
-                Schedule: null,
-                Reservations: []
+                id: 0,
+                tripName: '',
+                routeId: '',
+                scheduleIds: [],
+                isActiveForToday: true
             };
             this.showModal = true;
         },
 
         openEditModal(trip) {
-            this.currentTrip = { ...trip };
-
-            // Ensure tripTime is in the correct format for the time input (HH:MM)
-            if (typeof trip.tripTime === 'string' && trip.tripTime.includes(':')) {
-                const parts = trip.tripTime.split(':');
-                if (parts.length >= 2) {
-                    this.currentTrip.tripTime = `${parts[0]}:${parts[1]}`;
-                }
-            }
-
+            this.currentTrip = {
+                ...trip,
+                scheduleIds: trip.schedules?.map(s => s.id) || [],
+                routeId: trip.route?.id || '',
+                isActiveForToday: trip.isActiveForToday
+            };
             this.showModal = true;
-        },
-
-        toggleActive(trip) {
-            const updatedTrip = { ...trip, isActiveForToday: !trip.isActiveForToday };
-
-            // Send update to server
-            this.updateTripStatus(updatedTrip);
-        },
-
-        async updateTripStatus(trip) {
-            try {
-                await this.connection.invoke('UpdateTripStatus', trip);
-
-                const { Swal } = window;
-                if (Swal) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Estado actualizado',
-                        text: `El viaje ha sido ${trip.isActiveForToday ? 'activado' : 'desactivado'} para hoy.`,
-                        confirmButtonColor: '#0d5c46'
-                    });
-                }
-            } catch (error) {
-                console.error('Error updating trip status:', error);
-
-                const { Swal } = window;
-                if (Swal) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'No se pudo actualizar el estado del viaje. Por favor, inténtalo de nuevo.',
-                        confirmButtonColor: '#0d5c46'
-                    });
-                }
-            }
         },
 
         async saveTrip() {
             this.saving = true;
 
             try {
-                await this.connection.invoke('SaveTrip', this.currentTrip);
+                // Prepare trip data for saving
+                const tripToSave = {
+                    id: this.currentTrip.id,
+                    tripName: this.currentTrip.tripName,
+                    isActiveForToday: this.currentTrip.isActiveForToday,
+                    route: this.routes.find(r => r.id === parseInt(this.currentTrip.routeId)),
+                    schedules: this.schedules.filter(s => this.currentTrip.scheduleIds.includes(s.id))
+                };
+
+                await this.connection.invoke('SaveTrip', tripToSave);
+                this.showModal = false;
             } catch (error) {
                 console.error('Error saving trip:', error);
 
@@ -219,7 +173,6 @@ document.addEventListener('alpine:init', () => {
                     alert('Error al guardar el viaje: ' + error);
                 }
             } finally {
-                this.showModal = false;
                 this.saving = false;
             }
         },
@@ -243,12 +196,69 @@ document.addEventListener('alpine:init', () => {
                 : Promise.resolve(confirm('¿Estás seguro de que quieres eliminar este viaje? Esta acción no se puede deshacer.'));
 
             const isConfirmed = await confirmDelete;
-            if (!isConfirmed) {
-                this.showModal = false;
-                return;
-            };
+            if (!isConfirmed) return;
 
             await this.connection.invoke('DeleteTrip', tripId);
+        },
+
+        async toggleActive(trip) {
+            const updatedTrip = {
+                ...trip,
+                isActiveForToday: !trip.isActiveForToday
+            };
+            await this.connection.invoke('SaveTrip', updatedTrip);
+        }
+    }));
+});
+
+// Alpine Multi Select Component
+document.addEventListener('alpine:init', () => {
+    Alpine.data('alpineMultiSelect', ({
+        selected = [],
+        name = '',
+        placeholder = 'Seleccionar...',
+        maxItems = null
+    }) => ({
+        items: [],
+        search: '',
+        selected: selected,
+        open: false,
+        name: name,
+        placeholder: placeholder,
+        maxItems: maxItems,
+        
+        init() {
+            this.$watch('selected', (value) => {
+                this.$dispatch('change', this.selected);
+            });
+        },
+        
+        get filteredItems() {
+            const filtered = this.items.filter(item => {
+                const searchText = item.search || item.text;
+                return searchText.toLowerCase().includes(this.search.toLowerCase());
+            });
+            return filtered;
+        },
+        
+        isSelected(value) {
+            return this.selected.includes(value);
+        },
+        
+        toggleItem(value) {
+            if (this.maxItems && !this.isSelected(value) && this.selected.length >= this.maxItems) return;
+            
+            const index = this.selected.indexOf(value);
+            if (index === -1) {
+                this.selected.push(value);
+            } else {
+                this.selected.splice(index, 1);
+            }
+        },
+        
+        getItemText(value) {
+            const item = this.items.find(item => item.value === value);
+            return item ? item.text : '';
         }
     }));
 });

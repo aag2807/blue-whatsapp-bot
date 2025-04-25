@@ -25,9 +25,9 @@ public sealed class CoreTrip : BaseEntity
     public CoreRoute? Route { get; set; }
     
     /// <summary>
-    /// The schedule of the trip
+    /// The schedules associated with this trip
     /// </summary>
-    public CoreSchedule? Schedule { get; set; }
+    public ICollection<CoreSchedule> Schedules { get; set; } = new List<CoreSchedule>();
 
     /// <summary>
     /// Indicates whether the trip is active for a specific day

@@ -42,6 +42,18 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
             .WithOne(r => r.Trip)
             .HasForeignKey(r => r.TripId);
             
+        // Configure many-to-many relationship with schedules
+        builder.HasMany(t => t.Schedules)
+            .WithMany()
+            .UsingEntity<TripSchedule>(
+                j => j.HasOne(ts => ts.Schedule)
+                    .WithMany()
+                    .HasForeignKey(ts => ts.ScheduleId),
+                j => j.HasOne(ts => ts.Trip)
+                    .WithMany(t => t.TripSchedules)
+                    .HasForeignKey(ts => ts.TripId)
+            );
+            
         var currentTime = DateTime.UtcNow;
         
         builder.HasData(

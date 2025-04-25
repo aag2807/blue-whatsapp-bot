@@ -19,6 +19,11 @@ public interface IWhatsappBlueContext
     /// 
     /// </summary>
     public DbSet<Message> Messages { get; set; }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    public DbSet<TripSchedule> TripSchedules { get; set; }
 
     /// <summary>
     /// 

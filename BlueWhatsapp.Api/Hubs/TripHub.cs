@@ -1,6 +1,7 @@
 using BlueWhatsapp.Core.Enums;
 using BlueWhatsapp.Core.Models.Messages;
 using BlueWhatsapp.Core.Models.Route;
+using BlueWhatsapp.Core.Models.Schedule;
 using BlueWhatsapp.Core.Models.Trip;
 using BlueWhatsapp.Core.Persistence;
 using Microsoft.AspNetCore.SignalR;
@@ -11,11 +12,16 @@ public class TripHub : Hub
 {
     private readonly ITripRepository _tripRepository;
     private readonly IRouteRepository _routeRepository;
+    private readonly IScheduleRepository _scheduleRepository;
 
-    public TripHub(ITripRepository tripRepository, IRouteRepository routeRepository)
+    public TripHub(
+        ITripRepository tripRepository, 
+        IRouteRepository routeRepository,
+        IScheduleRepository scheduleRepository)
     {
         _tripRepository = tripRepository;
         _routeRepository = routeRepository;
+        _scheduleRepository = scheduleRepository;
     }
 
     public async Task GetTrips()
@@ -30,6 +36,12 @@ public class TripHub : Hub
         await Clients.All.SendAsync("ReceiveRoutes", routes).ConfigureAwait(true);
     }
 
+    public async Task GetSchedules()
+    {
+        var schedules = await _scheduleRepository.GetAllSchedulesAsync().ConfigureAwait(true);
+        await Clients.All.SendAsync("ReceiveSchedules", schedules).ConfigureAwait(true);
+    }
+
     public async Task SearchTrips(string value)
     {
         var trips = await _tripRepository.SearchTripsAsync(value).ConfigureAwait(true);
@@ -38,7 +50,14 @@ public class TripHub : Hub
     
     public async Task SaveTrip(CoreTrip trip)
     {
-        await _tripRepository.CreateTripAsync(trip).ConfigureAwait(true);
+        if (trip.Id == 0)
+        {
+            await _tripRepository.CreateTripAsync(trip).ConfigureAwait(true);
+        }
+        else
+        {
+            await _tripRepository.UpdateTripAsync(trip).ConfigureAwait(true);
+        }
         await GetTrips().ConfigureAwait(true);
     }
 

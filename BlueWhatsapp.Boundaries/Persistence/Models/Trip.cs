@@ -7,7 +7,7 @@ namespace BlueWhatsapp.Boundaries.Persistence.Models;
 public sealed class Trip : BaseEntity
 {
     /// <summary>
-    /// The name of the user    
+    /// The name of the trip    
     /// </summary>
     public string TripName { get; set; } = string.Empty;
 
@@ -25,17 +25,23 @@ public sealed class Trip : BaseEntity
     /// <summary>
     /// The route of the trip
     /// </summary>
-    [NotMapped]
     public Route? Route { get; set; }
+
+    /// <summary>
+    /// The schedules of the trip through junction table
+    /// </summary>
+    public ICollection<TripSchedule> TripSchedules { get; set; } = new List<TripSchedule>();
 
     /// <summary>
     /// The schedules of the trip
     /// </summary>
+    [NotMapped]
     public ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
     
     /// <summary>
-    /// The schedules of the trip
+    /// The hotels associated with this trip through the route
     /// </summary>
+    [NotMapped]
     public ICollection<Hotel> Hotels { get; set; } = new List<Hotel>();
     
     /// <summary>
@@ -59,6 +65,14 @@ public sealed class Trip : BaseEntity
         if (Route != null)
         {
             coreEntity.Route = Route.ToCoreRoute();
+        }
+
+        // Map schedules from TripSchedules
+        if (TripSchedules != null && TripSchedules.Any())
+        {
+            coreEntity.Schedules = TripSchedules
+                .Select(ts => ts.Schedule.ToCoreSchedule())
+                .ToList();
         }
 
         return coreEntity;
