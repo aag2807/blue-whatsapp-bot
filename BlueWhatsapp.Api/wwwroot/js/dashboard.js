@@ -1,3 +1,5 @@
+const { animate, scroll, stagger } = Motion
+
 /**
  * @typedef {Object} OpenChat
  * @property {string} number
@@ -43,6 +45,10 @@ document.addEventListener('alpine:init', () => {
         currentConversation: null,
         conversationMessages: [],
         connection: null,
+
+        chartRef$: null,
+        mobileChartRef$: null,
+
         /**
          * @type {Conversation[]}
          */
@@ -81,8 +87,116 @@ document.addEventListener('alpine:init', () => {
         mapDateTime(dateTime) {
             return new Date(dateTime).toLocaleString();
         },
+        animateElement(el, index) {
+            setTimeout(() => {
+                el.classList.remove('hidden');
+                animate(el, {
+                    opacity: [0, 1],
+                    x: [100, 0],
+                    delay: (index + 1) * 0.2
+                });
+            }, 100 * (index + 1));
+        },
+        animateClosedChats() {
+            const closedCounterCard = document.getElementById('closed-counter-card');
+            if (closedCounterCard) {
+                animate(0, this.closedChatCount,
+                    {
+                        ease: 'circCout',
+                        onUpdate: (value) => {
+                            closedCounterCard.textContent = Math.round(value);
+                        }
+                    }
+                )
+            }
 
+            const closedCounterResponsive = document.getElementById('closed-counter-responsive');
+            if (closedCounterResponsive) {
+                animate(0, this.closedChatCount,
+                    {
+                        ease: 'circCout',
+                        onUpdate: (value) => {
+                            closedCounterResponsive.textContent = Math.round(value);
+                        }
+                    }
+                )
+            }
+        },
+        animateOpenChats() {
+            const openCounterCard = document.getElementById('open-counter-card');
+            if (openCounterCard) {
+                animate(0, this.pendingChatCount,
+                    {
+                        ease: 'circCout',
+                        onUpdate: (value) => {
+                            openCounterCard.textContent = Math.round(value);
+                        }
+                    }
+                )
+            }
+
+            const openCounterResponsive = document.getElementById('open-counter-responsive');
+            if (openCounterResponsive) {
+                animate(0, this.pendingChatCount,
+                    {
+                        ease: 'circCout',
+                        onUpdate: (value) => {
+                            openCounterResponsive.textContent = Math.round(value);
+                        }
+                    }
+                )
+            }
+        },
+        animateTotalConversations() {
+            const totalConversationsResponsive = document.getElementById('total-conversations-responsive');
+            if (totalConversationsResponsive) {
+                animate(0, this.weeklyConversationCount,
+                    {
+                        ease: 'circCout',
+                        onUpdate: (value) => {
+                            totalConversationsResponsive.textContent = Math.round(value);
+                        }
+                    }
+                )
+            }
+
+            const totalConversationsCard = document.getElementById('total-conversations-card');
+            if (totalConversationsCard) {
+                animate(0, this.weeklyConversationCount,
+                    {
+                        ease: 'circCout',
+                        onUpdate: (value) => {
+                            totalConversationsCard.textContent = Math.round(value);
+                        }
+                    }
+                )
+            }
+        },
         init() {
+            // Debounce function
+            const debounce = (func, wait) => {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            };
+
+            // Debounced resize handler
+            const handleResize = debounce(() => {
+                if (this.chartRef$ && this.weeklyConversations.length > 0) {
+                    this.chartRef$.destroy();
+                    this.mobileChartRef$.destroy();
+                    this.initCharts(this.weeklyConversations);
+                }
+            }, 250);
+
+            window.addEventListener("resize", handleResize);
+
             this.connection = new signalR.HubConnectionBuilder()
                 .withUrl("/messages")
                 .withAutomaticReconnect()
@@ -95,11 +209,13 @@ document.addEventListener('alpine:init', () => {
                 }))
 
                 this.pendingChats = mappedPendingChats
+                this.animateOpenChats()
             })
 
             this.connection.on("ReceiveWeeklyConversations", (weeklyConversations) => {
                 this.weeklyConversations = weeklyConversations;
                 this.initCharts(weeklyConversations);
+                this.animateTotalConversations()
             })
 
             this.connection.on('ReceiveClosedMessages', (openChats) => {
@@ -109,6 +225,7 @@ document.addEventListener('alpine:init', () => {
                 }))
 
                 this.closedChats = mappedClosedChats
+                this.animateClosedChats()
             })
 
             // Handle receiving a new message
@@ -146,6 +263,7 @@ document.addEventListener('alpine:init', () => {
                 this.recentConversations = conversations;
             });
 
+
             // Start the connection
             this.connection.start()
                 .then(() => {
@@ -164,18 +282,27 @@ document.addEventListener('alpine:init', () => {
         // Method to show browser notification
         showNotification(from) {
             if (Notification.permission === "granted") {
-                new Notification("New WhatsApp Message", {body: `New message from ${from}`});
+                new Notification("New WhatsApp Message", { body: `New message from ${from}` });
             } else if (Notification.permission !== "denied") {
                 Notification.requestPermission();
             }
         },
         initCharts(weeklyConversations) {
             const ctx = document.getElementById('totalClosedConversationsVsOpen');
-            const openConversations = weeklyConversations.filter(cv => cv.isComplete);
-            const closedConversations = weeklyConversations.filter(cv => !cv.isComplete);
+            const mobileCtx = document.getElementById('mobileTotalClosedConversationsVsOpen');
 
-            console.log({openConversations, closedConversations});
-            
+            const closedConversations = weeklyConversations.filter(cv => cv.isComplete);
+            const openConversations = weeklyConversations.filter(cv => !cv.isComplete);
+
+            // If chart already exists, destroy it before creating a new one
+            if (this.chartRef$) {
+                this.chartRef$.destroy();
+            }
+
+            if (this.mobileChartRef$) {
+                this.mobileChartRef$.destroy();
+            }
+
             //chart js donut chart config
             const data = {
                 labels: ['Abiertas', 'Cerradas'],
@@ -188,24 +315,44 @@ document.addEventListener('alpine:init', () => {
 
             const options = {
                 responsive: true,
-                maintainAspectRatio: false,
+                maintainAspectRatio: true,
+                aspectRatio: 1.5,
                 plugins: {
                     legend: {
-                        position: 'right',
+                        position: 'bottom',
                         labels: {
                             font: {
                                 size: 16
                             }
                         }
                     }
+                },
+                onResize: (chart, size) => {
+                    chart.resize();
                 }
             };
 
-            const myChart = new Chart(ctx, {
+            this.chartRef$ = new Chart(ctx, {
                 type: 'doughnut',
                 data: data,
                 options: options
             });
+
+            this.mobileChartRef$ = new Chart(mobileCtx, {
+                type: 'doughnut',
+                data: data,
+                options: options
+            });
+
+            // Force a resize after initialization
+            setTimeout(() => {
+                if (this.chartRef$) {
+                    this.chartRef$.resize();
+                }
+                if (this.mobileChartRef$) {
+                    this.mobileChartRef$.resize();
+                }
+            }, 100);
         }
 
     }));

@@ -67,8 +67,8 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    <template x-for="trip in filteredTrips" :key="trip.id">
-                        <tr>
+                    <template x-for="(trip, index) in filteredTrips" :key="trip.id">
+                        <tr class="hidden" x-data="{}" x-init="animateElement($el, index)" >
                             <td class="px-4 py-4 whitespace-nowrap" x-text="trip.id"></td>
                             <td class="px-4 py-4 whitespace-nowrap" x-text="trip.tripName"></td>
                             <td class="px-4 py-4 whitespace-nowrap">
@@ -342,8 +342,8 @@
 
         <!-- Trips Cards -->
         <div class="space-y-4">
-            <template x-for="trip in filteredTrips" :key="trip.id">
-                <div class="bg-white rounded-lg shadow p-4">
+            <template x-for="(trip, index) in filteredTrips" :key="trip.id">
+                <div class="hidden bg-white rounded-lg shadow p-4" x-data="{}" x-init="animateElement($el, index)">
                     <div class="flex justify-between items-start mb-2">
                         <div>
                             <h3 class="font-medium" x-text="trip.tripName"></h3>

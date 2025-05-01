@@ -1,3 +1,6 @@
+
+const { animate, scroll, stagger } = Motion
+
 /**
  * @typedef {Object} Trip
  * @property {number} Id
@@ -46,7 +49,17 @@ document.addEventListener('alpine:init', () => {
         loading: false,
         error: null,
         connection: null,
-
+        animateElement(el, index) {
+            const delay = index + 1;
+            setTimeout(() => {
+                el.classList.remove('hidden');
+                animate(el, {
+                    opacity: [0, 1],
+                    x: [200, 0],
+                    delay: delay * 0.3
+                });
+            }, 100 * delay);
+        },
         get tripsCount() {
             return this.filteredTrips.length;
         },

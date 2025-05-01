@@ -8,9 +8,6 @@
  * @property {string} hotelName
  */
 
-
-
-
 document.addEventListener('alpine:init', () => {
     Alpine.data('reservationsManagement', () => ({
         /**

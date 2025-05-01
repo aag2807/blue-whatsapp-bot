@@ -1,3 +1,4 @@
+const { animate, scroll, stagger } = Motion
 /**
  * @typedef {Object} Schedule
  * @property {number} id
@@ -67,6 +68,18 @@ document.addEventListener('alpine:init', () => {
                 hotel.name.toLowerCase().includes(search) ||
                 (hotel.meetingPoint && hotel.meetingPoint.toLowerCase().includes(search))
             );
+        },
+
+        animateElement(el, index) {
+            const delay = index + 2;
+            setTimeout(() => {
+                el.classList.remove('hidden');
+                animate(el, {
+                    opacity: [0, 1],
+                    x: [200, 0],
+                    delay: delay * 0.3
+                });
+            }, 100 * delay);
         },
 
         isHotelAssigned(hotelId) {

@@ -16,7 +16,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.Id)
             .IsRequired()
             .ValueGeneratedOnAdd();
-            
+
         builder.Property(u => u.Name)
             .IsRequired()
             .HasMaxLength(100);
@@ -38,6 +38,28 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             Name = "Admin",
             Email = "admin@admin.com",
             Password = PasswordUtils.HashPassword("admin")
-        });
+        },
+        new User
+        {
+            Id = 2,
+            Name = "Diana",
+            Email = "dmartinez@bluemall.com.do",
+            Password = PasswordUtils.HashPassword("admin")
+        },
+        new User
+        {
+            Id = 3,
+            Name = "reservas",
+            Email = "reservas@bluemall.com.do",
+            Password = PasswordUtils.HashPassword("password123")
+        },
+        new User
+        {
+            Id = 4,
+            Name = "Murena",
+            Email = "murena@bluemall.com.do",
+            Password = PasswordUtils.HashPassword("password123")
+        }
+        );
     }
-}   
+}

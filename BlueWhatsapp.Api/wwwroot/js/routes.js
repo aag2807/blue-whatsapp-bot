@@ -1,3 +1,5 @@
+const { animate, scroll, stagger } = Motion
+
 /**
  * @typedef {Object} Route
  * @property {number} id
@@ -21,6 +23,17 @@ document.addEventListener('alpine:init', () => {
         error: null,
         connection: null,
         isEditing: false,
+        animateElement(el, index) {
+            const delay = index + 1;
+            setTimeout(() => {
+                el.classList.remove('hidden');
+                animate(el, {
+                    opacity: [0, 1],
+                    x: [100, 0],
+                    delay: delay * 0.2
+                });
+            }, 100 * delay);
+        },
         
         init() {
             this.connection = new signalR.HubConnectionBuilder()

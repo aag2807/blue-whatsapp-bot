@@ -19,16 +19,12 @@
     <!-- Header -->
     <div class="p-4 flex items-center justify-between border-b">
         <div>
-            <h1 class="text-lg font-semibold">Bienvenido @user</h1>
+            <h1 class="text-lg font-semibold">Bienvenido/a @user</h1>
             <p class="text-sm text-gray-500 capitalize">@DateTime.Now.ToString("dddd, dd MMM", new
                 System.Globalization.CultureInfo("es-ES"))</ p >
         </div>
 
         <div class="flex items-center">
-            <div class="relative mr-4">
-                <input type="text" placeholder="Search" class="pl-8 pr-4 py-2 border rounded-md">
-                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-            </div>
 
             <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center ml-4">
                 <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
@@ -48,7 +44,7 @@
                 <div class="bg-white rounded-lg shadow p-4 py-8">
                     <div class="flex items-start justify-between">
                         <div>
-                            <h3 class="text-3xl font-bold" x-text="pendingChatCount"></h3>
+                            <h3 class="text-3xl font-bold" id="open-counter-card" ></h3>
                             <p class="text-sm text-gray-500">Chats abiertos</p>
                         </div>
                         <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
@@ -60,7 +56,7 @@
                 <div class="bg-white rounded-lg shadow p-4 py-8">
                     <div class="flex items-start justify-between">
                         <div>
-                            <h3 class="text-3xl font-bold" x-text="closedChatCount"></h3>
+                            <h3 class="text-3xl font-bold" id="closed-counter-card"></h3>
                             <p class="text-sm text-gray-500">Chats cerrados</p>
                         </div>
                         <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
@@ -78,7 +74,7 @@
                     <h2 class="font-medium mb-4">Conversaciones completadas</h2>
                     <div class="flex justify-center">
                         <div class=" flex items-center justify-centers">
-                            <canvas id="totalClosedConversationsVsOpen"></canvas>
+                            <canvas class="w-[90%]" id="totalClosedConversationsVsOpen"></canvas>
                         </div>
                     </div>
                 </div>
@@ -86,8 +82,7 @@
                 <!-- Work Orders Per Day -->
                 <div class="bg-white rounded-lg shadow p-4">
                     <h2 class="font-medium mb-4">Conversaciones Totales</h2>
-                    <div class="flex justify-center items-center text-[80px] mt-[60px]"
-                        x-text="weeklyConversationCount">0</div>
+                    <div class="flex justify-center items-center text-[80px] mt-[60px]" id="total-conversations-card"></div>
                 </div>
             </div>
         </div>
@@ -100,10 +95,9 @@
                 </div>
 
                 <!-- Work Order List -->
-                <div class="divide-y gap-3 pt-5">
-                    <template x-for="conversation in recentConversations" :key="conversation.userNumber">
-
-                        <div class="bg-white p-3 py-5 rounded-lg shadow">
+                <div class="divide-y flex flex-col gap-3 p-2 overflow-x-hidden">
+                    <template x-for="(conversation, index) in recentConversations" :key="conversation.userNumber">
+                        <div x-data="{}" x-init="animateElement($el, index)" class="hidden bg-white p-3 py-5 rounded-lg shadow">
                             <div class="flex space-x-2 mb-1">
                                 <span x-show="conversation.isComplete"
                                     class="px-2 py-0.5 bg-green-600 text-white rounded-full text-xs">Completada</span>
@@ -141,7 +135,7 @@
 
 @section MobileContent
 {
-    <div class="p-4">
+    <div x-data="dashboard" class="p-4">
         <div class="flex items-center justify-between mb-4">
             <div>
                 <h1 class="text-lg font-semibold">Bienvenido @user</h1>
@@ -155,7 +149,7 @@
             <div class="bg-white rounded-lg shadow p-4 py-8">
                 <div class="flex items-start justify-between">
                     <div>
-                        <h3 class="text-3xl font-bold" x-text="pendingChatCount">0</h3>
+                        <h3 class="text-3xl font-bold" id="open-counter-responsive"></h3>
                         <p class="text-sm text-gray-500">Chats abiertos</p>
                     </div>
                     <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
@@ -167,7 +161,7 @@
             <div class="bg-white rounded-lg shadow p-4 py-8">
                 <div class="flex items-start justify-between">
                     <div>
-                        <h3 class="text-3xl font-bold" x-text="closedChatCount">0</h3>
+                        <h3 class="text-3xl font-bold" id="closed-counter-responsive"></h3>
                         <p class="text-sm text-gray-500">Chats cerrados</p>
                     </div>
                     <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
@@ -184,7 +178,7 @@
                 <h2 class="font-medium mb-4">Conversaciones completadas</h2>
                 <div class="flex justify-center">
                     <div class="flex items-center justify-centers">
-                        <canvas id="totalClosedConversationsVsOpen"></canvas>
+                        <canvas class="w-[90%]" id="mobileTotalClosedConversationsVsOpen"></canvas>
                     </div>
                 </div>
             </div>
@@ -192,8 +186,7 @@
             <!-- Work Orders Per Day -->
             <div class="bg-white rounded-lg shadow p-4">
                 <h2 class="font-medium mb-4">Conversaciones Totales</h2>
-                <div class="flex justify-center items-center text-[80px] mt-[60px]"
-                    x-text="weeklyConversationCount">0</div>
+                <div class="flex justify-center items-center text-[80px] mt-[60px]" id="total-conversations-responsive"></div>
             </div>
         </div>
 
@@ -203,9 +196,9 @@
                 <h2 class="font-medium">Conversaciones</h2>
             </div>
 
-            <div class="divide-y gap-3 pt-5">
-                <template x-for="conversation in recentConversations" :key="conversation.userNumber">
-                    <div class="bg-white p-3 py-5 rounded-lg shadow">
+            <div class="divide-y flex flex-col gap-3 p-5 conversation-container">
+                <template x-for="(conversation, index) in recentConversations" :key="conversation.userNumber">
+                    <div x-data="{}" x-init="animateElement($el, index)" class="hidden conversation-card bg-white p-3 py-5 rounded-lg shadow">
                         <div class="flex space-x-2 mb-1">
                             <span x-show="conversation.isComplete"
                                 class="px-2 py-0.5 bg-green-600 text-white rounded-full text-xs">Completada</span>

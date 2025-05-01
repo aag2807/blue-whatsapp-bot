@@ -14,7 +14,8 @@
     <script defer src="~/js/sweetalert.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.6/signalr.min.js"></script>
-    <script defer>
+    <script src="https://cdn.jsdelivr.net/npm/motion@latest/dist/motion.js"></script>
+   <script defer>
         tailwind.config = {
             theme: {
                 extend: {
@@ -46,10 +47,15 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="BlueWhatsApp Bot">
     <link rel="apple-touch-icon" href="~/img/android-chrome-512x512.png">
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
 </head>
 
 <body class="min-h-screen">
-    <div class="w-full h-screen" x-data="@ViewBag.AlpineComponent">
+    <div class="w-full h-screen">
         <!-- Tablet/Desktop View -->
 
         <div class="hidden md:flex bg-white h-full w-full">
@@ -58,7 +64,7 @@
                 <div class="flex flex-col items-center space-y-6 flex-1">
                     <div class="flex flex-col items-center">
                         <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center mb-1">
-                            <i class="fa-solid fa-taxi text-sidebar"></i>
+                            <i class="fa-solid fa-van-shuttle text-sidebar"></i>
                         </div>
                         <span class="text-xs text-center">Transporte</span>
                     </div>
@@ -132,7 +138,7 @@
             <div class="bg-white p-4 flex items-center justify-between border-b">
                 <div class="flex items-center">
                     <div class="w-8 h-8 rounded-full bg-sidebar flex items-center justify-center mr-2">
-                        <i class="fa-solid fa-taxi text-white text-sm"></i>
+                        <i class="fa-solid fa-van-shuttle text-white text-sm"></i>
                     </div>
                     <span class="font-medium">Transporte</span>
                 </div>
