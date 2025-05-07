@@ -34,6 +34,10 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
         builder.Property(t => t.IsActiveForToday)
             .IsRequired()
             .HasDefaultValue(true);
+
+        builder.Property(t => t.MaxCapacity)
+            .IsRequired()
+            .HasDefaultValue(30);
             
         // Configure relationships
         builder.HasOne(t => t.Route);
@@ -64,6 +68,7 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 IsActive = true,
                 RouteId = 1,
                 IsActiveForToday = true,
+                MaxCapacity = 30,
                 CreatedTime = currentTime
             },
             new Trip()
@@ -73,6 +78,7 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 IsActive = true,
                 RouteId = 1,
                 IsActiveForToday = true,
+                MaxCapacity = 30,
                 CreatedTime = currentTime
             },
             new Trip()
@@ -82,6 +88,7 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 IsActive = true,
                 RouteId = 2,
                 IsActiveForToday = true,
+                MaxCapacity = 30,
                 CreatedTime = currentTime
             },
             new Trip()
@@ -91,6 +98,7 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 IsActive = true,
                 RouteId = 2,
                 IsActiveForToday = true,
+                MaxCapacity = 30,
                 CreatedTime = currentTime
             },
             new Trip()
@@ -100,6 +108,7 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 IsActive = true,
                 RouteId = 3,
                 IsActiveForToday = true,
+                MaxCapacity = 30,
                 CreatedTime = currentTime
             },
             new Trip()
@@ -109,6 +118,7 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 IsActive = true,
                 RouteId = 3,
                 IsActiveForToday = true,
+                MaxCapacity = 30,
                 CreatedTime = currentTime
             },
             new Trip()
@@ -118,6 +128,7 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 IsActive = true,
                 RouteId = 4,
                 IsActiveForToday = true,
+                MaxCapacity = 30,
                 CreatedTime = currentTime
             },
             new Trip()
@@ -127,6 +138,7 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 IsActive = true,
                 RouteId = 4,
                 IsActiveForToday = true,
+                MaxCapacity = 30,
                 CreatedTime = currentTime
             },
             new Trip()
@@ -136,6 +148,7 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 IsActive = true,
                 RouteId = 4,
                 IsActiveForToday = true,
+                MaxCapacity = 30,
                 CreatedTime = currentTime
             },
             new Trip()
@@ -145,6 +158,7 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 IsActive = true,
                 RouteId = 5,
                 IsActiveForToday = true,
+                MaxCapacity = 30,
                 CreatedTime = currentTime
             },
             new Trip()
@@ -154,6 +168,7 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 IsActive = true,
                 RouteId = 5,
                 IsActiveForToday = true,
+                MaxCapacity = 30,
                 CreatedTime = currentTime
             },
             new Trip()
@@ -163,6 +178,7 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 IsActive = true,
                 RouteId = 5,
                 IsActiveForToday = true,
+                MaxCapacity = 30,
                 CreatedTime = currentTime
             },
             new Trip()
@@ -172,6 +188,7 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 IsActive = true,
                 RouteId = 6,
                 IsActiveForToday = true,
+                MaxCapacity = 30,
                 CreatedTime = currentTime
             },
             new Trip()
@@ -181,6 +198,7 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 IsActive = true,
                 RouteId = 6,
                 IsActiveForToday = true,
+                MaxCapacity = 30,
                 CreatedTime = currentTime
             },
             new Trip()
@@ -190,6 +208,7 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 IsActive = true,
                 RouteId = 6,
                 IsActiveForToday = true,
+                MaxCapacity = 30,
                 CreatedTime = currentTime
             },
             new Trip()
@@ -199,6 +218,7 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 IsActive = true,
                 RouteId = 7,
                 IsActiveForToday = true,
+                MaxCapacity = 30,
                 CreatedTime = currentTime
             },
             new Trip()
@@ -208,6 +228,7 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 IsActive = true,
                 RouteId = 7,
                 IsActiveForToday = true,
+                MaxCapacity = 30,
                 CreatedTime = currentTime
             }
         );

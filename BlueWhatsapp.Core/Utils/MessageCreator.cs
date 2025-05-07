@@ -283,4 +283,13 @@ public sealed class MessageCreator : IMessageCreator
 
         return model;
     }
+
+    /// <inheritdoc />
+    CoreMessageToSend IMessageCreator.CreateTripFullMessage(string userNumber)
+    {
+        string message = "Lo sentimos, este viaje ya ha alcanzado su capacidad máxima. Por favor, seleccione otro horario o intente en otro día.";
+        CoreMessageToSend model = new CoreMessageToSend(message, userNumber);
+
+        return model;
+    }
 }

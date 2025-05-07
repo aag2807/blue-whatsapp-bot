@@ -37,4 +37,47 @@ public sealed class ReservationRepository : BaseRepository<Reservation>, IReserv
 
         return response.Select(Reservation.ToCoreEntity);
     }
+
+    /// <inheritdoc />
+    async Task<IEnumerable<CoreReservation>> IReservationRepository.GetAllDailyReservationsOrderedByCreationDate()
+    {
+        DateTime today = DateTime.UtcNow.Date;
+        List<Reservation> response = await GetAllActiveQuery(false)
+            .Where(r => r.CreatedTime.Date == today)
+            .OrderByDescending(r => r.CreatedTime)
+            .ToListAsync()
+            .ConfigureAwait(true);
+
+        return response.Select(Reservation.ToCoreEntity);
+    }
+
+    /// <inheritdoc />
+    async Task<IEnumerable<CoreReservation>> IReservationRepository.GetAllUpcomingReservationsOrderedByCreationDate()
+    {
+        DateTime today = DateTime.UtcNow.Date;
+        List<Reservation> response = await GetAllActiveQuery(false)
+            .Where(r => r.CreatedTime.Date > today)
+            .OrderByDescending(r => r.CreatedTime)
+            .ToListAsync()
+            .ConfigureAwait(true);
+
+        return response.Select(Reservation.ToCoreEntity);
+    }
+
+    /// <inheritdoc />
+    async Task IReservationRepository.DeleteReservation(int reservationId)
+    {
+        await SoftDeleteAsync(reservationId).ConfigureAwait(true);
+    }
+
+    /// <inheritdoc />
+    async Task<IEnumerable<CoreReservation>> IReservationRepository.GetReservationsByTripId(int tripId)
+    {
+        List<Reservation> response = await GetAllActiveQuery(false)
+            .Where(r => r.TripId == tripId)
+            .ToListAsync()
+            .ConfigureAwait(true);
+
+        return response.Select(Reservation.ToCoreEntity);
+    }
 }

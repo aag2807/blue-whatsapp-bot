@@ -17,6 +17,23 @@ public sealed class Trip : BaseEntity
     public bool IsActiveForToday { get; set; } = true;
 
     /// <summary>
+    /// The maximum capacity of the trip
+    /// </summary>
+    public int MaxCapacity { get; set; } = 30;
+
+    /// <summary>
+    /// The current number of reservations for the trip
+    /// </summary>
+    [NotMapped]
+    public int CurrentReservations { get; set; }
+
+    /// <summary>
+    /// The remaining capacity of the trip
+    /// </summary>
+    [NotMapped]
+    public int RemainingCapacity => MaxCapacity - CurrentReservations;
+
+    /// <summary>
     /// The id of the route associated with the trip
     /// </summary>
     [ForeignKey("Route")]
@@ -60,6 +77,8 @@ public sealed class Trip : BaseEntity
             Id = Id,
             TripName = TripName,
             IsActiveForToday = IsActiveForToday,
+            MaxCapacity = MaxCapacity,
+            CurrentReservations = CurrentReservations
         };
 
         if (Route != null)

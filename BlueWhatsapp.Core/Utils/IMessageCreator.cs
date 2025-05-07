@@ -103,4 +103,11 @@ public interface IMessageCreator
     /// <param name="userNumber"></param>
     /// <returns></returns>
     public CoreMessageToSend CreateAskingEmailMessage(string userNumber);
+
+    /// <summary>
+    /// Creates a message informing the user that the trip is at full capacity.
+    /// </summary>
+    /// <param name="userNumber">The user's phone number</param>
+    /// <returns>A message indicating the trip is full</returns>
+    public CoreMessageToSend CreateTripFullMessage(string userNumber);
 }

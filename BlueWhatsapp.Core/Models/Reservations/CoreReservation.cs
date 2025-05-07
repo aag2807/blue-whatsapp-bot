@@ -1,4 +1,6 @@
 using BlueWhatsapp.Core.Models.Trip;
+using BlueWhatsapp.Core.Models.Route;
+using BlueWhatsapp.Core.Models.Schedule;
 
 namespace BlueWhatsapp.Core.Models.Reservations;
 
@@ -38,4 +40,19 @@ public sealed class CoreReservation : BaseEntity
     /// The trip of the reservation
     /// </summary>  
     public CoreTrip Trip { get; set; } = new CoreTrip();
+    
+    /// <summary>
+    /// The id of the trip
+    /// </summary>
+    public int TripId { get; set; }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    public CoreSchedule? Schedule { get; set; }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    public CoreHotel? Hotel { get; set; }
 }

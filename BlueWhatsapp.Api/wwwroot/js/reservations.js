@@ -18,9 +18,15 @@ document.addEventListener('alpine:init', () => {
         currentTab: 'all',
         currentReservation: { 
             id: 0, 
-            userName: '', 
+            username: '', 
             userNumber: '', 
-            tripId: ''
+            details: '',
+            reservationDate: '',
+            reserveTime: '',
+            hotelName: '',
+            tripId: '',
+            scheduleId: '',
+            hotelId: ''
         },
         searchTerm: '',
         saving: false,
@@ -28,35 +34,59 @@ document.addEventListener('alpine:init', () => {
         error: null,
         connection: null,
 
+        schedules: [],
+        hotels: [],
         trips: [],
-        routes: [],
         
         init() {
             this.connection = new signalR.HubConnectionBuilder()
-                .withUrl("/reservations")
+                .withUrl("/reservations")    
                 .withAutomaticReconnect()
                 .build();
 
-            this.connection.on('ReceiveReservations', (reservations) => {
+            this.connection.start()
+                .then(() => {
+                    console.log("SignalR Connected");
+                    this.loadData();
+                })
+                .catch(err => {
+                    console.error("SignalR Connection Error: ", err);
+                    this.error = "Error connecting to server";
+                });
+
+            this.connection.on("ReceiveReservations", (reservations) => {
                 this.reservations = reservations;
-                console.log(reservations);
+                this.loading = false;
             });
 
-            this.connection.on('ReceiveTrips', (trips) => {
+            this.connection.on("ReceiveSchedules", (schedules) => {
+                this.schedules = schedules;
+            });
+
+            this.connection.on("ReceiveHotels", (hotels) => {
+                this.hotels = hotels;
+            });
+
+            this.connection.on("ReceiveTrips", (trips) => {
                 this.trips = trips;
             });
+        },
 
-            this.connection.on('ReceiveRoutes', (routes) => {
-                this.routes = routes;
-            });
-
-            this.connection.start()
-                .then(() =>
-                {
-                    this.connection.invoke('GetReservations');
-                } )
+        loadData() {
+            this.loading = true;
+            this.error = null;
+            this.connection.invoke("GetReservations")
                 .catch(err => {
+                    console.error("Error loading reservations: ", err);
+                    this.error = "Error loading reservations";
+                    this.loading = false;
                 });
+            this.connection.invoke("GetSchedules")
+                .catch(err => console.error("Error loading schedules: ", err));
+            this.connection.invoke("GetHotels")
+                .catch(err => console.error("Error loading hotels: ", err));
+            this.connection.invoke("GetTrips")
+                .catch(err => console.error("Error loading trips: ", err));
         },
 
         get reservationsCount() {
@@ -66,33 +96,26 @@ document.addEventListener('alpine:init', () => {
         get filteredReservations() {
             let filtered = this.reservations;
             
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            
-            if (this.currentTab === 'today')
-            {
+            if (this.currentTab === 'today') {
                 filtered = filtered.filter(r => {
-                    const trip = this.trips.find(t => t.id === r.tripId);
-                    return trip && trip.isActiveForToday;
+                    const reservationDate = new Date(r.reservationDate);
+                    const today = new Date();
+                    return reservationDate.toDateString() === today.toDateString();
                 });
             } else if (this.currentTab === 'upcoming') {
-                // For upcoming, we need to look at trips that are scheduled for future dates
-                // Since in your model trips don't have dates, we'll just show trips that are active
-                // but not for today (assuming they're scheduled for a future date)
+                const today = new Date();
                 filtered = filtered.filter(r => {
-                    const trip = this.trips.find(t => t.id === r.tripId);
-                    return trip && !trip.isActiveForToday;
+                    const reservationDate = new Date(r.reservationDate);
+                    return reservationDate > today;
                 });
             }
             
-            // Then filter by search term
             if (this.searchTerm.trim()) {
                 const search = this.searchTerm.toLowerCase();
                 filtered = filtered.filter(r => 
-                    (r.userName && r.userName.toLowerCase().includes(search)) ||
+                    (r.username && r.username.toLowerCase().includes(search)) ||
                     (r.userNumber && r.userNumber.toLowerCase().includes(search)) ||
-                    this.getTripInfo(r.tripId).toLowerCase().includes(search) ||
-                    this.getRouteInfo(r.tripId).toLowerCase().includes(search)
+                    (r.hotelName && r.hotelName.toLowerCase().includes(search))
                 );
             }
             
@@ -100,50 +123,59 @@ document.addEventListener('alpine:init', () => {
         },
 
         changeTab(tab) {
+            console.log('Changing tab to:', tab);
             this.currentTab = tab;
-        },
-
-        getTripInfo(tripId) {
-            const trip = this.trips.find(t => t.id === tripId);
-            if (!trip) return 'No disponible';
-            
-            return `${trip.tripTime} (${trip.userName})`;
-        },
-
-        getRouteInfo(tripId) {
-            const trip = this.trips.find(t => t.id === tripId);
-            if (!trip) return 'No disponible';
-            
-            const route = this.routes.find(r => r.id === trip.routeId);
-            return route ? route.name : 'Ruta no encontrada';
-        },
-
-        formatTripOption(trip) {
-            const route = this.routes.find(r => r.id === trip.routeId);
-            return `${trip.tripTime} - ${route ? route.name : 'Ruta desconocida'} - ${trip.userName}`;
+            if (this.connection.state === 'Connected') {
+                console.log('SignalR connection is connected, invoking method...');
+                switch(tab) {
+                    case 'today':
+                        console.log('Invoking GetReservationsForToday');
+                        this.connection.invoke('GetReservationsForToday')
+                            .catch(err => console.error('Error invoking GetReservationsForToday:', err));
+                        break;
+                    case 'upcoming':
+                        console.log('Invoking GetUpcomingReservations');
+                        this.connection.invoke('GetUpcomingReservations')
+                            .catch(err => console.error('Error invoking GetUpcomingReservations:', err));
+                        break;
+                    default:
+                        console.log('Invoking GetReservations');
+                        this.connection.invoke('GetReservations')
+                            .catch(err => console.error('Error invoking GetReservations:', err));
+                        break;
+                }
+            } else {
+                console.warn('SignalR connection is not connected. Current state:', this.connection.state);
+            }
         },
 
         formatDate(date) {
+            if (!date) {
+                return 'No disponible'
+            };
             const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
             return new Date(date).toLocaleDateString('es-ES', options);
         },
 
-        async fetchReservations() {
-            try {
-                await this.connection.invoke('GetReservations');
-            } catch (error) {
-                console.error('Error fetching reservations via SignalR:', error);
-                // Fallback to regular fetch
-                this.fetchReservationsWithoutSignalR();
-            }
+        formatTime(time) {
+            if (!time) {
+                return 'No disponible'
+            };
+            return time;
         },
 
         openAddModal() {
             this.currentReservation = { 
                 id: 0, 
-                userName: '', 
+                username: '', 
                 userNumber: '', 
-                tripId: ''
+                details: '',
+                reservationDate: '',
+                reserveTime: '',
+                hotelName: '',
+                tripId: '',
+                scheduleId: '',
+                hotelId: ''
             };
             this.showModal = true;
         },
@@ -154,49 +186,21 @@ document.addEventListener('alpine:init', () => {
         },
 
         async saveReservation() {
-            this.saving = true;
-            
             try {
-                if (this.connection.state === 'Connected') {
-                    await this.connection.invoke('SaveReservation', this.currentReservation);
-                } else {
-                    // Fallback to regular fetch
-                    const url = this.currentReservation.id ? `/api/reservations/${this.currentReservation.id}` : '/api/reservations';
-                    const method = this.currentReservation.id ? 'PUT' : 'POST';
-                    
-                    const response = await fetch(url, {
-                        method,
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(this.currentReservation)
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error('Failed to save reservation');
-                    }
-                    
-                    // Refresh reservations list
-                    await this.fetchReservationsWithoutSignalR();
-                }
-                
-                this.showModal = false;
+                await this.connection.invoke("SaveReservation", this.currentReservation);
+                this.closeModal();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Reservation saved successfully'
+                });
             } catch (error) {
-                console.error('Error saving reservation:', error);
-                
-                const { Swal } = window;
-                if (Swal) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'No se pudo guardar la reservación. Por favor, inténtalo de nuevo.',
-                        confirmButtonColor: '#0d5c46'
-                    });
-                } else {
-                    alert('Error al guardar la reservación: ' + error);
-                }
-            } finally {
-                this.saving = false;
+                console.error("Error saving reservation:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'Error saving reservation'
+                });
             }
         },
 
@@ -224,27 +228,17 @@ document.addEventListener('alpine:init', () => {
             try {
                 if (this.connection.state === 'Connected') {
                     await this.connection.invoke('DeleteReservation', reservationId);
-                } else {
-                    // Fallback to regular fetch
-                    const response = await fetch(`/api/reservations/${reservationId}`, {
-                        method: 'DELETE'
-                    });
                     
-                    if (!response.ok) {
-                        throw new Error('Failed to delete reservation');
+                    if (Swal) {
+                        Swal.fire({
+                            title: 'Eliminada!',
+                            text: 'La reservación ha sido eliminada.',
+                            icon: 'success',
+                            confirmButtonColor: '#0d5c46'
+                        });
                     }
-                    
-                    // Refresh reservations list
-                    await this.fetchReservationsWithoutSignalR();
-                }
-                
-                if (Swal) {
-                    Swal.fire({
-                        title: 'Eliminada!',
-                        text: 'La reservación ha sido eliminada.',
-                        icon: 'success',
-                        confirmButtonColor: '#0d5c46'
-                    });
+                } else {
+                    throw new Error('No connection to server');
                 }
             } catch (error) {
                 console.error('Error deleting reservation:', error);
@@ -260,6 +254,25 @@ document.addEventListener('alpine:init', () => {
                     alert('Error al eliminar la reservación: ' + error);
                 }
             }
+        },
+
+        getTripCapacity(tripId) {
+            const trip = this.trips.find(t => t.id === tripId);
+            if (!trip) return { current: 0, max: 30 };
+            return {
+                current: trip.currentReservations,
+                max: trip.maxCapacity,
+                remaining: trip.remainingCapacity
+            };
+        },
+
+        getTripName(tripId) {
+            const trip = this.trips.find(t => t.id === tripId);
+            return trip ? trip.tripName : 'Unknown Trip';
+        },
+
+        closeModal() {
+            this.showModal = false;
         }
     }));
 });

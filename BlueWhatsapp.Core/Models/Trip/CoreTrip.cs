@@ -38,4 +38,24 @@ public sealed class CoreTrip : BaseEntity
     /// The reservations for the trip
     /// </summary>
     public ICollection<CoreReservation> Reservations { get; set; } = new List<CoreReservation>();
+
+    /// <summary>
+    /// The maximum capacity of the trip
+    /// </summary>
+    public int MaxCapacity { get; set; } = 30;
+
+    /// <summary>
+    /// The current number of reservations for the trip
+    /// </summary>
+    public int CurrentReservations { get; set; }
+
+    /// <summary>
+    /// The remaining capacity for the trip
+    /// </summary>
+    public int RemainingCapacity => MaxCapacity - CurrentReservations;
+
+    /// <summary>
+    /// The hotels associated with the trip
+    /// </summary>
+    public ICollection<CoreHotel> Hotels { get; set; } = new List<CoreHotel>();
 }

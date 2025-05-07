@@ -50,7 +50,8 @@ public sealed class TripRepository : BaseRepository<Trip>, ITripRepository
         {
             TripName = trip.TripName,
             IsActiveForToday = trip.IsActiveForToday,
-            RouteId = trip.Route?.Id ?? 0
+            RouteId = trip.Route?.Id ?? 0,
+            MaxCapacity = trip.MaxCapacity
         };
 
         Trip createdTrip = await AddAsync(newTrip).ConfigureAwait(true);
@@ -91,6 +92,7 @@ public sealed class TripRepository : BaseRepository<Trip>, ITripRepository
             existingTrip.TripName = trip.TripName;
             existingTrip.IsActiveForToday = trip.IsActiveForToday;
             existingTrip.RouteId = trip.Route?.Id ?? 0;
+            existingTrip.MaxCapacity = trip.MaxCapacity;
 
             // Update schedules
             if (trip.Schedules != null)
@@ -106,13 +108,10 @@ public sealed class TripRepository : BaseRepository<Trip>, ITripRepository
                 await _dbContext.TripSchedules.AddRangeAsync(mappedSchedules);
                 await _dbContext.SaveChangesAsync();
             }
-
-            await UpdateAsync(existingTrip).ConfigureAwait(true);
-            await _dbContext.SaveChangesAsync().ConfigureAwait(true);
         }
         catch (Exception ex)
         {
-            Console.WriteLine();
+            _logger.LogError($"Error updating trip: {ex.Message}");
             throw;
         }
     }

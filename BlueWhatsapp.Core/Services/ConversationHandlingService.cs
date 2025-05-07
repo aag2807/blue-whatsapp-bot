@@ -7,6 +7,7 @@ using BlueWhatsapp.Core.Models.Messages;
 using BlueWhatsapp.Core.Models.Reservations;
 using BlueWhatsapp.Core.Models.Route;
 using BlueWhatsapp.Core.Models.Schedule;
+using BlueWhatsapp.Core.Models.Trip;
 using BlueWhatsapp.Core.Persistence;
 using BlueWhatsapp.Core.Utils;
 using Triplex.Validations;
@@ -19,6 +20,7 @@ public sealed class ConversationHandlingService(
     IScheduleRepository scheduleRepository,
     IHotelRepository hotelRepository,
     IReservationRepository reservationRepository,
+    ITripRepository tripRepository,
     IAppLogger logger,
     IRouteRepository routeRepository
 ) : IConversationHandlingService
