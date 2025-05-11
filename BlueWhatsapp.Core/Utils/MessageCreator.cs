@@ -12,8 +12,7 @@ public sealed class MessageCreator : IMessageCreator
     /// <inheritdoc />
     CoreMessageToSend IMessageCreator.CreateWelcomeMessage(string number)
     {
-        string message = $"¡Gracias por elegir BlueMall Puntacana como su destino de compras! Servirle es nuestra prioridad, así que déjenos sus datos para procesar su reserva de transporte, para que nuestro equipo pueda brindarle un mejor servicio. Este chat es exclusivo para reservas de traslado desde los hoteles hacia el Mall.";
-        CoreMessageToSend model = new CoreMessageToSend(message, number);
+        string message = $"¡Gracias por elegir BlueMall Puntacana como su destino de compras! Servirle es nuestra prioridad, así que déjenos sus datos para procesar su reserva de transporte, para que nuestro equipo pueda brindarle un mejor servicio. Este chat es exclusivo para reservas de traslado desde los hoteles hacia el Mall. Si desea hablar con una persona, favor marque 0";        CoreMessageToSend model = new CoreMessageToSend(message, number);
 
         return model;
     }
@@ -107,7 +106,7 @@ public sealed class MessageCreator : IMessageCreator
 
         Row iDontKnowRow = new Row()
         {
-            id = "0",
+            id = "-1",
             title = "No lo sé",
         };
 
@@ -135,12 +134,40 @@ public sealed class MessageCreator : IMessageCreator
         section.title = "Hoteles";
         section.rows = new List<Row>();
         List<Row> temRows = hotels.Select(hotel => new Row() { id = hotel.Id.ToString(), title = hotel.Name, }).ToList();
+       
+        Row iDontKnowRow = new Row()
+        {
+            id = "-1",
+            title = "No está en la lista",
+        };
 
         section.rows.AddRange(temRows);
+        section.rows.Add(iDontKnowRow);
 
         model.interactive.action.sections.Add(section);
 
         return model;
+    }
+
+    private string FreeHotelTripMessage(CoreHotel hotel)
+    {
+        return $"""
+                Para su hotel {hotel.Name} tenemos el servicio de traslado gratuito en
+                nuestras rutas fijas con una duración de 2 horas en el Mall. El bus pasa en
+                los siguientes horarios, elija el de su preferencia:
+                """;
+    }
+
+    private string VIPHotelTripMessage(CoreHotel hotel)
+    {
+        return $"""
+                Para su hotel Iberostar Bávaro no tenemos el servicio de traslado gratuito,
+                pero le podemos ofrecer nuestro servicio VIP, con una duración de 2 horas
+                en el Mall. Nuestras reservas VIP tienen un costo general de 20 USD$ por
+                un mínimo de 4 personas. En caso de que vengan menos de 4, pagan el
+                total de 4 como monto mínimo. A partir de 4 personas se cobrará 5 USD$
+                por cada persona adicional que se agregue. Esto les cubre ida y vuelta.
+                """;
     }
 
     /// <inheritdoc />
@@ -149,7 +176,8 @@ public sealed class MessageCreator : IMessageCreator
         CoreInteractiveMessage model = new CoreInteractiveMessage(number);
         model.interactive.header.type = "text";
         model.interactive.header.text = "Bluemall";
-        model.interactive.body.text = $"elija el horarios de su preferencia:";
+
+        model.interactive.body.text = FreeHotelTripMessage(hotel);
 
         model.interactive.action.button = "Horarios";
         model.interactive.action.sections = new List<Section>();
@@ -160,7 +188,7 @@ public sealed class MessageCreator : IMessageCreator
         
         List<Row> tempRows = schedules.Select(schedule => new Row() { id = schedule.Id.ToString(), title = schedule.Time, }).ToList();
 
-        tempRows.Add(new Row() {  id = "0", title = "Escribiré luego.", });
+        tempRows.Add(new Row() {  id = "-1", title = "Lo voy a analizar y escribiré luego.", });
 
         section.rows.AddRange( tempRows );
 
@@ -185,6 +213,29 @@ public sealed class MessageCreator : IMessageCreator
 
         return model;
     }
+    
+    /// <inheritdoc />
+    CoreMessageToSend IMessageCreator.CreateUnknownHotelMessage(string userNumber)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("Por favor, indique el nombre del hotel donde se encuentra");
+        
+        CoreMessageToSend model = new CoreMessageToSend(sb.ToString(), userNumber);
+
+        return model;
+    }
+
+    /// <inheritdoc />
+    CoreMessageToSend IMessageCreator.CreateNoMatchingHotelMessage(string userNumber)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("No se ha podido encontrar el hotel indicado.");
+        sb.Append("La conversacion se le transferirá a un miembro de equipo para que le pueda ayudar.");
+        
+        CoreMessageToSend model = new CoreMessageToSend(sb.ToString(), userNumber);
+
+        return model;
+    }
 
     /// <inheritdoc />
     CoreMessageToSend IMessageCreator.CreateAskingForNameMessage(string userNumber)
@@ -196,7 +247,7 @@ public sealed class MessageCreator : IMessageCreator
     }
     
     /// <inheritdoc />
-    CoreMessageToSend IMessageCreator.CreateAskingForRoomNumberMessage(string userNumber)
+    CoreMessageToSend IMessageCreator.CreateAskForRoomNumberMessage(string userNumber)
     {
         string message = $"Indique su número de habitación";
         CoreMessageToSend model = new CoreMessageToSend(message, userNumber);
@@ -205,7 +256,7 @@ public sealed class MessageCreator : IMessageCreator
     }
     
     /// <inheritdoc />
-    CoreInteractiveMessage IMessageCreator.CreateAskingForAdultsMessage(string userNumber)
+    CoreInteractiveMessage IMessageCreator.CreateAskForAdultsCountMessage(string userNumber)
     {
         var model = new CoreInteractiveMessage(userNumber);
         model.interactive.header.type = "text";
@@ -236,7 +287,7 @@ public sealed class MessageCreator : IMessageCreator
     }
     
     /// <inheritdoc />
-    CoreInteractiveMessage IMessageCreator.CreateAskingAskingForChildrenMessage(string userNumber)
+    CoreInteractiveMessage IMessageCreator.CreateAskForChildrenCountMessage(string userNumber)
     {
         var model = new CoreInteractiveMessage(userNumber);
         model.interactive.header.type = "text";
@@ -291,5 +342,10 @@ public sealed class MessageCreator : IMessageCreator
         CoreMessageToSend model = new CoreMessageToSend(message, userNumber);
 
         return model;
+    }
+
+    public CoreMessageToSend CreateWillTextLaterMessage(string userNumber)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -1,0 +1,167 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{appendix}
+\usepackage{verbatim}
+\usepackage{babel}
+
+% Custom colors for code listings
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+% Code listing style
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% Document settings
+\geometry{a4paper, margin=1in}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Blue WhatsApp Bot Documentation},
+    pdfauthor={Blue WhatsApp Bot Team},
+    pdfsubject={Technical Documentation},
+    pdfkeywords={WhatsApp, Bot, Reservation System}
+}
+
+% Header and footer settings
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Blue WhatsApp Bot}
+\fancyhead[R]{\leftmark}
+\fancyfoot[C]{\thepage}
+
+% Title page settings
+\title{
+    \Huge\textbf{Blue WhatsApp Bot}\\[0.5cm]
+    \Large Technical Documentation
+}
+\author{Blue WhatsApp Bot Team}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\part{English Documentation}
+
+\chapter{Introduction}
+\input{chapters/introduction}
+
+\chapter{System Architecture}
+\input{chapters/architecture}
+
+\chapter{Core Components}
+\input{chapters/core_components}
+
+\chapter{API Layer}
+\input{chapters/api_layer}
+
+\chapter{Database Design}
+\input{chapters/database}
+
+\chapter{Reservation System}
+\input{chapters/reservation_system}
+
+\chapter{WhatsApp Integration}
+\input{chapters/whatsapp_integration}
+
+\chapter{Background Jobs}
+\input{chapters/background_jobs}
+
+\chapter{How to Use}
+\input{chapters/how_to_use}
+
+\chapter{Deployment}
+\input{chapters/deployment}
+
+\part{Documentación en Español}
+
+\chapter{Introducción}
+\input{chapters/introduction_es}
+
+\chapter{Arquitectura del Sistema}
+\input{chapters/architecture_es}
+
+\chapter{Componentes Principales}
+\input{chapters/core_components_es}
+
+\chapter{Capa de API}
+\input{chapters/api_layer_es}
+
+\chapter{Diseño de Base de Datos}
+\input{chapters/database_es}
+
+\chapter{Sistema de Reservas}
+\input{chapters/reservation_system_es}
+
+\chapter{Integración con WhatsApp}
+\input{chapters/whatsapp_integration_es}
+
+\chapter{Trabajos en Segundo Plano}
+\input{chapters/background_jobs_es}
+
+\chapter{Guía de Uso}
+\input{chapters/how_to_use_es}
+
+\chapter{Implementación}
+\input{chapters/deployment_es}
+
+\appendix
+\part{Apéndices}
+
+\chapter{API Reference}
+\input{appendices/api_reference}
+
+\chapter{Database Schema}
+\input{appendices/database_schema}
+
+\chapter{Referencia de API}
+\input{appendices/api_reference_es}
+
+\chapter{Esquema de Base de Datos}
+\input{appendices/database_schema_es}
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document} 

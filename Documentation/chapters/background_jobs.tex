@@ -1,0 +1,156 @@
+\section{Overview}
+The Blue WhatsApp Bot system includes several background jobs that automate routine tasks. These jobs are implemented using Quartz.NET, a powerful job scheduling library for .NET applications.
+
+\section{Job Configuration}
+All background jobs are configured in the \texttt{CronJobExtensions.cs} file, which sets up the job scheduling and dependencies. The jobs are registered during application startup using the \texttt{ConfigureCronSchedulerJobs} extension method.
+
+\section{Available Jobs}
+
+\subsection{Delete Old Folders Job}
+This job manages the system's log files by removing old log directories.
+
+\begin{itemize}
+    \item \textbf{Schedule:} Weekly on Monday at 00:00
+    \item \textbf{Purpose:} Cleans up old log files to prevent disk space issues
+    \item \textbf{Implementation:} \texttt{DeleteOldFoldersJob} class
+\end{itemize}
+
+\subsubsection{Implementation Details}
+\begin{lstlisting}[language=CSharp]
+public class DeleteOldFoldersJob : IJob
+{
+    private readonly IAppLogger _logger;
+
+    public DeleteOldFoldersJob(IAppLogger logger)
+    {
+        _logger = logger;
+    }
+
+    Task IJob.Execute(IJobExecutionContext context)
+    {
+        string rootDirectory = Path.Combine(Directory.GetCurrentDirectory(), "logs");
+        // ... implementation details ...
+    }
+}
+\end{lstlisting}
+
+\subsection{Reset Trip Capacities Job}
+This job resets the capacity of all trips to their default value at the end of each day.
+
+\begin{itemize}
+    \item \textbf{Schedule:} Daily at 23:50
+    \item \textbf{Purpose:} Ensures trip capacities are reset for the next day
+    \item \textbf{Implementation:} \texttt{ResetTripCapacitiesJob} class
+\end{itemize}
+
+\subsubsection{Implementation Details}
+\begin{lstlisting}[language=CSharp]
+public class ResetTripCapacitiesJob : IJob
+{
+    private readonly IAppLogger _logger;
+    private readonly ITripRepository _tripRepository;
+
+    public ResetTripCapacitiesJob(IAppLogger logger, ITripRepository tripRepository)
+    {
+        _logger = logger;
+        _tripRepository = tripRepository;
+    }
+
+    async Task IJob.Execute(IJobExecutionContext context)
+    {
+        try
+        {
+            _logger.LogInfo("Starting daily trip capacity reset job");
+            var trips = await _tripRepository.GetAllTripsAsync();
+            foreach (var trip in trips)
+            {
+                trip.MaxCapacity = 30;
+                await _tripRepository.UpdateTripAsync(trip);
+            }
+            _logger.LogInfo($"Successfully reset capacities for {trips.Count()} trips");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Failed to reset trip capacities. Error: {ex.Message}");
+        }
+    }
+}
+\end{lstlisting}
+
+\section{Job Configuration}
+The jobs are configured in the application startup using the following code:
+
+\begin{lstlisting}[language=CSharp]
+internal static void ConfigureCronSchedulerJobs(this WebApplicationBuilder builder)
+{
+    builder.Services.AddQuartz(q =>
+    {
+        q.UseMicrosoftDependencyInjectionJobFactory();
+
+        // Configure DeleteOldFoldersJob
+        var deleteFoldersJobKey = new JobKey("DeleteOldFoldersJob");
+        q.AddJob<DeleteOldFoldersJob>(opts => opts.WithIdentity(deleteFoldersJobKey));
+
+        q.AddTrigger(opts => opts
+            .ForJob(deleteFoldersJobKey)
+            .WithIdentity("DeleteOldFoldersTrigger")
+            .WithSchedule(CronScheduleBuilder.WeeklyOnDayAndHourAndMinute(DayOfWeek.Monday, 0, 0))
+        );
+
+        // Configure ResetTripCapacitiesJob
+        var resetCapacitiesJobKey = new JobKey("ResetTripCapacitiesJob");
+        q.AddJob<ResetTripCapacitiesJob>(opts => opts.WithIdentity(resetCapacitiesJobKey));
+
+        q.AddTrigger(opts => opts
+            .ForJob(resetCapacitiesJobKey)
+            .WithIdentity("ResetTripCapacitiesTrigger")
+            .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(23, 50))
+        );
+    });
+
+    builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+}
+\end{lstlisting}
+
+\section{Error Handling}
+All background jobs include comprehensive error handling and logging:
+
+\begin{itemize}
+    \item Each job operation is wrapped in try-catch blocks
+    \item Errors are logged using the \texttt{IAppLogger} interface
+    \item Failed jobs are logged with detailed error messages
+    \item The system continues to run even if a job fails
+\end{itemize}
+
+\section{Monitoring}
+The system provides monitoring capabilities for background jobs:
+
+\begin{itemize}
+    \item Job execution status is logged
+    \item Success/failure counts are tracked
+    \item Detailed error messages are available in the logs
+    \item Job execution times are recorded
+\end{itemize}
+
+\section{Adding New Jobs}
+To add a new background job to the system:
+
+\begin{enumerate}
+    \item Create a new class implementing \texttt{IJob}
+    \item Implement the \texttt{Execute} method
+    \item Add the job configuration in \texttt{ConfigureCronSchedulerJobs}
+    \item Register any required dependencies
+    \item Configure the job schedule
+\end{enumerate}
+
+\section{Best Practices}
+When working with background jobs in the system:
+
+\begin{itemize}
+    \item Always include proper error handling
+    \item Log all important operations
+    \item Use dependency injection for required services
+    \item Keep job execution times reasonable
+    \item Consider the impact on system resources
+    \item Test jobs thoroughly before deployment
+\end{itemize} 

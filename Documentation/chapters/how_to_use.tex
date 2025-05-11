@@ -1,0 +1,191 @@
+\section{How to Use Overview}
+This chapter provides a comprehensive guide on how to use the Blue WhatsApp Bot system, from initial setup to managing reservations and monitoring the system.
+
+\section{Getting Started}
+
+\subsection{Prerequisites}
+Before using the system, ensure you have:
+\begin{itemize}
+    \item A valid WhatsApp Business API account
+    \item SQL Server 2019 or later installed
+    \item .NET 6.0 or later runtime
+    \item IIS 10.0 or later configured
+    \item Valid SSL certificate for HTTPS
+\end{itemize}
+
+\subsection{Initial Setup}
+\begin{enumerate}
+    \item Configure the database connection string in \texttt{appsettings.json}
+    \item Set up WhatsApp API credentials
+    \item Configure logging directory
+    \item Set up JWT authentication keys
+\end{enumerate}
+
+\section{Managing Trips}
+
+\subsection{Creating a Trip}
+To create a new trip:
+\begin{enumerate}
+    \item Access the Trips management interface
+    \item Click "Create New Trip"
+    \item Fill in the required information:
+        \begin{itemize}
+            \item Trip Name
+            \item Route ID
+            \item Maximum Capacity
+        \end{itemize}
+    \item Select available schedules
+    \item Save the trip
+\end{enumerate}
+
+\subsection{Managing Trip Schedules}
+To manage trip schedules:
+\begin{enumerate}
+    \item Select the trip from the list
+    \item Click "Manage Schedules"
+    \item Add or remove available time slots
+    \item Set schedule status (active/inactive)
+\end{enumerate}
+
+\section{Reservation Process}
+
+\subsection{WhatsApp Conversation Flow}
+The system follows this conversation flow:
+\begin{enumerate}
+    \item User initiates conversation
+    \item System sends welcome message
+    \item User selects date
+    \item User selects time slot
+    \item User selects hotel
+    \item System confirms booking
+    \item Reservation is created
+\end{enumerate}
+
+\subsection{Example Conversation}
+\begin{verbatim}
+Bot: Welcome to Blue WhatsApp Bot! Let's book your trip.
+User: Hi
+Bot: Please select a date for your trip (DD/MM/YYYY)
+User: 15/05/2024
+Bot: Available time slots:
+     1. 08:00 AM
+     2. 10:00 AM
+     3. 02:00 PM
+     Please select a time slot (1-3)
+User: 2
+Bot: Please select your pickup hotel:
+     1. Hotel A
+     2. Hotel B
+     3. Hotel C
+User: 1
+Bot: Confirming your booking:
+     Date: 15/05/2024
+     Time: 10:00 AM
+     Hotel: Hotel A
+     Is this correct? (Yes/No)
+User: Yes
+Bot: Your reservation has been confirmed!
+     Reservation ID: #12345
+     Thank you for choosing Blue WhatsApp Bot!
+\end{verbatim}
+
+\section{Admin Interface}
+
+\subsection{Viewing Reservations}
+To view reservations:
+\begin{enumerate}
+    \item Access the Reservations dashboard
+    \item Use filters to search by:
+        \begin{itemize}
+            \item Date
+            \item Hotel
+            \item Trip
+            \item Customer name
+            \item Phone number
+        \end{itemize}
+    \item View reservation details
+    \item Export data if needed
+\end{enumerate}
+
+\subsection{Managing Capacity}
+To manage trip capacity:
+\begin{enumerate}
+    \item Access the Trips dashboard
+    \item Select the trip
+    \item View current capacity
+    \item Adjust maximum capacity if needed
+    \item Monitor remaining slots
+\end{enumerate}
+
+\section{Monitoring and Maintenance}
+
+\subsection{System Health}
+Monitor system health through:
+\begin{itemize}
+    \item Health check endpoint (/health)
+    \item Log files in configured directory
+    \item Database performance metrics
+    \item API usage statistics
+\end{itemize}
+
+\subsection{Backup and Recovery}
+Regular maintenance tasks:
+\begin{enumerate}
+    \item Daily database backups
+    \item Log file rotation
+    \item Application file backups
+    \item SSL certificate renewal
+\end{enumerate}
+
+\section{Troubleshooting}
+
+\subsection{Common Issues}
+\begin{itemize}
+    \item \textbf{WhatsApp API Connection Issues}
+        \begin{itemize}
+            \item Check API credentials
+            \item Verify internet connection
+            \item Check API rate limits
+        \end{itemize}
+    \item \textbf{Database Connection Issues}
+        \begin{itemize}
+            \item Verify connection string
+            \item Check SQL Server status
+            \item Verify user permissions
+        \end{itemize}
+    \item \textbf{Capacity Management Issues}
+        \begin{itemize}
+            \item Check trip status
+            \item Verify schedule availability
+            \item Review reservation counts
+        \end{itemize}
+\end{itemize}
+
+\subsection{Error Messages}
+Common error messages and solutions:
+\begin{itemize}
+    \item "Trip is at full capacity" - Trip has reached maximum bookings
+    \item "Invalid date format" - Use DD/MM/YYYY format
+    \item "Schedule not available" - Selected time slot is not active
+    \item "Hotel not found" - Selected hotel is not in the system
+\end{itemize}
+
+\section{Best Practices}
+
+\subsection{System Usage}
+\begin{itemize}
+    \item Regular monitoring of system health
+    \item Daily backup verification
+    \item Capacity planning
+    \item User communication templates
+    \item Error log review
+\end{itemize}
+
+\subsection{Performance Optimization}
+\begin{itemize}
+    \item Regular database maintenance
+    \item Log file cleanup
+    \item Cache management
+    \item API rate limit monitoring
+    \item Resource usage tracking
+\end{itemize} 

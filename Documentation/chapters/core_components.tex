@@ -1,0 +1,254 @@
+\section{Core Components Overview}
+The Blue WhatsApp Bot system consists of several core components that work together to provide the reservation functionality. Each component has a specific responsibility and follows the single responsibility principle.
+
+\section{Reservation System}
+
+\subsection{Reservation Model}
+The core reservation model that represents a booking in the system:
+
+\begin{lstlisting}[language=CSharp]
+public class CoreReservation
+{
+    public int Id { get; set; }
+    public string CustomerName { get; set; }
+    public string PhoneNumber { get; set; }
+    public int HotelId { get; set; }
+    public DateTime ReservationDate { get; set; }
+    public int ScheduleId { get; set; }
+    public int TripId { get; set; }
+    public string? AdditionalDetails { get; set; }
+    public DateTime CreatedTime { get; set; }
+    public DateTime ModifiedTime { get; set; }
+    public bool IsActive { get; set; }
+}
+\end{lstlisting}
+
+\subsection{Reservation Repository}
+Interface defining the data access operations for reservations:
+
+\begin{lstlisting}[language=CSharp]
+public interface IReservationRepository
+{
+    Task<IEnumerable<CoreReservation>> GetAllReservationsAsync();
+    Task<CoreReservation?> GetReservationByIdAsync(int id);
+    Task<CoreReservation> CreateReservationAsync(CoreReservation reservation);
+    Task UpdateReservationAsync(CoreReservation reservation);
+    Task DeleteReservationAsync(int id);
+    Task<IEnumerable<CoreReservation>> GetReservationsByTripId(int tripId);
+}
+\end{lstlisting}
+
+\section{Trip Management}
+
+\subsection{Trip Model}
+The core trip model representing a scheduled trip:
+
+\begin{lstlisting}[language=CSharp]
+public class CoreTrip
+{
+    public int Id { get; set; }
+    public string TripName { get; set; }
+    public int RouteId { get; set; }
+    public bool IsActiveForToday { get; set; }
+    public int MaxCapacity { get; set; }
+    public int CurrentReservations { get; set; }
+    public int RemainingCapacity => MaxCapacity - CurrentReservations;
+    public DateTime CreatedTime { get; set; }
+    public DateTime ModifiedTime { get; set; }
+    public bool IsActive { get; set; }
+}
+\end{lstlisting}
+
+\subsection{Trip Repository}
+Interface for trip-related data operations:
+
+\begin{lstlisting}[language=CSharp]
+public interface ITripRepository
+{
+    Task<IEnumerable<CoreTrip>> GetAllTripsAsync();
+    Task<CoreTrip?> GetTripByIdAsync(int id);
+    Task<CoreTrip> CreateTripAsync(CoreTrip trip);
+    Task UpdateTripAsync(CoreTrip trip);
+    Task DeleteTripAsync(int id);
+    Task UpdateTripStatusAsync(int id, bool isActiveForToday);
+}
+\end{lstlisting}
+
+\section{Conversation Handling}
+
+\subsection{Conversation State}
+Model representing the current state of a user conversation:
+
+\begin{lstlisting}[language=CSharp]
+public class ConversationState
+{
+    public string UserNumber { get; set; }
+    public string CurrentStep { get; set; }
+    public Dictionary<string, string> UserData { get; set; }
+    public DateTime LastInteraction { get; set; }
+}
+\end{lstlisting}
+
+\subsection{Message Creator}
+Interface for creating different types of messages:
+
+\begin{lstlisting}[language=CSharp]
+public interface IMessageCreator
+{
+    CoreMessageToSend CreateWelcomeMessage(string userNumber);
+    CoreMessageToSend CreateDatePromptMessage(string userNumber);
+    CoreMessageToSend CreateSchedulePromptMessage(string userNumber);
+    CoreMessageToSend CreateHotelPromptMessage(string userNumber);
+    CoreMessageToSend CreateConfirmationMessage(string userNumber, CoreReservation reservation);
+    CoreMessageToSend CreateTripFullMessage(string userNumber);
+}
+\end{lstlisting}
+
+\section{Logging System}
+
+\subsection{Logger Interface}
+Interface for system-wide logging:
+
+\begin{lstlisting}[language=CSharp]
+public interface IAppLogger
+{
+    void LogInfo(string message);
+    void LogError(string message);
+    void LogWarning(string message);
+    void LogDebug(string message);
+}
+\end{lstlisting}
+
+\subsection{Logger Implementation}
+Custom implementation of the logging interface:
+
+\begin{lstlisting}[language=CSharp]
+public class AppLogger : IAppLogger
+{
+    private readonly string _logDirectory;
+    
+    public AppLogger(string logDirectory)
+    {
+        _logDirectory = logDirectory;
+    }
+    
+    public void LogInfo(string message)
+    {
+        WriteLog("INFO", message);
+    }
+    
+    public void LogError(string message)
+    {
+        WriteLog("ERROR", message);
+    }
+    
+    // ... other logging methods
+}
+\end{lstlisting}
+
+\section{Background Jobs}
+
+\subsection{Job Interface}
+Base interface for all background jobs:
+
+\begin{lstlisting}[language=CSharp]
+public interface IJob
+{
+    Task Execute(IJobExecutionContext context);
+}
+\end{lstlisting}
+
+\subsection{Job Implementations}
+Implementation of specific background jobs:
+
+\begin{itemize}
+    \item \texttt{DeleteOldFoldersJob}: Manages log file cleanup
+    \item \texttt{ResetTripCapacitiesJob}: Resets trip capacities daily
+\end{itemize}
+
+\section{SignalR Integration}
+
+\subsection{Reservations Hub}
+Real-time communication hub for reservations:
+
+\begin{lstlisting}[language=CSharp]
+public class ReservationsHub : Hub
+{
+    private readonly IReservationRepository _reservationRepository;
+    private readonly ITripRepository _tripRepository;
+    
+    public async Task GetReservations()
+    {
+        var reservations = await _reservationRepository.GetAllReservationsAsync();
+        await Clients.Caller.SendAsync("ReceiveReservations", reservations);
+    }
+    
+    // ... other hub methods
+}
+\end{lstlisting}
+
+\section{Error Handling}
+
+\subsection{Error Types}
+Custom exception types for different error scenarios:
+
+\begin{lstlisting}[language=CSharp]
+public class ReservationException : Exception
+{
+    public ReservationException(string message) : base(message) { }
+}
+
+public class TripCapacityException : Exception
+{
+    public TripCapacityException(string message) : base(message) { }
+}
+\end{lstlisting}
+
+\subsection{Error Handler}
+Global error handling component:
+
+\begin{lstlisting}[language=CSharp]
+public class ErrorHandler
+{
+    private readonly IAppLogger _logger;
+    
+    public ErrorHandler(IAppLogger logger)
+    {
+        _logger = logger;
+    }
+    
+    public async Task HandleError(Exception ex)
+    {
+        _logger.LogError($"Error: {ex.Message}");
+        // ... error handling logic
+    }
+}
+\end{lstlisting}
+
+\section{Configuration}
+
+\subsection{App Settings}
+Configuration model for application settings:
+
+\begin{lstlisting}[language=CSharp]
+public class AppSettings
+{
+    public string WhatsAppApiKey { get; set; }
+    public string WhatsAppApiUrl { get; set; }
+    public string ConnectionString { get; set; }
+    public int DefaultTripCapacity { get; set; }
+    public string LogDirectory { get; set; }
+}
+\end{lstlisting}
+
+\subsection{Configuration Provider}
+Service for accessing configuration values:
+
+\begin{lstlisting}[language=CSharp]
+public interface IConfigurationProvider
+{
+    AppSettings GetAppSettings();
+    string GetConnectionString();
+    string GetWhatsAppApiKey();
+}
+\end{lstlisting} 

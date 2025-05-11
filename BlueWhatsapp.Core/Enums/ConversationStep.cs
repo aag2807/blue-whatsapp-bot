@@ -2,39 +2,46 @@ namespace BlueWhatsapp.Core.Enums;
 
 public enum ConversationStep
 {
-    /// <summary>
-    /// Represents the initial state of a conversation where no step has been initiated or defined.
-    /// </summary>
     None = 0,
+
     // Initial states
     Welcome = 1,
     LanguageSelection = 2,
-    ClientTypeSelection = 3, // not used right now
 
     // Date selection
-    DateSelection = 4,
+    DateSelection = 3,
 
     // Location/hotel selection
-    ZoneSelection = 5,
-    ZoneUnknown = 6,
-    HotelSelection = 7,
-    HotelUnknown = 8,
-    HotelConfirmation = 9,
+    ZoneSelection = 4, //
+    ZoneUnknown = 5,
+    HotelSelection = 6,
+    HotelUnknown = 7,
+    HotelConfirmation = 8,
+    ZoneSelectionResponse,
+    
+    // hotel name search selection
+    MoreThanOneMatchingHotel,
+    IsThisMatchingHotel,
+    NoMatchingHotel,
 
-    // Schedule selection
-    ScheduleSelection = 10,
-    WillTextLater = 11,
+    // Schedule and service type
+    ScheduleSelection = 9,
+    WillTextLater = 10,
+    VipServiceOffer = 11,
+    VipServiceConfirmation = 12,
+    VipGroupSizeSelection = 13,
 
-    //ask for user information,
-    AskForFullName = 12,
-    AskForRoomNumber = 13,
-    AskForAdults = 14,
-    AskForChildren = 15,
-    AskForEmail = 16,
+    // User information collection
+    AskForFullName = 14,
+    AskForRoomNumber = 15,
+    AskForAdults = 16,
+    AskForChildren = 17,
+    AskForPhone = 18,
+    AskForEmail = 19,
 
     // Conversation ending states
-    ReservationComplete = 17,
-    PendingDecision = 18,
+    ReservationComplete = 20,
+    PendingDecision = 21,
 
     // Admin override state 
     ManualHandling = 99,

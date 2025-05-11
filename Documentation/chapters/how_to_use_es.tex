@@ -1,0 +1,191 @@
+\section{Descripción General de Uso}
+Este capítulo proporciona una guía completa sobre cómo utilizar el sistema Blue WhatsApp Bot, desde la configuración inicial hasta la gestión de reservas y el monitoreo del sistema.
+
+\section{Comenzando}
+
+\subsection{Requisitos Previos}
+Antes de usar el sistema, asegúrese de tener:
+\begin{itemize}
+    \item Una cuenta válida de WhatsApp Business API
+    \item SQL Server 2019 o posterior instalado
+    \item Runtime .NET 6.0 o posterior
+    \item IIS 10.0 o posterior configurado
+    \item Certificado SSL válido para HTTPS
+\end{itemize}
+
+\subsection{Configuración Inicial}
+\begin{enumerate}
+    \item Configure la cadena de conexión a la base de datos en \texttt{appsettings.json}
+    \item Configure las credenciales de la API de WhatsApp
+    \item Configure el directorio de registro
+    \item Configure las claves de autenticación JWT
+\end{enumerate}
+
+\section{Gestión de Viajes}
+
+\subsection{Creación de un Viaje}
+Para crear un nuevo viaje:
+\begin{enumerate}
+    \item Acceda a la interfaz de gestión de viajes
+    \item Haga clic en "Crear Nuevo Viaje"
+    \item Complete la información requerida:
+        \begin{itemize}
+            \item Nombre del Viaje
+            \item ID de Ruta
+            \item Capacidad Máxima
+        \end{itemize}
+    \item Seleccione los horarios disponibles
+    \item Guarde el viaje
+\end{enumerate}
+
+\subsection{Gestión de Horarios de Viaje}
+Para gestionar los horarios de viaje:
+\begin{enumerate}
+    \item Seleccione el viaje de la lista
+    \item Haga clic en "Gestionar Horarios"
+    \item Agregue o elimine horarios disponibles
+    \item Establezca el estado del horario (activo/inactivo)
+\end{enumerate}
+
+\section{Proceso de Reserva}
+
+\subsection{Flujo de Conversación de WhatsApp}
+El sistema sigue este flujo de conversación:
+\begin{enumerate}
+    \item El usuario inicia la conversación
+    \item El sistema envía un mensaje de bienvenida
+    \item El usuario selecciona la fecha
+    \item El usuario selecciona el horario
+    \item El usuario selecciona el hotel
+    \item El sistema confirma la reserva
+    \item Se crea la reserva
+\end{enumerate}
+
+\subsection{Ejemplo de Conversación}
+\begin{verbatim}
+Bot: ¡Bienvenido a Blue WhatsApp Bot! Vamos a reservar tu viaje.
+Usuario: Hola
+Bot: Por favor, selecciona una fecha para tu viaje (DD/MM/AAAA)
+Usuario: 15/05/2024
+Bot: Horarios disponibles:
+     1. 08:00 AM
+     2. 10:00 AM
+     3. 02:00 PM
+     Por favor, selecciona un horario (1-3)
+Usuario: 2
+Bot: Por favor, selecciona tu hotel de recogida:
+     1. Hotel A
+     2. Hotel B
+     3. Hotel C
+Usuario: 1
+Bot: Confirmando tu reserva:
+     Fecha: 15/05/2024
+     Hora: 10:00 AM
+     Hotel: Hotel A
+     ¿Es correcto? (Sí/No)
+Usuario: Sí
+Bot: ¡Tu reserva ha sido confirmada!
+     ID de Reserva: #12345
+     ¡Gracias por elegir Blue WhatsApp Bot!
+\end{verbatim}
+
+\section{Interfaz de Administración}
+
+\subsection{Visualización de Reservas}
+Para ver las reservas:
+\begin{enumerate}
+    \item Acceda al panel de Reservas
+    \item Use filtros para buscar por:
+        \begin{itemize}
+            \item Fecha
+            \item Hotel
+            \item Viaje
+            \item Nombre del cliente
+            \item Número de teléfono
+        \end{itemize}
+    \item Vea los detalles de la reserva
+    \item Exporte los datos si es necesario
+\end{enumerate}
+
+\subsection{Gestión de Capacidad}
+Para gestionar la capacidad de viajes:
+\begin{enumerate}
+    \item Acceda al panel de Viajes
+    \item Seleccione el viaje
+    \item Vea la capacidad actual
+    \item Ajuste la capacidad máxima si es necesario
+    \item Monitoree los espacios restantes
+\end{enumerate}
+
+\section{Monitoreo y Mantenimiento}
+
+\subsection{Estado del Sistema}
+Monitoree el estado del sistema a través de:
+\begin{itemize}
+    \item Punto final de verificación de estado (/health)
+    \item Archivos de registro en el directorio configurado
+    \item Métricas de rendimiento de la base de datos
+    \item Estadísticas de uso de la API
+\end{itemize}
+
+\subsection{Respaldo y Recuperación}
+Tareas de mantenimiento regulares:
+\begin{enumerate}
+    \item Respaldos diarios de la base de datos
+    \item Rotación de archivos de registro
+    \item Respaldos de archivos de la aplicación
+    \item Renovación del certificado SSL
+\end{enumerate}
+
+\section{Solución de Problemas}
+
+\subsection{Problemas Comunes}
+\begin{itemize}
+    \item \textbf{Problemas de Conexión con la API de WhatsApp}
+        \begin{itemize}
+            \item Verifique las credenciales de la API
+            \item Compruebe la conexión a internet
+            \item Verifique los límites de tasa de la API
+        \end{itemize}
+    \item \textbf{Problemas de Conexión con la Base de Datos}
+        \begin{itemize}
+            \item Verifique la cadena de conexión
+            \item Compruebe el estado de SQL Server
+            \item Verifique los permisos de usuario
+        \end{itemize}
+    \item \textbf{Problemas de Gestión de Capacidad}
+        \begin{itemize}
+            \item Verifique el estado del viaje
+            \item Compruebe la disponibilidad del horario
+            \item Revise los conteos de reservas
+        \end{itemize}
+\end{itemize}
+
+\subsection{Mensajes de Error}
+Mensajes de error comunes y soluciones:
+\begin{itemize}
+    \item "El viaje está al máximo de capacidad" - El viaje ha alcanzado el máximo de reservas
+    \item "Formato de fecha inválido" - Use el formato DD/MM/AAAA
+    \item "Horario no disponible" - El horario seleccionado no está activo
+    \item "Hotel no encontrado" - El hotel seleccionado no está en el sistema
+\end{itemize}
+
+\section{Mejores Prácticas}
+
+\subsection{Uso del Sistema}
+\begin{itemize}
+    \item Monitoreo regular del estado del sistema
+    \item Verificación diaria de respaldos
+    \item Planificación de capacidad
+    \item Plantillas de comunicación con usuarios
+    \item Revisión de registros de errores
+\end{itemize}
+
+\subsection{Optimización de Rendimiento}
+\begin{itemize}
+    \item Mantenimiento regular de la base de datos
+    \item Limpieza de archivos de registro
+    \item Gestión de caché
+    \item Monitoreo de límites de tasa de la API
+    \item Seguimiento del uso de recursos
+\end{itemize} 

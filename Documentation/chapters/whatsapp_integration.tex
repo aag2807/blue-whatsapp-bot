@@ -1,0 +1,308 @@
+\section{WhatsApp Integration Overview}
+The Blue WhatsApp Bot integrates with the WhatsApp Business API to handle automated conversations and manage reservations. The integration provides a seamless experience for users while maintaining robust error handling and logging.
+
+\section{Message Handling}
+
+\subsection{Message Types}
+The system handles various types of WhatsApp messages:
+
+\begin{lstlisting}[language=CSharp]
+public enum MessageType
+{
+    Text,
+    Image,
+    Document,
+    Location,
+    Contact
+}
+
+public class WhatsAppMessage
+{
+    public string From { get; set; }
+    public string To { get; set; }
+    public MessageType Type { get; set; }
+    public string Content { get; set; }
+    public DateTime Timestamp { get; set; }
+}
+\end{lstlisting}
+
+\subsection{Message Processing}
+Messages are processed through a dedicated handler:
+
+\begin{lstlisting}[language=CSharp]
+public class WhatsAppMessageHandler
+{
+    private readonly IMessageCreator _messageCreator;
+    private readonly IAppLogger _logger;
+    private readonly Dictionary<string, ConversationState> _conversationStates;
+
+    public async Task HandleMessage(WhatsAppMessage message)
+    {
+        try
+        {
+            var state = GetOrCreateConversationState(message.From);
+            await ProcessMessage(message, state);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error processing message: {ex.Message}");
+            await SendErrorMessage(message.From);
+        }
+    }
+
+    private async Task ProcessMessage(WhatsAppMessage message, ConversationState state)
+    {
+        switch (state.CurrentStep)
+        {
+            case "Welcome":
+                await HandleWelcomeStep(message, state);
+                break;
+            case "DateSelection":
+                await HandleDateSelection(message, state);
+                break;
+            // ... other steps
+        }
+    }
+}
+\end{lstlisting}
+
+\section{Conversation Flow}
+
+\subsection{Step Management}
+The conversation flow is managed through distinct steps:
+
+\begin{lstlisting}[language=CSharp]
+public class ConversationStep
+{
+    public string Name { get; set; }
+    public string Message { get; set; }
+    public string NextStep { get; set; }
+    public Func<string, bool> Validation { get; set; }
+}
+
+public class ConversationManager
+{
+    private readonly Dictionary<string, ConversationStep> _steps;
+
+    public ConversationManager()
+    {
+        _steps = new Dictionary<string, ConversationStep>
+        {
+            {
+                "Welcome",
+                new ConversationStep
+                {
+                    Name = "Welcome",
+                    Message = "Welcome to Blue WhatsApp Bot! Let's book your trip.",
+                    NextStep = "DateSelection",
+                    Validation = _ => true
+                }
+            },
+            // ... other steps
+        };
+    }
+}
+\end{lstlisting}
+
+\subsection{Message Templates}
+Predefined message templates for different scenarios:
+
+\begin{lstlisting}[language=CSharp]
+public interface IMessageCreator
+{
+    CoreMessageToSend CreateWelcomeMessage(string userNumber);
+    CoreMessageToSend CreateDatePromptMessage(string userNumber);
+    CoreMessageToSend CreateSchedulePromptMessage(string userNumber);
+    CoreMessageToSend CreateHotelPromptMessage(string userNumber);
+    CoreMessageToSend CreateConfirmationMessage(string userNumber, CoreReservation reservation);
+    CoreMessageToSend CreateTripFullMessage(string userNumber);
+    CoreMessageToSend CreateErrorMessage(string userNumber);
+}
+\end{lstlisting}
+
+\section{API Integration}
+
+\subsection{WhatsApp API Client}
+Integration with WhatsApp Business API:
+
+\begin{lstlisting}[language=CSharp]
+public class WhatsAppApiClient
+{
+    private readonly HttpClient _httpClient;
+    private readonly string _apiKey;
+    private readonly string _apiUrl;
+
+    public async Task SendMessage(string to, string message)
+    {
+        var request = new
+        {
+            messaging_product = "whatsapp",
+            to = to,
+            type = "text",
+            text = new { body = message }
+        };
+
+        var response = await _httpClient.PostAsJsonAsync($"{_apiUrl}/messages", request);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task SendTemplate(string to, string templateName, Dictionary<string, string> parameters)
+    {
+        var request = new
+        {
+            messaging_product = "whatsapp",
+            to = to,
+            type = "template",
+            template = new
+            {
+                name = templateName,
+                language = new { code = "en" },
+                components = parameters.Select(p => new
+                {
+                    type = "body",
+                    parameters = new[] { new { type = "text", text = p.Value } }
+                })
+            }
+        };
+
+        var response = await _httpClient.PostAsJsonAsync($"{_apiUrl}/messages", request);
+        response.EnsureSuccessStatusCode();
+    }
+}
+\end{lstlisting}
+
+\section{Error Handling}
+
+\subsection{API Errors}
+Handling WhatsApp API errors:
+
+\begin{lstlisting}[language=CSharp]
+public class WhatsAppApiException : Exception
+{
+    public int StatusCode { get; }
+    public string ErrorCode { get; }
+
+    public WhatsAppApiException(string message, int statusCode, string errorCode)
+        : base(message)
+    {
+        StatusCode = statusCode;
+        ErrorCode = errorCode;
+    }
+}
+
+public async Task HandleApiError(HttpResponseMessage response)
+{
+    var error = await response.Content.ReadFromJsonAsync<WhatsAppApiError>();
+    throw new WhatsAppApiException(
+        error.Message,
+        (int)response.StatusCode,
+        error.ErrorCode
+    );
+}
+\end{lstlisting}
+
+\subsection{Retry Logic}
+Implementing retry mechanism for failed API calls:
+
+\begin{lstlisting}[language=CSharp]
+public class WhatsAppMessageSender
+{
+    private readonly IWhatsAppApiClient _apiClient;
+    private readonly IAppLogger _logger;
+    private readonly IAsyncPolicy<HttpResponseMessage> _retryPolicy;
+
+    public WhatsAppMessageSender(IWhatsAppApiClient apiClient, IAppLogger logger)
+    {
+        _apiClient = apiClient;
+        _logger = logger;
+        _retryPolicy = Policy<HttpResponseMessage>
+            .Handle<HttpRequestException>()
+            .Or<WhatsAppApiException>()
+            .WaitAndRetryAsync(3, retryAttempt =>
+                TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+    }
+
+    public async Task SendMessageWithRetry(string to, string message)
+    {
+        await _retryPolicy.ExecuteAsync(async () =>
+        {
+            try
+            {
+                return await _apiClient.SendMessage(to, message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error sending message: {ex.Message}");
+                throw;
+            }
+        });
+    }
+}
+\end{lstlisting}
+
+\section{Message Templates}
+
+\subsection{Template Management}
+Managing WhatsApp message templates:
+
+\begin{lstlisting}[language=CSharp]
+public class TemplateManager
+{
+    private readonly IWhatsAppApiClient _apiClient;
+    private readonly IAppLogger _logger;
+
+    public async Task CreateTemplate(string name, string content, string category)
+    {
+        var request = new
+        {
+            name = name,
+            language = "en",
+            category = category,
+            components = new[]
+            {
+                new
+                {
+                    type = "BODY",
+                    text = content
+                }
+            }
+        };
+
+        await _apiClient.CreateTemplate(request);
+    }
+
+    public async Task<List<Template>> GetTemplates()
+    {
+        return await _apiClient.GetTemplates();
+    }
+}
+\end{lstlisting}
+
+\section{Best Practices}
+
+\subsection{Message Handling}
+\begin{itemize}
+    \item Implement proper error handling for API calls
+    \item Use retry mechanisms for transient failures
+    \item Log all message interactions
+    \item Validate message content before sending
+    \item Implement rate limiting to prevent abuse
+\end{itemize}
+
+\subsection{Conversation Management}
+\begin{itemize}
+    \item Maintain conversation state
+    \item Implement timeout handling
+    \item Provide clear user instructions
+    \item Handle unexpected user inputs
+    \item Implement fallback options
+\end{itemize}
+
+\subsection{Security}
+\begin{itemize}
+    \item Secure API key storage
+    \item Validate message sources
+    \item Implement message encryption
+    \item Monitor for suspicious activity
+    \item Regular security audits
+\end{itemize} 

@@ -1,0 +1,352 @@
+\section{API Overview}
+The Blue WhatsApp Bot API provides endpoints for managing reservations, trips, and the backoffice interface. The API follows RESTful principles and uses SignalR for real-time updates.
+
+\section{Controllers}
+
+\subsection{Reservations Controller}
+Handles reservation-related HTTP requests:
+
+\begin{lstlisting}[language=CSharp]
+[ApiController]
+[Route("api/[controller]")]
+public class ReservationsController : ControllerBase
+{
+    private readonly IReservationRepository _reservationRepository;
+    private readonly IAppLogger _logger;
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<CoreReservation>>> GetReservations()
+    {
+        var reservations = await _reservationRepository.GetAllReservationsAsync();
+        return Ok(reservations);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<CoreReservation>> GetReservation(int id)
+    {
+        var reservation = await _reservationRepository.GetReservationByIdAsync(id);
+        if (reservation == null)
+            return NotFound();
+        return Ok(reservation);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<CoreReservation>> CreateReservation(CoreReservation reservation)
+    {
+        try
+        {
+            var created = await _reservationRepository.CreateReservationAsync(reservation);
+            return CreatedAtAction(nameof(GetReservation), new { id = created.Id }, created);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error creating reservation: {ex.Message}");
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateReservation(int id, CoreReservation reservation)
+    {
+        if (id != reservation.Id)
+            return BadRequest();
+
+        try
+        {
+            await _reservationRepository.UpdateReservationAsync(reservation);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error updating reservation: {ex.Message}");
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteReservation(int id)
+    {
+        try
+        {
+            await _reservationRepository.DeleteReservationAsync(id);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error deleting reservation: {ex.Message}");
+            return BadRequest(ex.Message);
+        }
+    }
+}
+\end{lstlisting}
+
+\subsection{Trips Controller}
+Manages trip-related operations:
+
+\begin{lstlisting}[language=CSharp]
+[ApiController]
+[Route("api/[controller]")]
+public class TripsController : ControllerBase
+{
+    private readonly ITripRepository _tripRepository;
+    private readonly IAppLogger _logger;
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<CoreTrip>>> GetTrips()
+    {
+        var trips = await _tripRepository.GetAllTripsAsync();
+        return Ok(trips);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<CoreTrip>> GetTrip(int id)
+    {
+        var trip = await _tripRepository.GetTripByIdAsync(id);
+        if (trip == null)
+            return NotFound();
+        return Ok(trip);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<CoreTrip>> CreateTrip(CoreTrip trip)
+    {
+        try
+        {
+            var created = await _tripRepository.CreateTripAsync(trip);
+            return CreatedAtAction(nameof(GetTrip), new { id = created.Id }, created);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error creating trip: {ex.Message}");
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateTrip(int id, CoreTrip trip)
+    {
+        if (id != trip.Id)
+            return BadRequest();
+
+        try
+        {
+            await _tripRepository.UpdateTripAsync(trip);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error updating trip: {ex.Message}");
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteTrip(int id)
+    {
+        try
+        {
+            await _tripRepository.DeleteTripAsync(id);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error deleting trip: {ex.Message}");
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPut("{id}/status")]
+    public async Task<IActionResult> UpdateTripStatus(int id, [FromBody] bool isActiveForToday)
+    {
+        try
+        {
+            await _tripRepository.UpdateTripStatusAsync(id, isActiveForToday);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error updating trip status: {ex.Message}");
+            return BadRequest(ex.Message);
+        }
+    }
+}
+\end{lstlisting}
+
+\section{SignalR Hubs}
+
+\subsection{Reservations Hub}
+Real-time communication for reservations:
+
+\begin{lstlisting}[language=CSharp]
+public class ReservationsHub : Hub
+{
+    private readonly IReservationRepository _reservationRepository;
+    private readonly ITripRepository _tripRepository;
+    private readonly IAppLogger _logger;
+
+    public ReservationsHub(
+        IReservationRepository reservationRepository,
+        ITripRepository tripRepository,
+        IAppLogger logger)
+    {
+        _reservationRepository = reservationRepository;
+        _tripRepository = tripRepository;
+        _logger = logger;
+    }
+
+    public async Task GetReservations()
+    {
+        try
+        {
+            var reservations = await _reservationRepository.GetAllReservationsAsync();
+            await Clients.Caller.SendAsync("ReceiveReservations", reservations);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error getting reservations: {ex.Message}");
+            throw;
+        }
+    }
+
+    public async Task GetTrips()
+    {
+        try
+        {
+            var trips = await _tripRepository.GetAllTripsAsync();
+            await Clients.Caller.SendAsync("ReceiveTrips", trips);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error getting trips: {ex.Message}");
+            throw;
+        }
+    }
+
+    public async Task SaveReservation(CoreReservation reservation)
+    {
+        try
+        {
+            var trip = await _tripRepository.GetTripByIdAsync(reservation.TripId);
+            if (trip == null)
+                throw new Exception("Trip not found");
+
+            if (trip.CurrentReservations >= trip.MaxCapacity)
+                throw new TripCapacityException("Trip is at full capacity");
+
+            var created = await _reservationRepository.CreateReservationAsync(reservation);
+            await Clients.All.SendAsync("ReservationCreated", created);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error saving reservation: {ex.Message}");
+            throw;
+        }
+    }
+}
+\end{lstlisting}
+
+\section{API Endpoints}
+
+\subsection{Reservations}
+\begin{itemize}
+    \item \texttt{GET /api/reservations} - Get all reservations
+    \item \texttt{GET /api/reservations/{id}} - Get reservation by ID
+    \item \texttt{POST /api/reservations} - Create new reservation
+    \item \texttt{PUT /api/reservations/{id}} - Update reservation
+    \item \texttt{DELETE /api/reservations/{id}} - Delete reservation
+\end{itemize}
+
+\subsection{Trips}
+\begin{itemize}
+    \item \texttt{GET /api/trips} - Get all trips
+    \item \texttt{GET /api/trips/{id}} - Get trip by ID
+    \item \texttt{POST /api/trips} - Create new trip
+    \item \texttt{PUT /api/trips/{id}} - Update trip
+    \item \texttt{DELETE /api/trips/{id}} - Delete trip
+    \item \texttt{PUT /api/trips/{id}/status} - Update trip status
+\end{itemize}
+
+\section{SignalR Methods}
+
+\subsection{Reservations Hub}
+\begin{itemize}
+    \item \texttt{GetReservations()} - Get all reservations
+    \item \texttt{GetTrips()} - Get all trips
+    \item \texttt{SaveReservation(reservation)} - Save new reservation
+\end{itemize}
+
+\section{Error Handling}
+
+\subsection{HTTP Status Codes}
+\begin{itemize}
+    \item \texttt{200 OK} - Successful operation
+    \item \texttt{201 Created} - Resource created
+    \item \texttt{204 No Content} - Operation successful, no content
+    \item \texttt{400 Bad Request} - Invalid request
+    \item \texttt{404 Not Found} - Resource not found
+    \item \texttt{500 Internal Server Error} - Server error
+\end{itemize}
+
+\subsection{Error Responses}
+Error responses follow this format:
+
+\begin{lstlisting}[language=json]
+{
+    "error": {
+        "message": "Error message",
+        "details": "Detailed error information"
+    }
+}
+\end{lstlisting}
+
+\section{Authentication}
+
+\subsection{JWT Authentication}
+The API uses JWT tokens for authentication:
+
+\begin{lstlisting}[language=CSharp]
+services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = Configuration["Jwt:Issuer"],
+            ValidAudience = Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+        };
+    });
+\end{lstlisting}
+
+\section{API Documentation}
+
+\subsection{Swagger Integration}
+The API includes Swagger documentation:
+
+\begin{lstlisting}[language=CSharp]
+services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Blue WhatsApp Bot API",
+        Version = "v1",
+        Description = "API for the Blue WhatsApp Bot system"
+    });
+});
+\end{lstlisting}
+
+\subsection{API Versioning}
+The API supports versioning:
+
+\begin{lstlisting}[language=CSharp]
+services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+});
+\end{lstlisting} 

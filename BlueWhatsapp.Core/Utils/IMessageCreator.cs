@@ -13,14 +13,14 @@ public interface IMessageCreator
     /// <param name="number"></param>
     /// <returns></returns>
     public CoreMessageToSend CreateWelcomeMessage(string number);
-    
+
     /// <summary>
     /// 
     /// </summary>
     /// <param name="number"></param>
     /// <returns></returns>
     public CoreMessageToSend CreateDatePromptMessage(string number);
-    
+
     /// <summary>
     /// Creates a language prompt message for the specified phone number.
     /// </summary>
@@ -58,7 +58,21 @@ public interface IMessageCreator
     /// <param name="userNumber"></param>
     /// <returns></returns>
     public CoreMessageToSend CreateAskForReservationDetailsMessage(string userNumber);
-    
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="number"></param>
+    /// <returns></returns>
+    public CoreMessageToSend CreateUnknownHotelMessage(string number);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="number"></param>
+    /// <returns></returns>
+    public CoreMessageToSend CreateNoMatchingHotelMessage(string number);
+
     /// <summary>
     /// 
     /// </summary>
@@ -68,34 +82,34 @@ public interface IMessageCreator
     /// <param name="date"></param>
     /// <returns></returns>
     public CoreMessageToSend CreateReservationConfirmationMessage(string userNumber, CoreHotel hotel, CoreSchedule schedule, string date);
-    
+
     /// <summary>
     /// 
     /// </summary>
     /// <param name="userNumber"></param>
     /// <returns></returns>
     public CoreMessageToSend CreateAskingForNameMessage(string userNumber);
-    
+
     /// <summary>
     /// 
     /// </summary>
     /// <param name="userNumber"></param>
     /// <returns></returns>
-    public CoreMessageToSend CreateAskingForRoomNumberMessage(string userNumber);
-    
+    public CoreMessageToSend CreateAskForRoomNumberMessage(string userNumber);
+
     /// <summary>
     /// 
     /// </summary>
     /// <param name="userNumber"></param>
     /// <returns></returns>
-    public CoreInteractiveMessage CreateAskingForAdultsMessage(string userNumber);
-    
+    public CoreInteractiveMessage CreateAskForAdultsCountMessage(string userNumber);
+
     /// <summary>
     /// 
     /// </summary>
     /// <param name="userNumber"></param>
     /// <returns></returns>
-    public CoreInteractiveMessage CreateAskingAskingForChildrenMessage(string userNumber);
+    public CoreInteractiveMessage  CreateAskForChildrenCountMessage(string userNumber);
 
     /// <summary>
     /// 
@@ -110,4 +124,11 @@ public interface IMessageCreator
     /// <param name="userNumber">The user's phone number</param>
     /// <returns>A message indicating the trip is full</returns>
     public CoreMessageToSend CreateTripFullMessage(string userNumber);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userNumber"></param>
+    /// <returns></returns>
+    public CoreMessageToSend CreateWillTextLaterMessage(string userNumber);
 }

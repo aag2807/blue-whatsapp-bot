@@ -2,9 +2,6 @@ using BlueWhatsapp.Core.Enums;
 using BlueWhatsapp.Core.Logger;
 using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
-using BlueWhatsapp.Core.Models.Reservations;
-using BlueWhatsapp.Core.Models.Schedule;
-using BlueWhatsapp.Core.Persistence;
 using BlueWhatsapp.Core.Utils;
 
 namespace BlueWhatsapp.Core.Services.ChatService;
@@ -37,22 +34,10 @@ public sealed class ChatResponseResponseService(
 
         if (state.CurrentStep == ConversationStep.Welcome) // is a special case since 2 messages/states are covered
         {
-            var welcomeMessage = await conversationHandling.HandleState(state, userText).ConfigureAwait(true);
-            if (welcomeMessage == null)
-            {
-                logger.LogSteps("No welcome message created.");
-                logger.LogSteps(state);
-                return;
-            }
-
-            await HandleWelcomingMessage(welcomeMessage, fromName, userText, userNumber);
-            state.CurrentStep = ConversationStep.LanguageSelection;
-            CoreBaseMessage? languageSelectionService = await conversationHandling.HandleState(state, userText).ConfigureAwait(true);
-            await HandleLanguageSelectionMessage(state, languageSelectionService, fromName, userText, userNumber).ConfigureAwait(true);
+            await HandleConversationIntro(userNumber, fromName, userText, state);
             return;
         }
 
-        UpdateConversationContextBasedOnCurrentStep(userText, state, fromName);
         CoreBaseMessage? newMessage = await conversationHandling.HandleState(state, userText).ConfigureAwait(true);
         if (newMessage == null)
         {
@@ -61,6 +46,22 @@ public sealed class ChatResponseResponseService(
         await whatsappCloudService.SendMessage(newMessage).ConfigureAwait(true);
         await messageService.SaveAsync(fromName, userText, userNumber).ConfigureAwait(true);
         await conversationStateService.UpdateConversationState(state).ConfigureAwait(true);
+    }
+
+    private async Task HandleConversationIntro(string userNumber, string fromName, string userText, CoreConversationState state)
+    {
+        CoreBaseMessage welcomeMessage = await conversationHandling.HandleState(state, userText).ConfigureAwait(true)!;
+            
+        CoreMessageToSend typedMessage = (CoreMessageToSend)welcomeMessage;
+        await whatsappCloudService.SendMessage(welcomeMessage).ConfigureAwait(true);
+        await messageService.SaveAsync(fromName, userText, userNumber).ConfigureAwait(true);
+        await messageService.SaveAsync("SYSTEM", typedMessage.text.body, userNumber).ConfigureAwait(true);
+            
+        CoreBaseMessage? languageSelectionService = await conversationHandling.HandleState(state, userText).ConfigureAwait(true);
+        await whatsappCloudService.SendMessage(languageSelectionService).ConfigureAwait(true);
+        await messageService.SaveAsync("SYSTEM", "Listado de lenguajes", userNumber).ConfigureAwait(true);
+
+        await conversationStateService.AddAsync(state).ConfigureAwait(true);
     }
 
     private void UpdateConversationContextBasedOnCurrentStep(string userText, CoreConversationState state, string fromName)
@@ -123,12 +124,7 @@ public sealed class ChatResponseResponseService(
                 logger.LogSteps("selected schedule");
             }
         }
-        else if (state.CurrentStep == ConversationStep.AskForFullName)
-        {
-            state.FullName = userText;
-            state.CurrentStep = ConversationStep.AskForRoomNumber;
-            logger.LogSteps("provided name");
-        }
+
         else if (state.CurrentStep == ConversationStep.AskForRoomNumber)
         {
             state.RoomNumber = userText;
@@ -163,19 +159,9 @@ public sealed class ChatResponseResponseService(
 
     private async Task HandleLanguageSelectionMessage(CoreConversationState state, CoreBaseMessage? languageSelectionService, string fromName, string userText, string userNumber)
     {
-        await conversationStateService.AddAsync(state).ConfigureAwait(true);
-        await whatsappCloudService.SendMessage(languageSelectionService).ConfigureAwait(true);
-        await messageService.SaveAsync(fromName, userText, userNumber).ConfigureAwait(true);
-        await messageService.SaveAsync("SYSTEM", "Listado de lenguajes", userNumber).ConfigureAwait(true);
-        logger.LogSteps("Language selection Message");
     }
 
     private async Task HandleWelcomingMessage(CoreBaseMessage message, string fromName, string userText, string userNumber)
     {
-        CoreMessageToSend typedMessage = (CoreMessageToSend)message;
-        await whatsappCloudService.SendMessage(message).ConfigureAwait(true);
-        await messageService.SaveAsync(fromName, userText, userNumber).ConfigureAwait(true);
-        await messageService.SaveAsync("SYSTEM", typedMessage.text.body, userNumber).ConfigureAwait(true);
-        logger.LogSteps("Sent Welcome Message");
     }
 }

@@ -1,6 +1,7 @@
 using BlueWhatsapp.Api.Extensions;
 using BlueWhatsapp.Api.Hubs;
 using BlueWhatsapp.Core.Logger;
+using BlueWhatsapp.Core.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 const string myAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -32,17 +33,20 @@ builder.Services.AddSession(options =>
 });
 
 builder.ConfigureCronSchedulerJobs();
+builder.ConfigureStateMachineNodes();
 builder.ConfigurePersistenceServices();
 builder.ConfigureSingletonServices();
 builder.ConfigureSwaggerServices();
 builder.ConfigureDomainServices();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    // app.MapOpenApi();
-}
+// Initialize the ServiceLocator BEFORE any request is processed
+// IMPORTANT: Use the root service provider to get the IServiceScopeFactory
+// This ensures the IServiceScopeFactory won't be disposed
+var logger = app.Services.GetRequiredService<IAppLogger>();
+var serviceScopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
+ServiceLocator.Initialize(serviceScopeFactory, logger);
 
 using (IServiceScope? serviceScope = app.Services.CreateScope())
 {

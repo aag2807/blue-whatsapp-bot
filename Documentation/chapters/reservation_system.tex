@@ -1,0 +1,214 @@
+\section{Reservation System Overview}
+The Blue WhatsApp Bot's reservation system is designed to handle trip bookings through WhatsApp conversations, providing a seamless experience for users while maintaining accurate capacity management.
+
+\section{Reservation Process}
+
+\subsection{Conversation Flow}
+The reservation process follows a structured conversation flow:
+
+\begin{enumerate}
+    \item \textbf{Welcome Message}: Initial greeting and introduction to the booking system
+    \item \textbf{Date Selection}: User selects the desired trip date
+    \item \textbf{Schedule Selection}: User chooses from available time slots
+    \item \textbf{Hotel Selection}: User selects their pickup location
+    \item \textbf{Confirmation}: System confirms the booking details
+    \item \textbf{Completion}: Reservation is created and confirmation is sent
+\end{enumerate}
+
+\subsection{State Management}
+The conversation state is managed through the \texttt{ConversationState} class:
+
+\begin{lstlisting}[language=CSharp]
+public class ConversationState
+{
+    public string UserNumber { get; set; }
+    public string CurrentStep { get; set; }
+    public Dictionary<string, string> UserData { get; set; }
+    public DateTime LastInteraction { get; set; }
+}
+\end{lstlisting}
+
+\section{Capacity Management}
+
+\subsection{Trip Capacity}
+Each trip has a maximum capacity that is managed through the \texttt{CoreTrip} model:
+
+\begin{lstlisting}[language=CSharp]
+public class CoreTrip
+{
+    public int Id { get; set; }
+    public string TripName { get; set; }
+    public int MaxCapacity { get; set; }
+    public int CurrentReservations { get; set; }
+    public int RemainingCapacity => MaxCapacity - CurrentReservations;
+    // ... other properties
+}
+\end{lstlisting}
+
+\subsection{Capacity Reset}
+Trip capacities are automatically reset daily at 23:50 through the \texttt{ResetTripCapacitiesJob}:
+
+\begin{lstlisting}[language=CSharp]
+public class ResetTripCapacitiesJob : IJob
+{
+    private readonly ITripRepository _tripRepository;
+    private readonly IAppLogger _logger;
+
+    public async Task Execute(IJobExecutionContext context)
+    {
+        try
+        {
+            var trips = await _tripRepository.GetAllTripsAsync();
+            foreach (var trip in trips)
+            {
+                trip.CurrentReservations = 0;
+                await _tripRepository.UpdateTripAsync(trip);
+            }
+            _logger.LogInfo("Trip capacities reset successfully");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error resetting trip capacities: {ex.Message}");
+            throw;
+        }
+    }
+}
+\end{lstlisting}
+
+\section{Reservation Validation}
+
+\subsection{Capacity Check}
+Before creating a reservation, the system validates the trip capacity:
+
+\begin{lstlisting}[language=CSharp]
+public async Task<CoreReservation> CreateReservationAsync(CoreReservation reservation)
+{
+    var trip = await _tripRepository.GetTripByIdAsync(reservation.TripId);
+    if (trip == null)
+        throw new ReservationException("Trip not found");
+
+    if (trip.CurrentReservations >= trip.MaxCapacity)
+        throw new TripCapacityException("Trip is at full capacity");
+
+    // ... create reservation logic
+}
+\end{lstlisting}
+
+\subsection{Date Validation}
+The system ensures reservations are made for valid dates:
+
+\begin{lstlisting}[language=CSharp]
+private bool IsValidReservationDate(DateTime date)
+{
+    return date.Date >= DateTime.Today && 
+           date.Date <= DateTime.Today.AddDays(30);
+}
+\end{lstlisting}
+
+\section{Real-time Updates}
+
+\subsection{SignalR Integration}
+Reservations are broadcast in real-time through SignalR:
+
+\begin{lstlisting}[language=CSharp]
+public async Task SaveReservation(CoreReservation reservation)
+{
+    var created = await _reservationRepository.CreateReservationAsync(reservation);
+    await Clients.All.SendAsync("ReservationCreated", created);
+}
+\end{lstlisting}
+
+\subsection{Capacity Updates}
+Trip capacity changes are immediately reflected:
+
+\begin{lstlisting}[language=CSharp]
+public async Task UpdateTripCapacity(int tripId)
+{
+    var trip = await _tripRepository.GetTripByIdAsync(tripId);
+    trip.CurrentReservations++;
+    await _tripRepository.UpdateTripAsync(trip);
+    await Clients.All.SendAsync("TripCapacityUpdated", trip);
+}
+\end{lstlisting}
+
+\section{Error Handling}
+
+\subsection{Reservation Exceptions}
+Custom exceptions for reservation-related errors:
+
+\begin{lstlisting}[language=CSharp]
+public class ReservationException : Exception
+{
+    public ReservationException(string message) : base(message) { }
+}
+
+public class TripCapacityException : Exception
+{
+    public TripCapacityException(string message) : base(message) { }
+}
+\end{lstlisting}
+
+\subsection{Error Recovery}
+The system includes mechanisms for handling failed reservations:
+
+\begin{lstlisting}[language=CSharp]
+public async Task HandleFailedReservation(CoreReservation reservation, Exception ex)
+{
+    _logger.LogError($"Reservation failed: {ex.Message}");
+    // Notify user of failure
+    await _messageCreator.CreateErrorMessage(reservation.PhoneNumber);
+    // Attempt to rollback any partial changes
+    await RollbackReservationChanges(reservation);
+}
+\end{lstlisting}
+
+\section{Reservation Queries}
+
+\subsection{Common Queries}
+The system provides various methods to query reservations:
+
+\begin{lstlisting}[language=CSharp]
+public interface IReservationRepository
+{
+    Task<IEnumerable<CoreReservation>> GetReservationsByDate(DateTime date);
+    Task<IEnumerable<CoreReservation>> GetReservationsByTripId(int tripId);
+    Task<IEnumerable<CoreReservation>> GetReservationsByPhoneNumber(string phoneNumber);
+}
+\end{lstlisting}
+
+\subsection{Reporting}
+Reservation data can be aggregated for reporting:
+
+\begin{lstlisting}[language=CSharp]
+public async Task<ReservationReport> GenerateDailyReport(DateTime date)
+{
+    var reservations = await _reservationRepository.GetReservationsByDate(date);
+    return new ReservationReport
+    {
+        Date = date,
+        TotalReservations = reservations.Count(),
+        ReservationsByTrip = reservations.GroupBy(r => r.TripId)
+            .ToDictionary(g => g.Key, g => g.Count())
+    };
+}
+\end{lstlisting}
+
+\section{Best Practices}
+
+\subsection{Reservation Management}
+\begin{itemize}
+    \item Always validate capacity before creating reservations
+    \item Use transactions for atomic operations
+    \item Implement proper error handling and recovery
+    \item Maintain audit trails of all changes
+    \item Send confirmations for all successful operations
+\end{itemize}
+
+\subsection{Performance Considerations}
+\begin{itemize}
+    \item Use appropriate indexes for frequent queries
+    \item Implement caching for static data
+    \item Optimize database queries
+    \item Monitor capacity thresholds
+    \item Implement rate limiting for API endpoints
+\end{itemize} 

@@ -1,0 +1,190 @@
+\section{Architecture Overview}
+The Blue WhatsApp Bot follows a clean architecture pattern, separating the system into distinct layers with clear responsibilities and dependencies. The architecture is designed to be maintainable, testable, and scalable.
+
+\section{Architecture Layers}
+
+\subsection{Core Layer}
+The innermost layer containing the business logic and domain models.
+
+\begin{itemize}
+    \item \textbf{Models:} Core domain entities and value objects
+    \item \textbf{Interfaces:} Repository and service contracts
+    \item \textbf{Enums:} Domain-specific enumerations
+    \item \textbf{Utils:} Utility classes and helpers
+\end{itemize}
+
+\subsection{Boundaries Layer}
+The layer responsible for implementing the interfaces defined in the Core layer.
+
+\begin{itemize}
+    \item \textbf{Persistence:} Database context and configurations
+    \item \textbf{Repositories:} Implementation of repository interfaces
+    \item \textbf{Models:} Database entity models
+    \item \textbf{Configurations:} Entity Framework configurations
+\end{itemize}
+
+\subsection{API Layer}
+The outermost layer handling HTTP requests and external integrations.
+
+\begin{itemize}
+    \item \textbf{Controllers:} API endpoints and request handling
+    \item \textbf{Hubs:} SignalR hubs for real-time communication
+    \item \textbf{Extensions:} Application configuration and middleware
+    \item \textbf{Views:} Backoffice interface views
+\end{itemize}
+
+\section{Design Patterns}
+
+\subsection{Repository Pattern}
+Used for data access abstraction:
+
+\begin{lstlisting}[language=CSharp]
+public interface IReservationRepository
+{
+    Task<IEnumerable<CoreReservation>> GetAllReservationsAsync();
+    Task<CoreReservation?> GetReservationByIdAsync(int id);
+    Task<CoreReservation> CreateReservationAsync(CoreReservation reservation);
+    // ... other methods
+}
+\end{lstlisting}
+
+\subsection{Dependency Injection}
+Used throughout the application for loose coupling:
+
+\begin{lstlisting}[language=CSharp]
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IReservationRepository, ReservationRepository>();
+        services.AddScoped<ITripRepository, TripRepository>();
+        // ... other registrations
+    }
+}
+\end{lstlisting}
+
+\subsection{SignalR Hub Pattern}
+Used for real-time communication:
+
+\begin{lstlisting}[language=CSharp]
+public class ReservationsHub : Hub
+{
+    private readonly IReservationRepository _reservationRepository;
+    
+    public ReservationsHub(IReservationRepository reservationRepository)
+    {
+        _reservationRepository = reservationRepository;
+    }
+    
+    // ... hub methods
+}
+\end{lstlisting}
+
+\section{Data Flow}
+
+\subsection{Reservation Process}
+\begin{enumerate}
+    \item WhatsApp message received
+    \item Message processed by conversation handler
+    \item Reservation created in database
+    \item Real-time update sent to backoffice
+    \item Confirmation sent to user
+\end{enumerate}
+
+\subsection{Capacity Management}
+\begin{enumerate}
+    \item Trip capacity checked before reservation
+    \item Capacity updated in real-time
+    \item Daily reset at 23:50
+    \item Notifications sent when capacity changes
+\end{enumerate}
+
+\section{Cross-Cutting Concerns}
+
+\subsection{Logging}
+Implemented using a custom logging interface:
+
+\begin{lstlisting}[language=CSharp]
+public interface IAppLogger
+{
+    void LogInfo(string message);
+    void LogError(string message);
+    void LogWarning(string message);
+}
+\end{lstlisting}
+
+\subsection{Error Handling}
+Global error handling middleware:
+
+\begin{lstlisting}[language=CSharp]
+public class ErrorHandlingMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly IAppLogger _logger;
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        try
+        {
+            await _next(context);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error: {ex.Message}");
+            // ... error handling logic
+        }
+    }
+}
+\end{lstlisting}
+
+\section{Security}
+
+\subsection{Authentication}
+\begin{itemize}
+    \item JWT-based authentication
+    \item Role-based authorization
+    \item Secure password hashing
+\end{itemize}
+
+\subsection{Data Protection}
+\begin{itemize}
+    \item HTTPS enforcement
+    \item Input validation
+    \item SQL injection prevention
+    \item XSS protection
+\end{itemize}
+
+\section{Performance Considerations}
+
+\subsection{Caching}
+\begin{itemize}
+    \item In-memory caching for frequently accessed data
+    \item Response caching for static content
+    \item Distributed caching support
+\end{itemize}
+
+\subsection{Database Optimization}
+\begin{itemize}
+    \item Indexed queries
+    \item Efficient joins
+    \item Connection pooling
+    \item Query optimization
+\end{itemize}
+
+\section{Scalability}
+
+\subsection{Horizontal Scaling}
+\begin{itemize}
+    \item Stateless design
+    \item Load balancing support
+    \item Distributed caching
+    \item Database sharding capability
+\end{itemize}
+
+\subsection{Vertical Scaling}
+\begin{itemize}
+    \item Resource optimization
+    \item Connection pooling
+    \item Memory management
+    \item Thread pool configuration
+\end{itemize} 

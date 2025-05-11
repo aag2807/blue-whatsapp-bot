@@ -1,0 +1,335 @@
+\section{Deployment Overview}
+The Blue WhatsApp Bot is designed to be deployed in a production environment with high availability and scalability. This chapter outlines the deployment process, requirements, and best practices.
+
+\section{System Requirements}
+
+\subsection{Hardware Requirements}
+\begin{itemize}
+    \item \textbf{CPU}: Minimum 2 cores, recommended 4 cores
+    \item \textbf{RAM}: Minimum 4GB, recommended 8GB
+    \item \textbf{Storage}: Minimum 50GB SSD
+    \item \textbf{Network}: Stable internet connection with minimum 10Mbps
+\end{itemize}
+
+\subsection{Software Requirements}
+\begin{itemize}
+    \item \textbf{Operating System}: Windows Server 2019 or later
+    \item \textbf{.NET Runtime}: .NET 6.0 or later
+    \item \textbf{Database}: SQL Server 2019 or later
+    \item \textbf{IIS}: Version 10.0 or later
+    \item \textbf{SSL Certificate}: Valid SSL certificate for HTTPS
+\end{itemize}
+
+\section{Deployment Process}
+
+\subsection{Database Setup}
+\begin{enumerate}
+    \item Install SQL Server
+    \item Create new database
+    \item Run database migrations
+    \item Configure database user and permissions
+\end{enumerate}
+
+\begin{lstlisting}[language=sql]
+-- Create database
+CREATE DATABASE BlueWhatsAppBot;
+
+-- Create database user
+CREATE LOGIN BlueWhatsAppBotUser WITH PASSWORD = 'StrongPassword123!';
+USE BlueWhatsAppBot;
+CREATE USER BlueWhatsAppBotUser FOR LOGIN BlueWhatsAppBotUser;
+
+-- Grant permissions
+GRANT SELECT, INSERT, UPDATE, DELETE ON SCHEMA::dbo TO BlueWhatsAppBotUser;
+\end{lstlisting}
+
+\subsection{Application Deployment}
+\begin{enumerate}
+    \item Publish application
+    \item Configure IIS
+    \item Set up application pool
+    \item Configure SSL
+    \item Set up logging
+\end{enumerate}
+
+\begin{lstlisting}[language=xml]
+<!-- web.config -->
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <system.webServer>
+    <handlers>
+      <add name="aspNetCore" path="*" verb="*" modules="AspNetCoreModuleV2" resourceType="Unspecified" />
+    </handlers>
+    <aspNetCore processPath="dotnet" arguments=".\BlueWhatsapp.Api.dll" stdoutLogEnabled="true" stdoutLogFile=".\logs\stdout" />
+  </system.webServer>
+</configuration>
+\end{lstlisting}
+
+\section{Configuration}
+
+\subsection{Environment Variables}
+Required environment variables:
+
+\begin{lstlisting}[language=json]
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=BlueWhatsAppBot;User Id=BlueWhatsAppBotUser;Password=StrongPassword123!;"
+  },
+  "WhatsAppApi": {
+    "ApiKey": "your-api-key",
+    "ApiUrl": "https://graph.facebook.com/v17.0/your-phone-number-id"
+  },
+  "Jwt": {
+    "Key": "your-secret-key",
+    "Issuer": "BlueWhatsAppBot",
+    "Audience": "BlueWhatsAppBotUsers"
+  },
+  "Logging": {
+    "LogDirectory": "C:\\Logs\\BlueWhatsAppBot"
+  }
+}
+\end{lstlisting}
+
+\subsection{IIS Configuration}
+IIS application pool settings:
+
+\begin{lstlisting}[language=xml]
+<applicationPools>
+  <add name="BlueWhatsAppBot" 
+       autoStart="true" 
+       managedRuntimeVersion="v4.0" 
+       managedPipelineMode="Integrated">
+    <processModel identityType="ApplicationPoolIdentity" />
+  </add>
+</applicationPools>
+\end{lstlisting}
+
+\section{Monitoring}
+
+\subsection{Logging Configuration}
+Configure logging in \texttt{appsettings.json}:
+
+\begin{lstlisting}[language=json]
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    },
+    "File": {
+      "Path": "C:\\Logs\\BlueWhatsAppBot\\app.log",
+      "Append": true,
+      "MinLevel": "Information",
+      "FileSizeLimitBytes": 10485760,
+      "MaxRollingFiles": 10
+    }
+  }
+}
+\end{lstlisting}
+
+\subsection{Health Checks}
+Configure health checks in \texttt{Startup.cs}:
+
+\begin{lstlisting}[language=CSharp]
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddHealthChecks()
+        .AddSqlServer(Configuration["ConnectionStrings:DefaultConnection"])
+        .AddCheck<WhatsAppApiHealthCheck>("WhatsApp API")
+        .AddCheck<DiskStorageHealthCheck>("Disk Storage");
+}
+
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    app.UseHealthChecks("/health", new HealthCheckOptions
+    {
+        ResponseWriter = async (context, report) =>
+        {
+            context.Response.ContentType = "application/json";
+            var response = new
+            {
+                status = report.Status.ToString(),
+                checks = report.Entries.Select(x => new
+                {
+                    name = x.Key,
+                    status = x.Value.Status.ToString(),
+                    description = x.Value.Description
+                })
+            };
+            await context.Response.WriteAsJsonAsync(response);
+        }
+    });
+}
+\end{lstlisting}
+
+\section{Backup and Recovery}
+
+\subsection{Database Backup}
+Configure SQL Server backup jobs:
+
+\begin{lstlisting}[language=sql]
+-- Create backup job
+USE msdb;
+GO
+
+EXEC dbo.sp_add_job
+    @job_name = N'BlueWhatsAppBot_DailyBackup',
+    @description = N'Daily backup of BlueWhatsAppBot database',
+    @category_name = N'Database Maintenance',
+    @owner_login_name = N'sa';
+GO
+
+EXEC dbo.sp_add_jobstep
+    @job_name = N'BlueWhatsAppBot_DailyBackup',
+    @step_name = N'Backup Database',
+    @subsystem = N'TSQL',
+    @command = N'BACKUP DATABASE BlueWhatsAppBot TO DISK = ''C:\Backups\BlueWhatsAppBot_$(ESCAPE_SQUOTE(DATE)).bak'' WITH INIT';
+GO
+
+EXEC dbo.sp_add_schedule
+    @job_name = N'BlueWhatsAppBot_DailyBackup',
+    @name = N'Daily Schedule',
+    @freq_type = 4,
+    @freq_interval = 1,
+    @active_start_time = 010000;
+GO
+\end{lstlisting}
+
+\subsection{Application Backup}
+Configure application backup:
+
+\begin{lstlisting}[language=powershell]
+# Backup script
+$backupPath = "C:\Backups\BlueWhatsAppBot"
+$appPath = "C:\inetpub\wwwroot\BlueWhatsAppBot"
+$date = Get-Date -Format "yyyy-MM-dd"
+
+# Create backup directory
+New-Item -ItemType Directory -Force -Path "$backupPath\$date"
+
+# Backup application files
+Copy-Item -Path "$appPath\*" -Destination "$backupPath\$date" -Recurse
+
+# Backup logs
+Copy-Item -Path "C:\Logs\BlueWhatsAppBot\*" -Destination "$backupPath\$date\Logs" -Recurse
+\end{lstlisting}
+
+\section{Security}
+
+\subsection{SSL Configuration}
+Configure SSL in IIS:
+
+\begin{lstlisting}[language=xml]
+<system.webServer>
+  <security>
+    <requestFiltering>
+      <requestLimits maxAllowedContentLength="30000000" />
+    </requestFiltering>
+  </security>
+  <rewrite>
+    <rules>
+      <rule name="HTTP to HTTPS" stopProcessing="true">
+        <match url="(.*)" />
+        <conditions>
+          <add input="{HTTPS}" pattern="^OFF$" />
+        </conditions>
+        <action type="Redirect" url="https://{HTTP_HOST}/{R:1}" redirectType="Permanent" />
+      </rule>
+    </rules>
+  </rewrite>
+</system.webServer>
+\end{lstlisting}
+
+\subsection{Firewall Configuration}
+Configure Windows Firewall:
+
+\begin{lstlisting}[language=powershell]
+# Allow HTTP traffic
+New-NetFirewallRule -DisplayName "Allow HTTP" -Direction Inbound -Protocol TCP -LocalPort 80 -Action Allow
+
+# Allow HTTPS traffic
+New-NetFirewallRule -DisplayName "Allow HTTPS" -Direction Inbound -Protocol TCP -LocalPort 443 -Action Allow
+\end{lstlisting}
+
+\section{Maintenance}
+
+\subsection{Log Rotation}
+Configure log rotation in \texttt{appsettings.json}:
+
+\begin{lstlisting}[language=json]
+{
+  "Serilog": {
+    "WriteTo": [
+      {
+        "Name": "File",
+        "Args": {
+          "path": "C:\\Logs\\BlueWhatsAppBot\\log-.txt",
+          "rollingInterval": "Day",
+          "retainedFileCountLimit": 31
+        }
+      }
+    ]
+  }
+}
+\end{lstlisting}
+
+\subsection{Database Maintenance}
+Configure database maintenance jobs:
+
+\begin{lstlisting}[language=sql]
+-- Create maintenance job
+USE msdb;
+GO
+
+EXEC dbo.sp_add_job
+    @job_name = N'BlueWhatsAppBot_Maintenance',
+    @description = N'Weekly database maintenance',
+    @category_name = N'Database Maintenance',
+    @owner_login_name = N'sa';
+GO
+
+-- Add maintenance steps
+EXEC dbo.sp_add_jobstep
+    @job_name = N'BlueWhatsAppBot_Maintenance',
+    @step_name = N'Update Statistics',
+    @subsystem = N'TSQL',
+    @command = N'UPDATE STATISTICS BlueWhatsAppBot WITH FULLSCAN';
+GO
+
+EXEC dbo.sp_add_jobstep
+    @job_name = N'BlueWhatsAppBot_Maintenance',
+    @step_name = N'Rebuild Indexes',
+    @subsystem = N'TSQL',
+    @command = N'ALTER INDEX ALL ON BlueWhatsAppBot.dbo.Reservations REBUILD';
+GO
+\end{lstlisting}
+
+\section{Best Practices}
+
+\subsection{Deployment}
+\begin{itemize}
+    \item Use deployment scripts for consistency
+    \item Implement blue-green deployment
+    \item Test deployment in staging environment
+    \item Maintain deployment documentation
+    \item Use version control for configuration
+\end{itemize}
+
+\subsection{Monitoring}
+\begin{itemize}
+    \item Set up application monitoring
+    \item Configure alert thresholds
+    \item Monitor system resources
+    \item Track API usage
+    \item Monitor error rates
+\end{itemize}
+
+\subsection{Security}
+\begin{itemize}
+    \item Regular security updates
+    \item SSL certificate renewal
+    \item Access control review
+    \item Security audit logging
+    \item Regular vulnerability scanning
+\end{itemize} 

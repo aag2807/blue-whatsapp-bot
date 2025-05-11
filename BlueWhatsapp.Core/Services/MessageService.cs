@@ -52,8 +52,6 @@ public sealed class MessageService : IMessageService
     /// <inheritdoc />
     async Task<IEnumerable<CoreMessage>> IMessageService.GetAllByStatus(MessageStatus status)
     {
-        State.IsFalse(status == MessageStatus.None, nameof(status));
-        
         return await _messageRepository.GetMessagesByTypeAsync(status).ConfigureAwait(true);
     }
 
