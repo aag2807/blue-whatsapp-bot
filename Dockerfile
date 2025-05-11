@@ -24,6 +24,9 @@ RUN dotnet publish "BlueWhatsapp.Api/BlueWhatsapp.Api.csproj" -c Release -o /app
 FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS runtime
 WORKDIR /app
 
+# Install SQLite tools
+RUN apk add --no-cache sqlite
+
 # Create directory for SQLite database
 RUN mkdir -p /app/data
 VOLUME /app/data
@@ -41,6 +44,18 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 # Create the SQLite database file
 RUN touch /app/WhatsappApp.db
 RUN chmod 666 /app/WhatsappApp.db
+
+# Create a helper script for database inspection
+RUN echo '#!/bin/sh\n\
+echo "SQLite Database Inspection Tool"\n\
+echo "Available commands:"\n\
+echo "1. List all tables: .tables"\n\
+echo "2. Show table schema: .schema table_name"\n\
+echo "3. Show all data in a table: SELECT * FROM table_name;"\n\
+echo "4. Exit: .quit"\n\
+echo "Enter SQLite command or .help for more options:"\n\
+sqlite3 /app/WhatsappApp.db' > /app/inspect-db.sh && \
+chmod +x /app/inspect-db.sh
 
 # Expose port 80
 EXPOSE 80

@@ -11,6 +11,6 @@ docker rm whatsapp-bot
 docker pull aagn2807/blue-whastapp-transportation-bot:latest
 
 docker run -d --name whatsapp-bot -p 80:80 aagn2807/blue-whastapp-transportation-bot:latest
-O
+
 docker exec -it whatsapp-bot /bin/sh
 
