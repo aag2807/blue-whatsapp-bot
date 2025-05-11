@@ -21,16 +21,10 @@ public class ScheduleConfiguration :  IEntityTypeConfiguration<Schedule>
         builder.Property(s => s.Time)
             .IsRequired();
 
-        builder.HasMany<Hotel>()
-            .WithMany(h => h.Schedules)
-            .UsingEntity<HotelSchedule>(
-                j => j.HasOne(hs => hs.Hotel)
-                    .WithMany()
-                    .HasForeignKey(hs => hs.HotelId),
-                j => j.HasOne(hs => hs.Schedule)
-                    .WithMany(s => s.HotelSchedules)
-                    .HasForeignKey(hs => hs.ScheduleId)
-            );
+        builder.HasMany(s => s.HotelSchedules)
+            .WithOne(hs => hs.Schedule)
+            .HasForeignKey(hs => hs.ScheduleId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         // Create date time for all records
         var currentTime = DateTime.UtcNow;

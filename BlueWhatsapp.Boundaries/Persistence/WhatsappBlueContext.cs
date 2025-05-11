@@ -2,6 +2,7 @@
 using BlueWhatsapp.Boundaries.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Triplex.Validations;
 
 namespace BlueWhatsapp.Boundaries.Persistence;
@@ -31,6 +32,8 @@ public class WhatsappBlueContext : DbContext, IWhatsappBlueContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.EnableSensitiveDataLogging();
+        optionsBuilder.ConfigureWarnings(warnings => 
+            warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
     }
 
     #region [DBSET]

@@ -80,6 +80,12 @@ public sealed class ConversationState : BaseEntity
     /// </summary>
     [MaxLength(60)]
     public string Email { get; set; } = string.Empty;
+    
+    /// <summary> 
+    /// extra information
+    /// </summary>
+    [MaxLength(60)]
+    public string ExtraInformation { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the number of adults included in the reservation or service.

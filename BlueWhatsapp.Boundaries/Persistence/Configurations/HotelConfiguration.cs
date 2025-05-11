@@ -54,16 +54,10 @@ public class HotelConfiguration : IEntityTypeConfiguration<Hotel>
             .IsRequired()
             .HasMaxLength(20);
         
-        builder.HasMany(h => h.Schedules)
-            .WithMany()
-            .UsingEntity<HotelSchedule>(
-                j => j.HasOne(hs => hs.Schedule)
-                    .WithMany(s => s.HotelSchedules)
-                    .HasForeignKey(hs => hs.ScheduleId),
-                j => j.HasOne(hs => hs.Hotel)
-                    .WithMany(h => h.HotelSchedules)
-                    .HasForeignKey(hs => hs.HotelId)
-            );
+        builder.HasMany(h => h.HotelSchedules)
+            .WithOne(hs => hs.Hotel)
+            .HasForeignKey(hs => hs.HotelId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // Create date time for all records
         var currentTime = DateTime.UtcNow;

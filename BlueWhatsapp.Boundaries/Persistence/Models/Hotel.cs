@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using BlueWhatsapp.Core.Models;
 using Triplex.Validations;
 
@@ -56,12 +57,6 @@ public sealed class Hotel : BaseEntity
     /// Collection of schedules associated with this hotel through the junction table
     /// </summary>
     public ICollection<HotelSchedule> HotelSchedules { get; set; } = new List<HotelSchedule>();
-    
-    /// <summary>
-    /// Collection of schedules associated with this hotel
-    /// </summary>
-    [NotMapped]
-    public ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
 
     /// <summary>
     /// Converts a CoreHotel to a Hotel
