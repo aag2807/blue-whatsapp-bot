@@ -12,13 +12,6 @@ RUN dotnet restore "BlueWhatsapp.Api/BlueWhatsapp.Api.csproj"
 # Copy the rest of the source code
 COPY . .
 
-# Use a properly formatted appsettings.json file
-COPY BlueWhatsapp.Api/appsettings.json BlueWhatsapp.Api/appsettings.json
-# If the file doesn't exist in your source, create it with proper formatting
-RUN if [ ! -f BlueWhatsapp.Api/appsettings.json ]; then \
-    echo '{\n  "Logging": {\n    "LogLevel": {\n      "Default": "Information",\n      "Microsoft.AspNetCore": "Warning"\n    }\n  },\n  "AllowedHosts": "*"\n}' > BlueWhatsapp.Api/appsettings.json; \
-    fi
-
 # Build and publish
 RUN dotnet publish "BlueWhatsapp.Api/BlueWhatsapp.Api.csproj" -c Release -o /app/publish
 
@@ -32,6 +25,9 @@ VOLUME /app/data
 
 # Copy the published application
 COPY --from=build /app/publish .
+
+# Ensure appsettings.json is properly copied and has correct permissions
+RUN chmod 644 appsettings.json
 
 # Set environment variables
 ENV ASPNETCORE_URLS=http://+:80

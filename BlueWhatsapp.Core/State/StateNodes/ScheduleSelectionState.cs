@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using BlueWhatsapp.Core.Enums;
 using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
