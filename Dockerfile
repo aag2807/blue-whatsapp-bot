@@ -1,6 +1,11 @@
 ﻿FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
 WORKDIR /src
 
+# Add maintainer and repository information
+LABEL maintainer="aagn2807"
+LABEL org.opencontainers.image.source="https://github.com/aag2807/blue-whatsapp-bot/"
+LABEL org.opencontainers.image.description="Blue WhatsApp Transportation Bot"
+
 # Copy project files and restore dependencies
 COPY ["BlueWhatsapp.Api/BlueWhatsapp.Api.csproj", "BlueWhatsapp.Api/"]
 COPY ["BlueWhatsapp.Boundaries/BlueWhatsapp.Boundaries.csproj", "BlueWhatsapp.Boundaries/"]
