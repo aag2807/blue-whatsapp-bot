@@ -37,7 +37,10 @@ RUN chmod 644 appsettings.json
 # Set environment variables
 ENV ASPNETCORE_URLS=http://+:80
 ENV ASPNETCORE_ENVIRONMENT=Production
-ENV SQLite__DatabasePath=/app/data/WhatsappApp.db
+
+# Create the SQLite database file
+RUN touch /app/WhatsappApp.db
+RUN chmod 666 /app/WhatsappApp.db
 
 # Expose port 80
 EXPOSE 80
