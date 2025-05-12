@@ -34,8 +34,10 @@ public sealed class WhatsappCloudService(IAppLogger logger) : IWhatsappCloudServ
         if (responseContent != null)
         {
             object data = JsonConvert.DeserializeObject<object>(responseContent);
-            logger.LogInfo("Whatsappp sent message response");
-            logger.LogInfo(data);
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogError(data);
+            }
         }
         
         return response.IsSuccessStatusCode;

@@ -31,7 +31,14 @@ RUN apk add --no-cache icu-libs
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 # Install SQLite tools
-RUN apk add --no-cache sqlite
+RUN apk add --no-cache \
+    vim \
+    less \
+    grep \
+    curl \
+    sqlite \
+    icu-libs \
+    bash
 
 # Create directory for SQLite database
 RUN mkdir -p /app/data

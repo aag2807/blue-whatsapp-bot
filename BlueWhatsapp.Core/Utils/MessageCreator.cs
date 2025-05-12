@@ -106,7 +106,7 @@ public sealed class MessageCreator : IMessageCreator
 
         Row iDontKnowRow = new Row()
         {
-            id = "-1",
+            id = "99",
             title = "No lo sé",
         };
 
@@ -137,7 +137,7 @@ public sealed class MessageCreator : IMessageCreator
        
         Row iDontKnowRow = new Row()
         {
-            id = "-1",
+            id = "99",
             title = "No está en la lista",
         };
 
@@ -188,7 +188,7 @@ public sealed class MessageCreator : IMessageCreator
         
         List<Row> tempRows = schedules.Select(schedule => new Row() { id = schedule.Id.ToString(), title = schedule.Time, }).ToList();
 
-        tempRows.Add(new Row() {  id = "-1", title = "Lo voy a analizar y escribiré luego.", });
+        tempRows.Add(new Row() {  id = "99", title = "Escribiré luego.", });
 
         section.rows.AddRange( tempRows );
 

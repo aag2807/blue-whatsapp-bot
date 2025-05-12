@@ -45,4 +45,11 @@ public sealed class WhatsAppCloudModel
     {
         return Entry[0]?.Changes[0]?.Value?.Contacts[0]?.Profile?.Name;
     }
+
+    public bool IsValidEntity()
+    {
+        bool hasContacts = Entry[0]?.Changes[0]?.Value?.Contacts.Any() ?? false;
+        bool hasResponseMessage = Entry[0]?.Changes[0]?.Value?.Messages.Any() ?? false;
+        return hasContacts && hasResponseMessage;
+    }
 }

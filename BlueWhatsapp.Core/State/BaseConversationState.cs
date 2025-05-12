@@ -11,7 +11,7 @@ public abstract class BaseConversationState : IConversationState
 {
     private ServiceLocator Services => ServiceLocator.Instance;
     
-    protected string I_DONT_KNOW_OPTION = "-1";
+    protected string I_DONT_KNOW_OPTION = "99";
 
     public abstract ConversationStep StateId { get; }
 

@@ -76,13 +76,20 @@ public class WhatsappController : ControllerBase
     [LogAction]
     public async Task<IActionResult> ReceiveMessage([FromBody] WhatsAppCloudModel body)
     {
+        if (!body.IsValidEntity())
+        {
+            return Ok("EVENT_RECEIVED");
+        }
+
         _logger.LogInfo("receive-message");
         _logger.LogInfo(body);
+        
         try
         {
             Message? message = body.GetMessage();
             if (message == null)
             {
+                _logger.LogInfo("No message received");
                 return Ok("EVENT_RECEIVED");
             }
 
@@ -97,7 +104,6 @@ public class WhatsappController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex);
-            return Ok("EVENT_RECEIVED");
         }
 
         return Ok("EVENT_RECEIVED");

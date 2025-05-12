@@ -2,12 +2,13 @@ dotnet ef migrations add PendingChangesMadeToModel3 --project BlueWhatsapp.Bound
 
 dotnet ef database update --project BlueWhatsapp.Boundaries\BlueWhatsapp.Boundaries.csproj --startup-project BlueWhatsapp.Api\BlueWhatsapp.Api.csproj --context BlueWhatsapp.Boundaries.Persistence.WhatsappBlueContext
 
+// build and push docker changes
 docker build -t aagn2807/blue-whastapp-transportation-bot:latest .
 
-docker push aagn2807/blue-whastapp-transportation-bot:lates
+docker push aagn2807/blue-whastapp-transportation-bot:latest
 
 // docker steps
-sudo ocker stop whatsapp-bot
+sudo docker stop whatsapp-bot
 sudo docker rm whatsapp-bot
 
 sudo docker pull aagn2807/blue-whastapp-transportation-bot:latest
@@ -16,3 +17,4 @@ sudo docker run -d --name whatsapp-bot -p 80:80 aagn2807/blue-whastapp-transport
 
 sudo docker exec -it whatsapp-bot /bin/sh
 
+./ngrok http 80
