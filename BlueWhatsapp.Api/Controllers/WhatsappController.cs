@@ -1,4 +1,4 @@
-﻿    using BlueWhatsapp.Api.Hubs;
+﻿using BlueWhatsapp.Api.Hubs;
 using BlueWhatsapp.Api.models.DTO;
 using BlueWhatsapp.Api.models.DTO.Messages;
 using BlueWhatsapp.Api.Utils;
@@ -22,7 +22,7 @@ public class WhatsappController : ControllerBase
 {
     private readonly IAppLogger _logger;
     private readonly IHubContext<MessagesHub> _hubContext;
-    private readonly IChatResponseService _chatResponseService; 
+    private readonly IChatResponseService _chatResponseService;
 
     /// <summary>
     /// Controller responsible for handling API endpoints related to WhatsApp integrations.
@@ -43,26 +43,33 @@ public class WhatsappController : ControllerBase
     /// </summary>
     /// <returns>The challenge response.</returns>
     [HttpGet]
-    [LogAction]
-    public async Task<IActionResult> ValidateToken()
+    public async Task<IActionResult> ValidateToken([FromQuery(Name = "hub.mode")] string mode, [FromQuery(Name = "hub.verify_token")] string token, [FromQuery(Name = "hub.challenge")] string challenge)
     {
-        _logger.LogInfo("verify-token");
-
-        const string accessToken =
-            "EAAN28uo8ybUBOwGonoTm1mnHMX7IQid4YDii9THUHfdJGNaadhIg7wo06veATYOcjZCL0Y9eZC5hZB5laDjPRcl15EHAM7JwKug7o0OX3ZCkyzcxD0HD8aR2yrFvkg45EbgmpZANmbRTrUscZB1YIZAzZCD50PEBRO7C5cqnE4ELmajP4MYSiBQB0HYVk5TrhAFkVQZDZD";
-        string token = Request.Query["hub.verify_token"].ToString();
-        string challenge = Request.Query["hub.challenge"].ToString();
-
-        _logger.LogInfo($"token: {token}");
-        _logger.LogInfo($"challenge: {challenge}");
-
-        if (token.IsNullOrWhiteSpace() || token.IsNullOrWhiteSpace() || token is not accessToken)
-        {
-            _logger.LogError("Invalid token");
-            return BadRequest();
-        }
-
         return Ok(challenge);
+        
+        try
+        {
+            _logger.LogInfo("verify-token");
+
+            const string accessToken =
+                "EAAJZBUAn6wJcBADZCDnZCT0VEIqfScKb37HVn8ZAfPwl5LXZBm3r4ZBeE0ZCeVgf9DgZCY6YrXqLb1TxE9ZAZBfNPMjUuIiOHy18wxmTcOEtqWZAj6DTZAm1JvtEt9gYgJHOCySPrGYrJDYXmZBUPISDV6ezOPdI8MVE8fKwHq0ZBxzyjhVtq5eLQXQRljWIXPNHwYPqkJF";
+
+            _logger.LogInfo($"token: {token}");
+            _logger.LogInfo($"challenge: {challenge}");
+
+            // if (token.IsNullOrWhiteSpace() || token.IsNullOrWhiteSpace() || token is not accessToken)
+            // {
+            //     _logger.LogError("Invalid token");
+            //     return BadRequest();
+            // }
+
+            return Ok(challenge);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"token: {ex.Message}");
+            throw new Exception("issue happened");
+        }
     }
 
     [HttpPost]
@@ -71,7 +78,6 @@ public class WhatsappController : ControllerBase
     {
         _logger.LogInfo("receive-message");
         _logger.LogInfo(body);
-
         try
         {
             Message? message = body.GetMessage();
@@ -79,7 +85,7 @@ public class WhatsappController : ControllerBase
             {
                 return Ok("EVENT_RECEIVED");
             }
-        
+
             string userNumber = message.From!;
             string fromName = body.GetContactProfileName() ?? string.Empty;
             string userText = message.GetUserText();
@@ -93,14 +99,44 @@ public class WhatsappController : ControllerBase
             _logger.LogError(ex);
             return Ok("EVENT_RECEIVED");
         }
-        
+
         return Ok("EVENT_RECEIVED");
     }
-    
+
     [HttpGet("health")]
     [LogAction]
     public async Task<IActionResult> Health()
     {
         return Ok(new { healthy = true });
+    }
+    
+    private bool HasContent(WhatsAppCloudModel body)
+    {
+        if (body.Entry == null || body.Entry.Count == 0)
+        {
+            return false;
+        }
+        
+        foreach (var entry in body.Entry)
+        {
+            if (entry.Changes == null || entry.Changes.Count == 0)
+                continue;
+            
+            foreach (var change in entry.Changes)
+            {
+                var value = change.Value;
+                if (value == null)
+                    continue;
+                
+                // Check if there are any actual messages or contacts
+                if ((value.Messages != null && value.Messages.Count > 0) ||
+                    (value.Contacts != null && value.Contacts.Count > 0))
+                {
+                    return true;
+                }
+            }
+        }
+    
+        return false;
     }
 }

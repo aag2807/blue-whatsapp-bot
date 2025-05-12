@@ -18,7 +18,14 @@ public sealed class WhatsAppCloudModel
     /// <returns></returns>
     public Message? GetMessage()
     {
-        return Entry[0]?.Changes[0]?.Value?.Messages[0];
+        try
+        {
+            return Entry[0]?.Changes[0]?.Value?.Messages[0];
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
     }
 
     /// <summary>
