@@ -5,12 +5,12 @@ dotnet ef database update --project BlueWhatsapp.Boundaries\BlueWhatsapp.Boundar
 docker push aagn2807/blue-whastapp-transportation-bot:latest
 
 // docker steps
-docker stop whatsapp-bot
-docker rm whatsapp-bot
+sudo ocker stop whatsapp-bot
+sudo docker rm whatsapp-bot
 
-docker pull aagn2807/blue-whastapp-transportation-bot:latest
+sudo docker pull aagn2807/blue-whastapp-transportation-bot:latest
 
-docker run -d --name whatsapp-bot -p 80:80 aagn2807/blue-whastapp-transportation-bot:latest
+sudo docker run -d --name whatsapp-bot -p 80:80 aagn2807/blue-whastapp-transportation-bot:latest
 
-docker exec -it whatsapp-bot /bin/sh
+sudo docker exec -it whatsapp-bot /bin/sh
 

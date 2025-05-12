@@ -24,6 +24,12 @@ RUN dotnet publish "BlueWhatsapp.Api/BlueWhatsapp.Api.csproj" -c Release -o /app
 FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS runtime
 WORKDIR /app
 
+# Install ICU libraries for globalization support
+RUN apk add --no-cache icu-libs
+
+# Set globalization invariant mode to false to use system's globalization libraries
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
 # Install SQLite tools
 RUN apk add --no-cache sqlite
 

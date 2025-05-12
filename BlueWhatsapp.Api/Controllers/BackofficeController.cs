@@ -147,7 +147,7 @@ public class BackofficeController : Controller
     private async Task<CoreUser?> VerifyCredentials(string email, string password)
     {
         _logger.LogInfo($"Login attempt for {email}");
-        CoreUser? user =  await _userService.Login(email, password).ConfigureAwait(true);
+        CoreUser? user = await _userService.Login(email, password).ConfigureAwait(true);
         _logger.LogInfo($"Found user for {email}");
 
         return user;

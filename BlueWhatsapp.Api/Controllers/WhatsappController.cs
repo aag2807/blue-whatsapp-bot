@@ -49,7 +49,7 @@ public class WhatsappController : ControllerBase
         _logger.LogInfo("verify-token");
 
         const string accessToken =
-            "EAAJZBUAn6wJcBADZCDnZCT0VEIqfScKb37HVn8ZAfPwl5LXZBm3r4ZBeE0ZCeVgf9DgZCY6YrXqLb1TxE9ZAZBfNPMjUuIiOHy18wxmTcOEtqWZAj6DTZAm1JvtEt9gYgJHOCySPrGYrJDYXmZBUPISDV6ezOPdI8MVE8fKwHq0ZBxzyjhVtq5eLQXQRljWIXPNHwYPqkJF";
+            "EAAN28uo8ybUBOwGonoTm1mnHMX7IQid4YDii9THUHfdJGNaadhIg7wo06veATYOcjZCL0Y9eZC5hZB5laDjPRcl15EHAM7JwKug7o0OX3ZCkyzcxD0HD8aR2yrFvkg45EbgmpZANmbRTrUscZB1YIZAzZCD50PEBRO7C5cqnE4ELmajP4MYSiBQB0HYVk5TrhAFkVQZDZD";
         string token = Request.Query["hub.verify_token"].ToString();
         string challenge = Request.Query["hub.challenge"].ToString();
 
