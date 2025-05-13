@@ -107,7 +107,6 @@ document.addEventListener('alpine:init', () => {
 
                 // Set up handlers
                 this.connection.on('ReceiveTrips', (trips) => {
-                    console.log(trips)
                     this.trips = trips;
                 });
 

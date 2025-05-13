@@ -23,11 +23,6 @@ public interface IWhatsappBlueContext
     /// <summary>
     /// 
     /// </summary>
-    public DbSet<TripSchedule> TripSchedules { get; set; }
-
-    /// <summary>
-    /// 
-    /// </summary>
     public DbSet<User> Users { get; set; }
     
     /// <summary>

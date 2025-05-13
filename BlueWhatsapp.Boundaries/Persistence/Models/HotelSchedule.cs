@@ -11,11 +11,13 @@ public sealed class HotelSchedule : BaseEntity
     /// <summary>
     /// Foreign key to the Hotel entity
     /// </summary>
+    [ForeignKey("HotelId")]
     public int HotelId { get; set; }
     
     /// <summary>
     /// Foreign key to the Schedule entity
     /// </summary>
+    [ForeignKey("ScheduleId")]
     public int ScheduleId { get; set; }
     
     /// <summary>
@@ -26,12 +28,10 @@ public sealed class HotelSchedule : BaseEntity
     /// <summary>
     /// Navigation property to the related Hotel
     /// </summary>
-    [ForeignKey("HotelId")]
     public Hotel Hotel { get; set; }
     
     /// <summary>
     /// Navigation property to the related Schedule
     /// </summary>
-    [ForeignKey("ScheduleId")]
     public Schedule Schedule { get; set; }
 }

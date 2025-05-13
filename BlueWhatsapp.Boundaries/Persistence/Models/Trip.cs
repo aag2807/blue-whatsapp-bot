@@ -43,23 +43,6 @@ public sealed class Trip : BaseEntity
     /// The route of the trip
     /// </summary>
     public Route? Route { get; set; }
-
-    /// <summary>
-    /// The schedules of the trip through junction table
-    /// </summary>
-    public ICollection<TripSchedule> TripSchedules { get; set; } = new List<TripSchedule>();
-
-    /// <summary>
-    /// The schedules of the trip
-    /// </summary>
-    [NotMapped]
-    public ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
-    
-    /// <summary>
-    /// The hotels associated with this trip through the route
-    /// </summary>
-    [NotMapped]
-    public ICollection<Hotel> Hotels { get; set; } = new List<Hotel>();
     
     /// <summary>
     /// The reservations for the trip
@@ -86,11 +69,13 @@ public sealed class Trip : BaseEntity
             coreEntity.Route = Route.ToCoreRoute();
         }
 
-        // Map schedules from TripSchedules
-        if (TripSchedules != null && TripSchedules.Any())
+        // Map schedules from hotels through route
+        if (Route?.Hotels != null)
         {
-            coreEntity.Schedules = TripSchedules
-                .Select(ts => ts.Schedule.ToCoreSchedule())
+            coreEntity.Schedules = Route.Hotels
+                .SelectMany(h => h.HotelSchedules)
+                .Select(hs => hs.Schedule.ToCoreSchedule())
+                .Distinct()
                 .ToList();
         }
 

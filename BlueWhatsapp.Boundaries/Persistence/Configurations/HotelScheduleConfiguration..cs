@@ -41,7 +41,7 @@ public class HotelScheduleConfiguration : IEntityTypeConfiguration<HotelSchedule
 
         // Define relationships
         builder.HasOne(hs => hs.Hotel)
-            .WithMany()
+            .WithMany(h => h.HotelSchedules)
             .HasForeignKey(hs => hs.HotelId)
             .OnDelete(DeleteBehavior.Cascade);
 

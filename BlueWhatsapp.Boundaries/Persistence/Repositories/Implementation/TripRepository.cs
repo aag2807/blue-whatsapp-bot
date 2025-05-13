@@ -20,9 +20,9 @@ public sealed class TripRepository : BaseRepository<Trip>, ITripRepository
     {
         IEnumerable<Trip> models = await GetAllActiveQuery(false)
             .Include(t => t.Route)
-            .Include(t => t.TripSchedules)
-            .ThenInclude(ts => ts.Schedule)
-            .Include(t => t.Reservations)
+            .ThenInclude( route => route.Hotels )
+            .ThenInclude( hotel => hotel.HotelSchedules )
+            .ThenInclude( hotelSchedules => hotelSchedules.Schedule )
             .ToListAsync()
             .ConfigureAwait(true);
 
@@ -34,8 +34,6 @@ public sealed class TripRepository : BaseRepository<Trip>, ITripRepository
     {
         Trip? model = await _dbSet
             .Include(t => t.Route)
-            .Include(t => t.TripSchedules)
-            .ThenInclude(ts => ts.Schedule)
             .Include(t => t.Reservations)
             .FirstOrDefaultAsync(t => t.Id == id)
             .ConfigureAwait(true);
@@ -59,12 +57,6 @@ public sealed class TripRepository : BaseRepository<Trip>, ITripRepository
         // Add schedules if provided
         if (trip.Schedules.Any())
         {
-            IEnumerable<TripSchedule> mappedSchedules = trip.Schedules.Select(s => new TripSchedule
-            {
-                TripId = createdTrip.Id,
-                ScheduleId = s.Id,
-            });
-            await _dbContext.Set<TripSchedule>().AddRangeAsync(mappedSchedules);
             await _dbContext.SaveChangesAsync();
         }
 
@@ -80,7 +72,6 @@ public sealed class TripRepository : BaseRepository<Trip>, ITripRepository
             Arguments.NotEmptyOrWhiteSpaceOnly(trip.TripName, nameof(trip.TripName));
 
             Trip? existingTrip = await _dbSet
-                .Include(t => t.TripSchedules)
                 .FirstOrDefaultAsync(t => t.Id == trip.Id)
                 .ConfigureAwait(true);
 
@@ -98,14 +89,6 @@ public sealed class TripRepository : BaseRepository<Trip>, ITripRepository
             if (trip.Schedules != null)
             {
                 // Remove existing schedules
-                _dbContext.Set<TripSchedule>().RemoveRange(existingTrip.TripSchedules);
-
-                IEnumerable<TripSchedule> mappedSchedules = trip.Schedules.Select(s => new TripSchedule
-                {
-                    TripId = existingTrip.Id,
-                    ScheduleId = s.Id,
-                });
-                await _dbContext.TripSchedules.AddRangeAsync(mappedSchedules);
                 await _dbContext.SaveChangesAsync();
             }
         }
@@ -120,13 +103,11 @@ public sealed class TripRepository : BaseRepository<Trip>, ITripRepository
     async Task ITripRepository.DeleteTripAsync(int id)
     {
         var trip = await _dbSet
-            .Include(t => t.TripSchedules)
             .FirstOrDefaultAsync(t => t.Id == id);
 
         if (trip != null)
         {
             // Remove associated schedules
-            _dbContext.Set<TripSchedule>().RemoveRange(trip.TripSchedules);
 
             // Soft delete the trip
             await SoftDeleteAsync(id).ConfigureAwait(true);
