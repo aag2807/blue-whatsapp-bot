@@ -28,35 +28,18 @@ public class ScheduleHub : Hub
         IEnumerable<CoreSchedule> schedules = await _scheduleRepository.GetAllSchedulesAsync().ConfigureAwait(true);
         await Clients.All.SendAsync("ReceiveSchedules", schedules).ConfigureAwait(true);
     }
-    
+
     public async Task UpdateSchedule(CoreSchedule schedule)
     {
         await _scheduleRepository.UpdateAsync(schedule).ConfigureAwait(true);
         IEnumerable<CoreSchedule> schedules = await _scheduleRepository.GetAllSchedulesAsync().ConfigureAwait(true);
         await Clients.All.SendAsync("ReceiveSchedules", schedules).ConfigureAwait(true);
     }
-    
+
     public async Task DeleteSchedule(int id)
     {
         await _scheduleRepository.DeleteAsync(id).ConfigureAwait(true);
         IEnumerable<CoreSchedule> schedules = await _scheduleRepository.GetAllSchedulesAsync().ConfigureAwait(true);
         await Clients.All.SendAsync("ReceiveSchedules", schedules).ConfigureAwait(true);
     }
-
-    public async Task GetSchedulesPaginated(int page, int pageSize = 20)
-    {
-        IEnumerable<CoreSchedule> schedules = await _scheduleRepository.GetSchedulesPaginated(page, pageSize).ConfigureAwait(true);
-        int totalSchedules = await _scheduleRepository.GetTotalSchedulesAsync().ConfigureAwait(true);
-
-        PaginatedResponse<CoreSchedule> paginatedResponse = new PaginatedResponse<CoreSchedule>
-        {
-            Data = schedules.ToList(),
-            Total = totalSchedules,
-            Page = page,
-            PageSize = pageSize
-        };
-
-        await Clients.All.SendAsync("ReceiveSchedules", paginatedResponse).ConfigureAwait(true);
-    }
-
 }

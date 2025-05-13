@@ -23,10 +23,16 @@ public sealed class CoreSchedule : BaseEntity
     /// </summary>
     public string Time { get; set; } = "0:00";
 
-    public CoreSchedule(int id, string name, string time)
+    /// <summary>
+    ///  The amount of related hotels to a given schedule.
+    /// </summary>
+    public int HotelCount { get; set;  } = 0 ;
+
+    public CoreSchedule(int id, string name, string time, int hotelCount = 0)
     {
         Id = id;
         Name = name;
         Time = time;
+        HotelCount = hotelCount;
     }
 }

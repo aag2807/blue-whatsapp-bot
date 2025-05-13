@@ -4,6 +4,7 @@ const { animate, scroll, stagger } = Motion
  * @property {number} id
  * @property {string} name
  * @property {string} time
+ * @property {number} hotelCount
  */
 
 /**
@@ -42,6 +43,7 @@ document.addEventListener('alpine:init', () => {
                 .build();
 
             this.connection.on('ReceiveSchedules', (schedules) => {
+                console.log(schedules)
                 this.schedules = schedules;
             });
 
@@ -89,21 +91,14 @@ document.addEventListener('alpine:init', () => {
         getHotelSchedule(hotelId) {
             return this.hotelSchedules.find(hs => hs.hotelId === hotelId) || {};
         },
-
-        toggleHotelAssignment(hotel) {
-
-        },
-
         async fetchSchedules()
         {
             this.connection.invoke('GetSchedules');
         },
-
         openAddModal() {
             this.currentSchedule = { id: 0, name: '', time: '' };
             this.showModal = true;
         },
-
         openEditModal(schedule) {
             this.currentSchedule = { ...schedule };
             this.showModal = true;
@@ -126,10 +121,6 @@ document.addEventListener('alpine:init', () => {
                 this.showModal = false;
                 this.saving = false;
             }
-        },
-
-        async saveHotelAssignments() {
-
         },
 
         async deleteSchedule(scheduleId) {

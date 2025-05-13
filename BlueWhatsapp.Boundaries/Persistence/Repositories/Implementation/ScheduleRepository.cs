@@ -1,7 +1,9 @@
+using System.Runtime.CompilerServices;
 using BlueWhatsapp.Boundaries.Persistence.Models;
 using BlueWhatsapp.Core.Persistence;
 using BlueWhatsapp.Core.Logger;
 using BlueWhatsapp.Core.Models.Schedule;
+using BlueWhatsapp.Core.Utils;
 using Microsoft.EntityFrameworkCore;
 using Triplex.Validations;
 
@@ -17,8 +19,18 @@ public sealed class ScheduleRepository : BaseRepository<Schedule>, IScheduleRepo
     async Task<IEnumerable<CoreSchedule>> IScheduleRepository.GetAllSchedulesAsync()
     {
         IReadOnlyList<Schedule> schedules = await GetAllActiveAsync(false).ConfigureAwait(true);
+        List<HotelSchedule> hotelSchedules = await _dbContext.HotelSchedules.ToListAsync().ConfigureAwait(true);
+        
+        Dictionary<int, int> hotelCountByScheduleId = hotelSchedules
+            .GroupBy(h => h.ScheduleId)
+            .ToDictionary(g => g.Key, g => g.Count());
 
-        return schedules.Select(s => new CoreSchedule(s.Id, s.Name, s.Time));
+        return schedules
+            .OrderBy(x => x.Time, new TimeStringComparer())
+            .Select(s => new CoreSchedule(s.Id, s.Name, s.Time)
+            {
+                HotelCount = hotelCountByScheduleId.TryGetValue(s.Id, out int count) ? count : 0
+            });
     }
 
     /// <inheritdoc/>

@@ -1,6 +1,7 @@
 using BlueWhatsapp.Core.Enums;
 using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
+using BlueWhatsapp.Core.Models.Reservations;
 using BlueWhatsapp.Core.Models.Schedule;
 using BlueWhatsapp.Core.Persistence;
 using BlueWhatsapp.Core.Utils;
@@ -22,12 +23,25 @@ public class ReservationCompleteState : BaseConversationState
         {
             IHotelRepository hotelRepository = serviceLocator.GetRequiredService<IHotelRepository>();
             IScheduleRepository scheduleRepository = serviceLocator.GetRequiredService<IScheduleRepository>();
-
+            IReservationRepository reservationRepository = serviceLocator.GetRequiredService<IReservationRepository>();
+            
             int hotelId = int.Parse(context.HotelId);
             int scheduleId = int.Parse(context.ScheduleId);
             CoreHotel hotel = await hotelRepository.GetHotelByIdAsync(hotelId).ConfigureAwait(true)!;
             CoreSchedule schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleId).ConfigureAwait(true)!;
             string scheduleDate = context.PickUpDate;
+
+            CoreReservation reservation = new();
+            reservation.TripId = int.Parse(context.ZoneId);
+            reservation.UserNumber = context.UserNumber;
+            reservation.Schedule = schedule;
+            reservation.ReservationDate = context.PickUpDate;
+            reservation.Hotel = hotel;
+            reservation.HotelName = hotel.Name;
+            reservation.Username = context.FullName;
+            reservation.ReserveTime = schedule.Time;
+                
+            await reservationRepository.SaveReservation(reservation).ConfigureAwait(true);
             
             return messageCreator.CreateReservationConfirmationMessage(context.UserNumber, hotel, schedule, scheduleDate);
         });
