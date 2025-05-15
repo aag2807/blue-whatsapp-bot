@@ -105,9 +105,9 @@ document.addEventListener('alpine:init', () => {
                     .withAutomaticReconnect()
                     .build();
 
-                // Set up handlers
                 this.connection.on('ReceiveTrips', (trips) => {
-                    this.trips = trips;
+                    const filteredTrips = trips.filter(trip => trip.tripName != "Externo");
+                    this.trips = filteredTrips;
                 });
 
                 this.connection.on('ReceiveRoutes', (routes) => {

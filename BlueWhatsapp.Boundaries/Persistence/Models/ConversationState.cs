@@ -84,7 +84,7 @@ public sealed class ConversationState : BaseEntity
     /// <summary> 
     /// extra information
     /// </summary>
-    [MaxLength(60)]
+    [MaxLength(500)]
     public string ExtraInformation { get; set; } = string.Empty;
 
     /// <summary>

@@ -218,6 +218,16 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 IsActiveForToday = true,
                 MaxCapacity = 30,
                 CreatedTime = currentTime
+            },
+            new Trip()
+            {
+                Id = 18,
+                TripName = "Externo",
+                IsActive = true,
+                RouteId = 8,
+                IsActiveForToday = true,
+                MaxCapacity = 100,
+                CreatedTime = currentTime
             }
         );
     }

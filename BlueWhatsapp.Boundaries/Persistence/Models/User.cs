@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using BlueWhatsapp.Boundaries.Persistence.Migrations;
 using BlueWhatsapp.Core.Models.Users;
+using BlueWhatsapp.Core.Utils;
 
 namespace BlueWhatsapp.Boundaries.Persistence.Models;
 
@@ -46,7 +47,20 @@ public sealed class User : BaseEntity
     /// <returns></returns>
     public CoreUser ToCoreUser()
     {
-        return CoreUser.FromRaw(Name, Email, Email, Password);
+        CoreUser user = CoreUser.FromRaw(Name, Email, Email, Password);
+        user.Id = Id;
+        
+        return user;
+    }
+
+    public void UpdateFromCore(CoreUser coreUser)
+    {
+        Name = coreUser.Name;
+        Email = coreUser.Email;
+        if (!PasswordUtils.VerifyPassword(coreUser.Password, Password))
+        {
+            Password = PasswordUtils.HashPassword(Password);
+        }
     }
 }
     

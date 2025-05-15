@@ -12,13 +12,18 @@ public class BackofficeController : Controller
 {
     private readonly IUserService _userService;
     private readonly IAppLogger _logger;
- 
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userService"></param>
+    /// <param name="logger"></param>
     public BackofficeController(IUserService userService, IAppLogger logger)
     {
         _logger = logger;
         _userService = userService;
     }
- 
+
     /// <summary>
     /// Displays the Index page in the Backoffice section.
     /// </summary>
@@ -49,6 +54,7 @@ public class BackofficeController : Controller
             if (user != null)
             {
                 HttpContext.Session.SetString("UserName", user.Name);
+                HttpContext.Session.SetInt32("UserId", (int)user.Id);
                 HttpContext.Session.SetString("UserEmail", user.Email);
                 return RedirectToAction("Dashboard", "Backoffice");
             }
@@ -57,7 +63,7 @@ public class BackofficeController : Controller
                 ModelState.AddModelError("", "Invalid email or password.");
             }
         }
-        
+
         return View("Index", model);
     }
 
@@ -75,10 +81,12 @@ public class BackofficeController : Controller
             return RedirectToAction("Index");
         }
 
+
         ViewBag.User = userName;
         ViewBag.AlpineComponent = "dashboard";
         ViewBag.ActivePage = "Dashboard";
-        
+        ViewBag.IsAdmin = IsUserAdmin();
+
         return View();
     }
 
@@ -88,6 +96,7 @@ public class BackofficeController : Controller
     /// <returns>Returns the Trips view.</returns>
     public IActionResult Trips()
     {
+        ViewBag.IsAdmin = IsUserAdmin();
         return View();
     }
 
@@ -97,6 +106,8 @@ public class BackofficeController : Controller
     /// <returns>Returns the Hotels view.</returns>
     public IActionResult Hotels()
     {
+        ViewBag.IsAdmin = IsUserAdmin();
+
         return View();
     }
 
@@ -106,6 +117,8 @@ public class BackofficeController : Controller
     /// <returns>Returns the Schedules view for the Backoffice section.</returns>
     public IActionResult Schedules()
     {
+        ViewBag.IsAdmin = IsUserAdmin();
+
         return View();
     }
 
@@ -115,16 +128,42 @@ public class BackofficeController : Controller
     /// <returns>Returns a view that represents the reserves page.</returns>
     public IActionResult Reserves()
     {
+        ViewBag.IsAdmin = IsUserAdmin();
+
         return View();
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public IActionResult Referals()
     {
+        ViewBag.IsAdmin = IsUserAdmin();
+
         return View();
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public IActionResult Users()
+    {
+        ViewBag.IsAdmin = IsUserAdmin();
+
+        return View();
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public IActionResult Routes()
     {
+        ViewBag.IsAdmin = IsUserAdmin();
+
         return View();
     }
 
@@ -151,5 +190,18 @@ public class BackofficeController : Controller
         _logger.LogInfo($"Found user for {email}");
 
         return user;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    private bool IsUserAdmin()
+    {
+        var adminIds = new List<int>() { 1, 2 };
+
+        int? userId = HttpContext.Session.GetInt32("UserId");
+
+        return adminIds.Contains((int)userId!);
     }
 }

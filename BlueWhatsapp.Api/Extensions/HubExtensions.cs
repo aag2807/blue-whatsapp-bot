@@ -12,6 +12,7 @@ internal static class HubExtensions
         app.MapHub<TripHub>("/trips");
         app.MapHub<HotelHub>("/hotels");
         app.MapHub<ReservationsHub>("/reservations");
+        app.MapHub<UsersHub>("/users");
     }
 }
 

@@ -4,6 +4,7 @@ using BlueWhatsapp.Core.Models.Messages;
 using BlueWhatsapp.Core.Models.Users;
 using BlueWhatsapp.Core.Persistence;
 using BlueWhatsapp.Core.Utils;
+using Triplex.Validations;
 
 namespace BlueWhatsapp.Core.Services;
 
@@ -43,6 +44,57 @@ public sealed class UserService : IUserService
         catch (Exception e)
         {
             return null;
+        }
+    }
+
+    async Task<CoreUser> IUserService.CreateUserAsync(CoreUser user)
+    {
+        try
+        {
+            Arguments.NotNull(user, nameof(user));
+            Arguments.NotEmptyOrWhiteSpaceOnly(user.Email, nameof(user.Email));
+            Arguments.NotEmptyOrWhiteSpaceOnly(user.Password, nameof(user.Password));
+            Arguments.NotEmptyOrWhiteSpaceOnly(user.Name, nameof(user.Name));
+
+            // Check if user with same email already exists
+            var existingUser = await _userRepository.GetUserByEmailAsync(user.Email).ConfigureAwait(true);
+            if (existingUser != null)
+            {
+                throw new InvalidOperationException("A user with this email already exists");
+            }
+
+            // Hash the password before saving
+            user.Password = PasswordUtils.HashPassword(user.Password);
+
+            // Create the user
+            return await _userRepository.CreateUserAsync(user).ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error creating user: {ex.Message}");
+            throw;
+        }
+    }
+
+    async Task<bool> IUserService.DeleteUserAsync(int id)
+    {
+        try
+        {
+            Arguments.GreaterThan(id, 0, nameof(id));
+
+            // Check if user exists
+            var users = await _userRepository.GetNonAdminUsers().ConfigureAwait(true);
+            if (!users.Any(u => u.Id == id))
+            {
+                throw new InvalidOperationException("User not found");
+            }
+
+            return await _userRepository.DeleteUserAsync(id).ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error deleting user: {ex.Message}");
+            throw;
         }
     }
 }

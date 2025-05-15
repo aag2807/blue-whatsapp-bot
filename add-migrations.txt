@@ -1,4 +1,4 @@
-dotnet ef migrations add UpdatedSomeModels --project BlueWhatsapp.Boundaries\BlueWhatsapp.Boundaries.csproj --startup-project BlueWhatsapp.Api\BlueWhatsapp.Api.csproj --context BlueWhatsapp.Boundaries.Persistence.WhatsappBlueContext --output-dir Persistence\Migrations --verbose
+dotnet ef migrations add AddedSingleExternalTripToCoordinate --project BlueWhatsapp.Boundaries\BlueWhatsapp.Boundaries.csproj --startup-project BlueWhatsapp.Api\BlueWhatsapp.Api.csproj --context BlueWhatsapp.Boundaries.Persistence.WhatsappBlueContext --output-dir Persistence\Migrations --verbose
 
 dotnet ef database update --project BlueWhatsapp.Boundaries\BlueWhatsapp.Boundaries.csproj --startup-project BlueWhatsapp.Api\BlueWhatsapp.Api.csproj --context BlueWhatsapp.Boundaries.Persistence.WhatsappBlueContext
 

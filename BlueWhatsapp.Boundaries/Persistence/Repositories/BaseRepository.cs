@@ -305,7 +305,7 @@ public abstract class BaseRepository<TEntity> where TEntity : BaseEntity
     /// <param name="entity">Entity to update</param>
     /// <param name="filterByToday">Whether to filter by today's date</param>
     /// <returns>Updated entity</returns>
-    public virtual async Task<TEntity> UpdateAsync(TEntity entity, bool filterByToday = true)
+    public virtual async Task<TEntity> UpdateAsync(TEntity entity, bool filterByToday = false)
     {
         if (filterByToday)
         {
