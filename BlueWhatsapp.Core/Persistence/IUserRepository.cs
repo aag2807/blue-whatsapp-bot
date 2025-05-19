@@ -41,4 +41,12 @@ public interface IUserRepository
     /// <param name="id">The ID of the user to delete</param>
     /// <returns>True if the user was deleted successfully</returns>
     Task<bool> DeleteUserAsync(int id);
+
+    /// <summary>
+    /// Updates a user's password
+    /// </summary>
+    /// <param name="userId">The ID of the user</param>
+    /// <param name="newPassword">The new password to set</param>
+    /// <returns>True if the password was updated successfully</returns>
+    Task<bool> UpdatePasswordAsync(int userId, string newPassword);
 }

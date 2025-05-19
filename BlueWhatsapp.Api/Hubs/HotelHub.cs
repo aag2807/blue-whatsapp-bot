@@ -1,8 +1,8 @@
-using BlueWhatsapp.Core.Enums;
-using BlueWhatsapp.Core.Models.Messages;
-using BlueWhatsapp.Core.Models.Route;
+using BlueWhatsapp.Boundaries.Persistence.Repositories.Implementation;
+using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Persistence;
 using Microsoft.AspNetCore.SignalR;
+using Triplex.Validations;
 
 namespace BlueWhatsapp.Api.Hubs;
 
@@ -36,10 +36,21 @@ public class HotelHub : Hub
         var schedules = await _scheduleRepository.GetAllSchedulesAsync();
         await Clients.All.SendAsync("ReceiveSchedules", schedules);
     }
-    
-    
-    
-    
-    
-    
+
+    public async Task CreateHotel(CoreHotel hotel)
+    {
+        Arguments.NotNull(hotel, nameof(hotel));
+        await _hotelRepository.CreateHotelAsync(hotel).ConfigureAwait(true);
+                    
+        await GetHotels().ConfigureAwait(true);
+    }
+
+    public async Task DeleteHotel(int hotelId)
+    {
+        Arguments.GreaterThan(hotelId, 0, nameof(hotelId));
+
+        await _hotelRepository.DeleteHotelAsync(hotelId).ConfigureAwait(true);
+
+        await GetHotels().ConfigureAwait(true);
+    }
 }

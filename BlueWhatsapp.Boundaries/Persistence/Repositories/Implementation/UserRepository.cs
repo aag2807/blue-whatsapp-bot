@@ -6,6 +6,9 @@ using BlueWhatsapp.Core.Models.Users;
 using BlueWhatsapp.Core.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Triplex.Validations;
+using System.Security.Cryptography;
+using System.Text;
+using BlueWhatsapp.Core.Utils;
 
 namespace BlueWhatsapp.Boundaries.Persistence.Repositories.Implementation;
 
@@ -108,6 +111,33 @@ public sealed class UserRepository : BaseRepository<User>, IUserRepository
         catch (Exception ex)
         {
             _logger.LogError($"Error deleting user: {ex.Message}");
+            _logger.LogError(ex);
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    async Task<bool> IUserRepository.UpdatePasswordAsync(int userId, string newPassword)
+    {
+        try
+        {
+            Arguments.GreaterThan(userId, 0, nameof(userId));
+            Arguments.NotEmptyOrWhiteSpaceOnly(newPassword, nameof(newPassword));
+
+            User? user = await _dbSet.FirstOrDefaultAsync(u => u.Id == userId).ConfigureAwait(true);
+            if (user == null)
+            {
+                throw new InvalidOperationException("User not found");
+            }
+
+            user.Password = PasswordUtils.HashPassword(newPassword);
+            await UpdateAsync(user, false).ConfigureAwait(true);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error updating password: {ex.Message}");
             _logger.LogError(ex);
             throw;
         }

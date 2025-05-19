@@ -4,16 +4,24 @@ document.addEventListener('alpine:init', () => {
         filteredUsers: [],
         searchTerm: '',
         showModal: false,
+        showPasswordModal: false,
         currentUser: {
             id: null,
             name: '',
             email: '',
             password: ''
         },
+        passwordData: {
+            newPassword: '',
+            confirmPassword: ''
+        },
         connection: null,
 
         init() {
             this.initializeSignalR();
+            this.$watch('searchTerm', (value) => {
+                this.filterUsers();
+            });
         },
 
         get usersCount() {
@@ -58,10 +66,11 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
 
-            const searchLower = this.searchTerm.toLowerCase();
+            const searchLower = this.searchTerm.toLowerCase().trim();
             this.filteredUsers = this.users.filter(user => 
                 user.name.toLowerCase().includes(searchLower) ||
-                user.email.toLowerCase().includes(searchLower)
+                user.email.toLowerCase().includes(searchLower) ||
+                user.id.toString().includes(searchLower)
             );
         },
 
@@ -78,6 +87,52 @@ document.addEventListener('alpine:init', () => {
         openEditModal(user) {
             this.currentUser = { ...user };
             this.showModal = true;
+        },
+
+        openPasswordModal() {
+            this.passwordData = {
+                newPassword: '',
+                confirmPassword: ''
+            };
+            this.showPasswordModal = true;
+        },
+
+        updatePassword() {
+            if (!this.passwordData.newPassword || !this.passwordData.confirmPassword) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Por favor complete todos los campos'
+                });
+                return;
+            }
+
+            if (this.passwordData.newPassword !== this.passwordData.confirmPassword) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Las contraseñas no coinciden'
+                });
+                return;
+            }
+
+            this.connection.invoke("UpdatePassword", this.passwordData.newPassword)
+                .then(() => {
+                    this.showPasswordModal = false;
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: 'Contraseña actualizada correctamente'
+                    });
+                })
+                .catch(err => {
+                    console.error("Error updating password:", err);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error al actualizar la contraseña'
+                    });
+                });
         },
 
         saveUser() {
@@ -118,7 +173,6 @@ document.addEventListener('alpine:init', () => {
                         });
                     });
             } else {
-                debugger;
                 this.connection.invoke("CreateUser", this.currentUser)
                     .then(() => {
                         this.showModal = false;

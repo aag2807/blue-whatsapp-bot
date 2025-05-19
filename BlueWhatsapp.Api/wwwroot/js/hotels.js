@@ -227,7 +227,10 @@ document.addEventListener('alpine:init', () => {
                     this.currentHotel.route = selectedRoute.name;
                 }
                 
-                await this.connection.invoke('SaveHotel', this.currentHotel);
+                this.currentHotel.price = parseFloat(this.currentHotel.price);
+                this.currentHotel.routeId = parseInt(this.currentHotel.routeId);
+
+                this.connection.invoke('CreateHotel', this.currentHotel);
                 this.showModal = false;
             } catch (error) {
                 console.error('Error saving hotel:', error);
@@ -290,7 +293,7 @@ document.addEventListener('alpine:init', () => {
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        this.connection.invoke('DeleteHotel', hotelId)
+                        this.connection.invoke('DeleteHotel', parseInt(hotelId))
                             .then(() => {
                                 Swal.fire({
                                     title: 'Eliminado!',

@@ -2,6 +2,7 @@
 using BlueWhatsapp.Core.Persistence;
 using BlueWhatsapp.Core.Services;
 using Microsoft.AspNetCore.SignalR;
+using System.Security.Claims;
 
 namespace BlueWhatsapp.Api.Hubs;
 
@@ -61,6 +62,34 @@ public sealed class UsersHub : Hub
             else
             {
                 await Clients.Caller.SendAsync("Error", "Failed to delete user").ConfigureAwait(true);
+            }
+        }
+        catch (Exception ex)
+        {
+            await Clients.Caller.SendAsync("Error", ex.Message).ConfigureAwait(true);
+        }
+    }
+
+    public async Task UpdatePassword(string newPassword)
+    {
+        try
+        {
+            var userIdClaim = Context.User?.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            {
+                await Clients.Caller.SendAsync("Error", "User not authenticated").ConfigureAwait(true);
+                return;
+            }
+
+            bool success = await _userRepository.UpdatePasswordAsync(userId, newPassword).ConfigureAwait(true);
+            
+            if (success)
+            {
+                await Clients.Caller.SendAsync("Success", "Password updated successfully").ConfigureAwait(true);
+            }
+            else
+            {
+                await Clients.Caller.SendAsync("Error", "Failed to update password").ConfigureAwait(true);
             }
         }
         catch (Exception ex)
