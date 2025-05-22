@@ -1,5 +1,5 @@
 ﻿@{
-    var user = @ViewBag.User;
+    var userId = @ViewBag.UserId;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -38,6 +38,8 @@
                 }
             }
         }
+
+        window.userId= parseInt("@userId");
     </script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     @RenderSection("Styles", required: false)
@@ -118,13 +120,16 @@
                         <span class="text-xs">Reservas</span>
                     </a>
 
-                    <a href="@Url.Action("Users", "Backoffice")"
-                       class="transition flex flex-col items-center cursor-pointer w-full @(ViewBag.ActivePage == "Users" ? "bg-sidebar-hover" : "hover:bg-sidebar-hover") p-2 rounded mt-auto">
-                        <div class="w-10 h-10 flex items-center justify-center">
-                            <i class="fa-solid fa-users"></i>
-                        </div>
-                        <span class="text-xs">Usuarios</span>
-                    </a>
+                    @if (ViewBag.IsAdmin)
+                    {
+                        <a href="@Url.Action("Users", "Backoffice")"
+                           class="transition flex flex-col items-center cursor-pointer w-full @(ViewBag.ActivePage == "Users" ? "bg-sidebar-hover" : "hover:bg-sidebar-hover") p-2 rounded mt-auto">
+                            <div class="w-10 h-10 flex items-center justify-center">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                            <span class="text-xs">Usuarios</span>
+                        </a>
+                    }
 
                     <a href="@Url.Action("Logout", "Backoffice")"
                         class="transition flex flex-col items-center cursor-pointer w-full hover:bg-sidebar-hover p-2 rounded !mt-auto">
@@ -193,11 +198,15 @@
                     <i class="fa-solid fa-suitcase-rolling"></i>
                     <span class="text-xs">Reservas</span>
                 </a>
-                <a href="@Url.Action("Users", "Backoffice")"
-                   class="min-w-[80px] flex flex-col items-center p-2 @(ViewBag.ActivePage == "Users" ? "text-sidebar" : "text-gray-500")">
-                    <i class="fa-solid fa-users"></i>
-                    <span class="text-xs">Usuarios</span>
-                </a>
+
+                @if (ViewBag.IsAdmin)
+                {
+                    <a href="@Url.Action("Users", "Backoffice")"
+                       class="min-w-[80px] flex flex-col items-center p-2 @(ViewBag.ActivePage == "Users" ? "text-sidebar" : "text-gray-500")">
+                        <i class="fa-solid fa-users"></i>
+                        <span class="text-xs">Usuarios</span>
+                    </a>
+                }
                 <a href="@Url.Action("Logout", "Backoffice")"
                     class="min-w-[80px] flex flex-col items-center p-2">
                     <i class="fa-solid fa-right-from-bracket"></i>

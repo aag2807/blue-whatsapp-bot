@@ -2,6 +2,7 @@ using BlueWhatsapp.Core.Enums;
 using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
 using BlueWhatsapp.Core.Persistence;
+using BlueWhatsapp.Core.Services;
 using Microsoft.AspNetCore.SignalR;
 
 namespace BlueWhatsapp.Api.Hubs;
@@ -10,15 +11,23 @@ public class MessagesHub : Hub
 {
     private readonly IMessageRepository _messageRepository;
     private readonly IConversationStateRepository _conversationStateRepository;
-
+    private readonly IWhatsappCloudService _whatsappCloudService;
+    private readonly IMessageService _messageService;
 
     /// <summary>
     /// Hub class facilitating real-time communication between clients and the server for managing and retrieving messages.
     /// </summary>
-    public MessagesHub(IMessageRepository messageRepository, IConversationStateRepository conversationStateRepository)
+    public MessagesHub(
+        IMessageRepository messageRepository, 
+        IConversationStateRepository conversationStateRepository,
+        IWhatsappCloudService whatsappCloudService,
+        IMessageService messageService
+    )
     {
         _messageRepository = messageRepository;
         _conversationStateRepository = conversationStateRepository;
+        _whatsappCloudService = whatsappCloudService;
+        _messageService = messageService;
     }
 
     /// <summary>
@@ -78,6 +87,30 @@ public class MessagesHub : Hub
     {
         IEnumerable<CoreConversationState> weeklyConversations = await _conversationStateRepository.GetAllConversationsThisWeekAsync().ConfigureAwait(true);
         await Clients.Caller.SendAsync("ReceiveWeeklyConversations", weeklyConversations).ConfigureAwait(true);
+    }
+
+    public async Task MarkConversationAsManuallyOverriden(int conversationId)
+    {
+        await _conversationStateRepository.MarkConversationAsManuallyOverridenAsync(conversationId).ConfigureAwait(true);
+        await GetRecentConversations().ConfigureAwait(true);
+    }
+
+    public async Task GetAllMessagesFromConversation(int conversationId)
+    {
+        CoreConversationState conversation = await _conversationStateRepository.GetConversationStateById(conversationId).ConfigureAwait(true);
+        IEnumerable<CoreMessage> messages = await _messageRepository.GetMessagesByPhoneNumber(conversation.UserNumber).ConfigureAwait(true);
+        
+        await Clients.Caller.SendAsync("ReceiveModalMessages", messages).ConfigureAwait(true);
+    }
+
+    public async Task SendMessageToConversation(int conversationId, string message)
+    {
+        CoreConversationState conversation = await _conversationStateRepository.GetConversationStateById(conversationId).ConfigureAwait(true);
+        CoreMessageToSend coreMessage = new CoreMessageToSend(message, conversation.UserNumber);
+        await _whatsappCloudService.SendMessage(coreMessage).ConfigureAwait(true);
+        await _messageService.SaveAsync("SYSTEM", message, conversation.UserNumber).ConfigureAwait(true);
+
+        await Clients.Caller.SendAsync("RefreshCurrentConversation");
     }
     
     /// <summary>

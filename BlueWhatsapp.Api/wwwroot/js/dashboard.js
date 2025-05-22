@@ -39,39 +39,30 @@ const { animate, scroll, stagger } = Motion
 
 document.addEventListener('alpine:init', () => {
     Alpine.data('dashboard', () => ({
+        // State variables
         openChats: 0,
         totalMessages: 0,
         recentMessages: [],
         currentConversation: null,
+        modalConversationHeader: '',
         conversationMessages: [],
+        currentConversationId: null,
         connection: null,
+        newMessage: '',
+        isOpen: false,
 
+        // Chart references
         chartRef$: null,
         mobileChartRef$: null,
 
-        /**
-         * @type {Conversation[]}
-         */
+        // Conversation lists
         conversations: [],
-        /**
-         * @type {Conversation[]}
-         */
         pendingChats: [],
-        /**
-         * @type {Conversation[]}
-         */
         closedChats: [],
-
-        /**
-         * @type {WeeklyConversation[]}
-         */
         weeklyConversations: [],
-
-        /**
-         * @type {Conversation[]}
-         */
         recentConversations: [],
 
+        // Computed properties
         get pendingChatCount() {
             return this.pendingChats.length;
         },
@@ -84,9 +75,77 @@ document.addEventListener('alpine:init', () => {
             return this.weeklyConversations.length;
         },
 
-        mapDateTime(dateTime) {
-            return new Date(dateTime).toLocaleString();
+        // Methods
+        showAllConversationMessages(conversation) {
+            this.modalConversationHeader = conversation.userNumber + ' - ' + conversation.personName;
+            this.currentConversationId = conversation.id;
+            this.conversationMessages = [];
+            this.isOpen = true;
+            
+            // Get messages for this conversation
+            this.connection.invoke("GetAllMessagesFromConversation", conversation.id)
+                .then(() => {
+                    // Scroll to bottom after messages are loaded
+                    this.$nextTick(() => {
+                        const chatMessages = document.getElementById('chat-messages');
+                        if (chatMessages) {
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error("Error loading conversation messages:", error);
+                });
         },
+        
+        handleConversationRefresh()
+        {
+            console.log('conversation refresh');
+            this.connection.invoke("GetAllMessagesFromConversation", this.currentConversationId)
+        },
+
+        sendMessage() {
+            if (!this.newMessage.trim() || !this.currentConversationId) return;
+            
+            // Send message through SignalR
+            this.connection.invoke("SendMessageToConversation", this.currentConversationId, this.newMessage)
+                .then(() => {
+                    // Clear input after successful send
+                    this.newMessage = '';
+
+                    // Scroll to bottom
+                    this.$nextTick(() => {
+                        const chatMessages = document.getElementById('chat-messages');
+                        if (chatMessages) {
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error("Error sending message:", error);
+                });
+        },
+
+        mapDateTime(dateTime) {
+            if (!dateTime) return '';
+            const date = new Date(dateTime);
+            return date.toLocaleString('es-ES', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        },
+
+        handleManuallyConversation(conversation) {
+            if(conversation.isAdminOverridden) {
+                return;
+            }
+            
+            this.connection.invoke("MarkConversationAsManuallyOverriden", conversation.id);
+        },
+
         animateElement(el, index) {
             setTimeout(() => {
                 el.classList.remove('hidden');
@@ -97,6 +156,7 @@ document.addEventListener('alpine:init', () => {
                 });
             }, 100 * (index + 1));
         },
+
         animateClosedChats() {
             const closedCounterCard = document.getElementById('closed-counter-card');
             if (closedCounterCard) {
@@ -211,12 +271,34 @@ document.addEventListener('alpine:init', () => {
                 this.pendingChats = mappedPendingChats
                 this.animateOpenChats()
             })
+            
+            this.connection.on("RefreshCurrentConversation", () =>
+            {
+              this.handleConversationRefresh()  
+            })
 
             this.connection.on("ReceiveWeeklyConversations", (weeklyConversations) => {
                 this.weeklyConversations = weeklyConversations;
                 this.initCharts(weeklyConversations);
                 this.animateTotalConversations()
             })
+            
+            this.connection.on("ReceiveModalMessages", (messages) => {
+                this.conversationMessages = messages.map(m => ({
+                    from: m.from,
+                    body: m.body,
+                    createdTime: m.createdTime,
+                    status: m.status
+                }));
+                
+                // Scroll to bottom after messages are loaded
+                this.$nextTick(() => {
+                    const chatMessages = document.getElementById('chat-messages');
+                    if (chatMessages) {
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
+                });
+            });
 
             this.connection.on('ReceiveClosedMessages', (openChats) => {
                 const mappedClosedChats = openChats.map(m => ({
@@ -251,12 +333,20 @@ document.addEventListener('alpine:init', () => {
 
             // Handle receiving message history for a conversation
             this.connection.on("ReceiveMessageHistory", (from, messages) => {
-                this.currentConversation = from;
                 this.conversationMessages = messages.map(m => ({
                     from: m.from,
                     body: m.body,
-                    timestamp: new Date(m.createdTime).toLocaleString()
+                    createdTime: m.createdTime,
+                    status: m.status
                 }));
+                
+                // Scroll to bottom after messages are loaded
+                this.$nextTick(() => {
+                    const chatMessages = document.getElementById('chat-messages');
+                    if (chatMessages) {
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
+                });
             });
 
             this.connection.on("ReceiveRecentConversations", (conversations) => {

@@ -70,19 +70,11 @@ public sealed class UsersHub : Hub
         }
     }
 
-    public async Task UpdatePassword(string newPassword)
+    public async Task UpdatePassword(string newPassword, int userId)
     {
         try
         {
-            var userIdClaim = Context.User?.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            {
-                await Clients.Caller.SendAsync("Error", "User not authenticated").ConfigureAwait(true);
-                return;
-            }
-
             bool success = await _userRepository.UpdatePasswordAsync(userId, newPassword).ConfigureAwait(true);
-            
             if (success)
             {
                 await Clients.Caller.SendAsync("Success", "Password updated successfully").ConfigureAwait(true);

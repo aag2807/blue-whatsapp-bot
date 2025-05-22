@@ -116,7 +116,7 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
 
-            this.connection.invoke("UpdatePassword", this.passwordData.newPassword)
+            this.connection.invoke("UpdatePassword", this.passwordData.newPassword, window.userId)
                 .then(() => {
                     this.showPasswordModal = false;
                     Swal.fire({

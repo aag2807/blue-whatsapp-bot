@@ -55,4 +55,17 @@ public interface IConversationStateRepository
     /// </summary>
     /// <returns></returns>
     public Task<IEnumerable<CoreConversationState>> GetAllConversationsThisWeekAsync();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public Task MarkConversationAsManuallyOverridenAsync(int conversationId);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="conversationId"></param>
+    /// <returns></returns>
+    public Task<CoreConversationState> GetConversationStateById(int conversationId);
 }

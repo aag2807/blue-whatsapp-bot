@@ -6,11 +6,6 @@
 }
 
 @section Styles {
-    <style>
-        .map-container {
-            background-image: url('https://api.mapbox.com/styles/v1/mapbox/light-v10/static/-71.0589,42.3601,11,0/600x400?access_token=pk.placeholder');
-        }
-    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.6/signalr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 }
@@ -26,7 +21,6 @@
         </div>
 
         <div class="flex items-center">
-
             <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center ml-4">
                 <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
                     class="w-8 h-8 rounded-full" alt="Profile">
@@ -40,7 +34,6 @@
         <div class="col-span-8 space-y-4">
             <!-- Stats Row -->
             <div class="grid grid-cols-2 gap-4">
-
                 <!-- Work Orders Stat -->
                 <div class="bg-white rounded-lg shadow p-4 py-8">
                     <div class="flex items-start justify-between">
@@ -64,7 +57,6 @@
                             <i class="fas fa-box text-blue-500"></i>
                         </div>
                     </div>
-
                 </div>
             </div>
 
@@ -99,11 +91,30 @@
                 <div class="divide-y flex flex-col gap-3 p-2 overflow-x-hidden">
                     <template x-for="(conversation, index) in recentConversations" :key="conversation.userNumber">
                         <div x-data="{}" x-init="animateElement($el, index)" class="hidden bg-white p-3 py-5 rounded-lg shadow">
-                            <div class="flex space-x-2 mb-1">
+                            <div class="flex mb-1 w-full">
                                 <span x-show="conversation.isComplete"
                                     class="px-2 py-0.5 bg-green-600 text-white rounded-full text-xs">Completada</span>
                                 <span x-show="!conversation.isComplete"
-                                    class="px-2 py-0.5 bg-yellow-500 text-white rounded-full text-xs">En curso</span>
+                                      class="px-2 py-0.5 bg-yellow-500 text-white rounded-full text-xs">En curso</span>
+                     
+                                <div class="inline-flex ml-auto gap-3">
+                                    <button  data-role="override-conversation" x-on:click="handleManuallyConversation(conversation)" lass="w-fit h-fit transition hover:opacity-75">
+                                        <template x-if="conversation.isAdminOverridden">
+                                            <i class="fa-solid fa-lock text-[12px] text-red-500"></i>
+                                        </template>
+                                        <template x-if="!conversation.isAdminOverridden">
+                                            <i class="fa-solid fa-lock-open text-[12px] text-green-400"></i>
+                                        </template>
+                                    </button>
+
+                                    <button 
+                                        data-role="open-conversation" 
+                                        x-on:click="showAllConversationMessages(conversation)" 
+                                        class="w-fit h-fit transition hover:opacity-75"
+                                    >
+                                        <i class="fa-solid fa-comment text-[12px]" ></i>
+                                    </button>
+                                </div>
                             </div>
                             <h3 class="font-medium">
                                 <span x-text="conversation.personName"></span>
@@ -112,15 +123,15 @@
                                 <span x-text="conversation.userNumber"></span>
                             </h3>
 
-                            <div class="flex items-center space-x-4 mt-1">
-                                <div class="flex items-center">
-                                    <i class="far fa-clock mr-1"></i>
+                            <div class="flex flex-col gap-3 mt-3">
+                                <div class="flex items-center gap-[6px]">
+                                    <i class="far fa-clock"></i>
                                     <span class="text-sm">Creada:
                                         <span x-text="mapDateTime(conversation.createdTime)"></span>
                                     </span>
                                 </div>
-                                <div class="flex items-center ">
-                                    <i class="far fa-clock mr-1"></i>
+                                <div class="flex items-center gap-[6px]">
+                                    <i class="far fa-clock"></i>
                                     <span class="text-sm">Ultimo mensaje:
                                         <span x-text="mapDateTime(conversation.modifiedTime)"></span>
                                     </span>
@@ -128,6 +139,78 @@
                             </div>
                         </div>
                     </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conversation Modal -->
+    <div x-show="isOpen" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 overflow-y-auto" 
+         style="display: none;">
+        
+        <!-- Modal Backdrop -->
+        <div class="fixed inset-0 bg-black bg-opacity-50"></div>
+
+        <!-- Modal Content -->
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="relative bg-white rounded-lg w-full max-w-2xl shadow-xl">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-4 border-b">
+                    <h3 class="text-lg font-semibold" x-text="modalConversationHeader"></h3>
+                    <button x-on:click="isOpen = false" class="text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <!-- Chat Messages -->
+                <div class="h-[400px] overflow-y-auto p-4 space-y-4" id="chat-messages">
+                    <template x-for="(message, index) in conversationMessages" :key="index">
+                        <div :class="{
+                            'flex justify-start': message.from !== 'admin',
+                            'flex justify-end': message.from === 'SYSTEM'
+                        }">
+                            <div :class="{
+                                'bg-blue-500 text-white': message.from === 'admin',
+                                'bg-gray-200': message.from !== 'admin' && message.from !== 'SYSTEM',
+                                'bg-yellow-100 border border-yellow-300': message.from === 'SYSTEM'
+                            }"
+                                 class="rounded-lg px-4 py-2 max-w-[70%]">
+                                <div class="flex flex-col">
+                                    <template x-if="message.from !== 'SYSTEM'">
+                                        <span class="text-xs font-semibold mb-1" 
+                                              :class="{'text-blue-100': message.from === 'admin', 'text-gray-600': message.from !== 'admin'}"
+                                              x-text="message.from"></span>
+                                    </template>
+                                    <p class="whitespace-pre-wrap" x-text="message.body"></p>
+                                    <span class="text-xs mt-1" 
+                                          :class="{'text-blue-100': message.from === 'admin', 'text-gray-500': message.from !== 'admin'}"
+                                          x-text="mapDateTime(message.createdTime)"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Message Input -->
+                <div class="p-4 border-t">
+                    <div class="flex space-x-2">
+                        <input type="text" 
+                               x-model="newMessage" 
+                               x-on:keyup.enter="sendMessage()"
+                               placeholder="Type your message..." 
+                               class="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500">
+                        <button x-on:click="sendMessage()" 
+                                class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -213,7 +296,7 @@
                             <span x-text="conversation.userNumber"></span>
                         </h3>
 
-                        <div class="flex items-center space-x-4 mt-1">
+                        <div class="flex flex-col items-center space-x-4 mt-1">
                             <div class="flex items-center">
                                 <i class="far fa-clock mr-1"></i>
                                 <span class="text-sm">Creada:

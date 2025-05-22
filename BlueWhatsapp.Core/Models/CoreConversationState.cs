@@ -7,6 +7,11 @@ public class CoreConversationState : BaseEntity
         /// <summary>
         /// 
         /// </summary>
+        public int Id { get; set; }
+        
+        /// <summary>
+        /// 
+        /// </summary>
         public ConversationFlowEnum Flow { get; set; } = ConversationFlowEnum.None;
         
         /// <summary>
@@ -37,7 +42,7 @@ public class CoreConversationState : BaseEntity
         /// <summary>
         /// Gets or sets the date and time when the conversation was last modified.
         /// </summary>
-        public DateTime ModifiedTime { get; set; }
+        public DateTime? ModifiedTime { get; set; }
 
         /// <summary>
         /// 
@@ -107,6 +112,8 @@ public class CoreConversationState : BaseEntity
         /// <returns>A new instance of <see cref="CoreConversationState"/> populated with the given data.</returns>
         public static CoreConversationState Create<T>(T data) where T : class
         {
-                return BaseEntity.Create<CoreConversationState, T>(data);
+                CoreConversationState entity  = BaseEntity.Create<CoreConversationState, T>(data);
+
+                return entity;
         }
 }

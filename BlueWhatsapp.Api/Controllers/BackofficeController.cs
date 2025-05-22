@@ -86,6 +86,7 @@ public class BackofficeController : Controller
         ViewBag.AlpineComponent = "dashboard";
         ViewBag.ActivePage = "Dashboard";
         ViewBag.IsAdmin = IsUserAdmin();
+        ViewBag.UserId = HttpContext.Session.GetInt32("UserId");
 
         return View();
     }
@@ -97,6 +98,7 @@ public class BackofficeController : Controller
     public IActionResult Trips()
     {
         ViewBag.IsAdmin = IsUserAdmin();
+        ViewBag.UserId = HttpContext.Session.GetInt32("UserId");
         return View();
     }
 
@@ -107,6 +109,7 @@ public class BackofficeController : Controller
     public IActionResult Hotels()
     {
         ViewBag.IsAdmin = IsUserAdmin();
+        ViewBag.UserId = HttpContext.Session.GetInt32("UserId");
 
         return View();
     }
@@ -117,6 +120,7 @@ public class BackofficeController : Controller
     /// <returns>Returns the Schedules view for the Backoffice section.</returns>
     public IActionResult Schedules()
     {
+        ViewBag.UserId = HttpContext.Session.GetInt32("UserId");
         ViewBag.IsAdmin = IsUserAdmin();
 
         return View();
@@ -129,6 +133,7 @@ public class BackofficeController : Controller
     public IActionResult Reserves()
     {
         ViewBag.IsAdmin = IsUserAdmin();
+        ViewBag.UserId = HttpContext.Session.GetInt32("UserId");
 
         return View();
     }
@@ -139,6 +144,7 @@ public class BackofficeController : Controller
     /// <returns></returns>
     public IActionResult Referals()
     {
+        ViewBag.UserId = HttpContext.Session.GetInt32("UserId");
         ViewBag.IsAdmin = IsUserAdmin();
 
         return View();
@@ -150,6 +156,7 @@ public class BackofficeController : Controller
     /// <returns></returns>
     public IActionResult Users()
     {
+        ViewBag.UserId = HttpContext.Session.GetInt32("UserId");
         ViewBag.IsAdmin = IsUserAdmin();
 
         return View();
@@ -163,6 +170,7 @@ public class BackofficeController : Controller
     public IActionResult Routes()
     {
         ViewBag.IsAdmin = IsUserAdmin();
+        ViewBag.UserId = HttpContext.Session.GetInt32("UserId");
 
         return View();
     }

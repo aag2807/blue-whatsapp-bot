@@ -140,4 +140,19 @@ public sealed class ConversationStateRepository : BaseRepository<ConversationSta
         return response.Select(CoreConversationState.Create);
     }
     
+    /// <inheritdoc />
+    async Task IConversationStateRepository.MarkConversationAsManuallyOverridenAsync(int conversationId)
+    {
+        ConversationState model = await _dbSet.FirstOrDefaultAsync(cs => cs.Id == conversationId).ConfigureAwait(true)!;
+        model.IsAdminOverridden = true;
+        await UpdateAsync(model).ConfigureAwait(true);
+    }
+    
+    /// <inheritdoc />
+    async Task<CoreConversationState> IConversationStateRepository.GetConversationStateById(int conversationId)
+    {
+        ConversationState model = await _dbSet.FirstOrDefaultAsync(cs => cs.Id == conversationId).ConfigureAwait(true)!;
+
+        return CoreConversationState.Create(model);
+    }
 }

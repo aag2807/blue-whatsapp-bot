@@ -83,7 +83,10 @@ public sealed class MessageRepository : BaseRepository<Message>, IMessageReposit
     /// <inheritdoc />
     async Task<IEnumerable<CoreMessage>> IMessageRepository.GetMessagesByPhoneNumber(string phoneNumber)
     {
-        IEnumerable<Message> results = await FindAsync(m => m.From == phoneNumber).ConfigureAwait(true);
+        IEnumerable<Message> results = await _dbSet
+            .Where(message => message.Number == phoneNumber)
+            .ToListAsync()
+            .ConfigureAwait(true);
 
         return results.Select(CoreMessage.Create<Message>);
     }
