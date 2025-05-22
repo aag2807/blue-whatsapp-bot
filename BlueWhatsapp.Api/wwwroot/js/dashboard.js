@@ -85,12 +85,17 @@ document.addEventListener('alpine:init', () => {
             // Get messages for this conversation
             this.connection.invoke("GetAllMessagesFromConversation", conversation.id)
                 .then(() => {
-                    // Scroll to bottom after messages are loaded
                     this.$nextTick(() => {
-                        const chatMessages = document.getElementById('chat-messages');
-                        if (chatMessages) {
-                            chatMessages.scrollTop = chatMessages.scrollHeight;
-                        }
+                        setTimeout(() => {
+                            const chatMessages = document.getElementById('chat-messages');
+                            if (chatMessages) {
+                                chatMessages.scrollTop = chatMessages.scrollHeight;
+                            }
+                            const mobileChatMessages = document.getElementById('mobile-chat-messages');
+                            if (mobileChatMessages) {
+                                mobileChatMessages.scrollTop = mobileChatMessages.scrollHeight;
+                            }
+                        }, 50);
                     });
                 })
                 .catch(error => {
@@ -139,11 +144,12 @@ document.addEventListener('alpine:init', () => {
         },
 
         handleManuallyConversation(conversation) {
-            if(conversation.isAdminOverridden) {
+            if (conversation.isAdminOverridden) {
                 return;
             }
-            
-            this.connection.invoke("MarkConversationAsManuallyOverriden", conversation.id);
+            if (confirm('¿Estás seguro que deseas marcar esta conversación como override manual?')) {
+                this.connection.invoke("MarkConversationAsManuallyOverriden", conversation.id);
+            }
         },
 
         animateElement(el, index) {
@@ -291,13 +297,12 @@ document.addEventListener('alpine:init', () => {
                     status: m.status
                 }));
                 
-                // Scroll to bottom after messages are loaded
-                this.$nextTick(() => {
-                    const chatMessages = document.getElementById('chat-messages');
-                    if (chatMessages) {
-                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                setTimeout(() => {
+                    const mobileChatMessages = document.getElementById('mobile-chat-messages');
+                    if (mobileChatMessages) {
+                        mobileChatMessages.scrollTop = mobileChatMessages.scrollHeight;
                     }
-                });
+                }, 50);
             });
 
             this.connection.on('ReceiveClosedMessages', (openChats) => {
@@ -342,10 +347,12 @@ document.addEventListener('alpine:init', () => {
                 
                 // Scroll to bottom after messages are loaded
                 this.$nextTick(() => {
-                    const chatMessages = document.getElementById('chat-messages');
-                    if (chatMessages) {
-                        chatMessages.scrollTop = chatMessages.scrollHeight;
-                    }
+                    setTimeout(() => {
+                        const mobileChatMessages = document.getElementById('mobile-chat-messages');
+                        if (mobileChatMessages) {
+                            mobileChatMessages.scrollTop = mobileChatMessages.scrollHeight;
+                        }
+                    }, 50);
                 });
             });
 
