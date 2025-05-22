@@ -18,3 +18,7 @@ sudo docker run -d --name whatsapp-bot -p 80:80 aagn2807/blue-whastapp-transport
 sudo docker exec -it whatsapp-bot /bin/sh
 
 ./ngrok http 80
+
+tmux ls 
+
+tmux kill-session -t 0
