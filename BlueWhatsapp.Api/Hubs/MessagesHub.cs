@@ -101,6 +101,7 @@ public class MessagesHub : Hub
         IEnumerable<CoreMessage> messages = await _messageRepository.GetMessagesByPhoneNumber(conversation.UserNumber).ConfigureAwait(true);
         
         await Clients.Caller.SendAsync("ReceiveModalMessages", messages).ConfigureAwait(true);
+        await GetRecentConversations().ConfigureAwait(true);
     }
 
     public async Task SendMessageToConversation(int conversationId, string message)
@@ -109,6 +110,7 @@ public class MessagesHub : Hub
         CoreMessageToSend coreMessage = new CoreMessageToSend(message, conversation.UserNumber);
         await _whatsappCloudService.SendMessage(coreMessage).ConfigureAwait(true);
         await _messageService.SaveAsync("SYSTEM", message, conversation.UserNumber).ConfigureAwait(true);
+        await _conversationStateRepository.MarkConversationAsManuallyOverridenAsync(conversationId).ConfigureAwait(true);
 
         await Clients.Caller.SendAsync("RefreshCurrentConversation");
     }
