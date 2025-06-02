@@ -53,7 +53,8 @@ internal static class PersistenceServices
             {
                 WhatsappBlueContext context = services.GetRequiredService<WhatsappBlueContext>();
                 
-                context.Database.EnsureCreated();
+                // Apply any pending migrations
+                context.Database.Migrate();
                 
                 Console.WriteLine("Database migration completed successfully.");
                 

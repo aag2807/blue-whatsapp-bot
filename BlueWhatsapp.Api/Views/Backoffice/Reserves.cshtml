@@ -1,7 +1,7 @@
 @{
-    Layout = "_DashboardLayout";
-    ViewData["Title"] = "Manejo de reservas";
-    ViewBag.ActivePage = "Reservations";
+Layout = "_DashboardLayout";
+ViewData["Title"] = "Manejo de reservas";
+ViewBag.ActivePage = "Reservations";
 }
 
 <div class="container mx-auto px-4 py-8" x-data="reservationsManagement">
@@ -16,34 +16,34 @@
     <!-- Action Bar -->
     <div class="p-4 flex items-center justify-between border-b">
         <div class="flex space-x-4">
-            <button @@click="changeTab('all')" 
-                    :class="{'bg-sidebar text-white': currentTab === 'all', 'bg-gray-200 text-gray-700': currentTab !== 'all'}"
-                    class="px-4 py-2 rounded-lg transition-colors">
+            <button x-on:click="changeTab('all')"
+                :class="{'bg-sidebar text-white': currentTab === 'all', 'bg-gray-200 text-gray-700': currentTab !== 'all'}"
+                class="px-4 py-2 rounded-lg transition-colors">
                 Todas
             </button>
-            <button @@click="changeTab('today')"
-                    :class="{'bg-sidebar text-white': currentTab === 'today', 'bg-gray-200 text-gray-700': currentTab !== 'today'}"
-                    class="px-4 py-2 rounded-lg transition-colors">
+            <button x-on:click="changeTab('today')"
+                :class="{'bg-sidebar text-white': currentTab === 'today', 'bg-gray-200 text-gray-700': currentTab !== 'today'}"
+                class="px-4 py-2 rounded-lg transition-colors">
                 Hoy
             </button>
-            <button @@click="changeTab('upcoming')"
-                    :class="{'bg-sidebar text-white': currentTab === 'upcoming', 'bg-gray-200 text-gray-700': currentTab !== 'upcoming'}"
-                    class="px-4 py-2 rounded-lg transition-colors">
+            <button x-on:click="changeTab('upcoming')"
+                :class="{'bg-sidebar text-white': currentTab === 'upcoming', 'bg-gray-200 text-gray-700': currentTab !== 'upcoming'}"
+                class="px-4 py-2 rounded-lg transition-colors">
                 Próximas
             </button>
         </div>
         <div class="flex items-center space-x-4">
             <div class="relative">
-                <input type="text" 
-                       x-model="searchTerm" 
-                       placeholder="Buscar reservación..."
-                       class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar">
-                <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                <input type="text" x-model="searchTerm" placeholder="Buscar reservación..."
+                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200">
+                <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             </div>
-            <button @@click="openAddModal()" 
-                    class="bg-sidebar text-white px-4 py-2 rounded-lg hover:bg-sidebar-hover transition-colors">
+            <button x-on:click="openAddModal()"
+                class="bg-sidebar text-white px-4 py-2 rounded-lg hover:bg-sidebar-hover transition-colors">
                 Nueva Reservación
             </button>
         </div>
@@ -68,59 +68,143 @@
                     <div>
                         <h3 class="text-lg font-semibold text-gray-800" x-text="reservation.username"></h3>
                         <p class="text-gray-600" x-text="reservation.userNumber"></p>
+                        <span :class="{
+                            'bg-green-100 text-green-800': reservation.status === 'Active',
+                            'bg-red-100 text-red-800': reservation.status === 'Cancelled',
+                            'bg-blue-100 text-blue-800': reservation.status === 'Rescheduled'
+                        }" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1">
+                            <span x-text="reservation.status || 'Active'"></span>
+                        </span>
                     </div>
                     <div class="flex space-x-2">
-                        <button @@click="openEditModal(reservation)" 
-                                class="text-sidebar hover:text-sidebar-hover">
+                        <button x-on:click="openEditModal(reservation)" class="text-sidebar hover:text-sidebar-hover">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                         </button>
-                        <button @@click="deleteReservation(reservation.id)"
-                                class="text-red-600 hover:text-red-800">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                        </button>
+                        <div class="relative" x-data="{ open: false }">
+                            <button x-on:click="open = !open"
+                                class="text-gray-600 hover:text-gray-800 focus:outline-none">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                </svg>
+                            </button>
+                            <div x-show="open" x-on:click.away="open = false"
+                                class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                                <div class="py-1">
+                                    <button x-on:click="openRescheduleModal(reservation); open = false"
+                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        Reprogramar
+                                    </button>
+                                    <button x-on:click="openCancelModal(reservation); open = false"
+                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                        </svg>
+                                        Cancelar
+                                    </button>
+                                    <button x-on:click="deleteReservation(reservation.id); open = false"
+                                        class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-100">
+                                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                        Eliminar definitivamente
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="space-y-2">
                     <div class="flex items-center text-gray-600">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
                         <span x-text="reservation.hotelName"></span>
                     </div>
                     <div class="flex items-center text-gray-600">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m7 7 5-5 5 5" />
+                        </svg>
+                        <span>Habitación: </span>
+                        <span x-text="reservation.roomNumber || 'No especificada'"></span>
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span
+                            x-text="`${reservation.adultsCount || 1} adultos, ${reservation.childrenCount || 0} niños`"></span>
+                    </div>
+                    <div class="flex items-center text-gray-600" x-show="reservation.email">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <span x-text="reservation.email"></span>
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         <span x-text="new Date(reservation.reservationDate).toLocaleDateString()"></span>
                     </div>
                     <div class="flex items-center text-gray-600">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <span x-text="reservation.reserveTime"></span>
                     </div>
-                    <div class="flex items-center text-gray-600">
+                    <div class="flex items-center text-gray-600"
+                        x-show="reservation.hotel && reservation.hotel.meetingPoint">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span>Punto de encuentro: </span>
+                        <span x-text="reservation.hotel?.meetingPoint || 'Lobby del Hotel'"></span>
+                    </div>
+                    <div class="flex items-center text-gray-600" x-show="reservation.details">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <span x-text="reservation.details"></span>
                     </div>
                     <div class="flex items-center text-gray-600">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                         <span x-text="getTripName(reservation.tripId)"></span>
-                        <span class="ml-2 text-sm" x-text="`(${getTripCapacity(reservation.tripId).current}/${getTripCapacity(reservation.tripId).max})`"></span>
+                        <span class="ml-2 text-sm"
+                            x-text="`(${getTripCapacity(reservation.tripId).current}/${getTripCapacity(reservation.tripId).max})`"></span>
                     </div>
                 </div>
             </div>
         </template>
-        
-        <div x-show="filteredReservations.length === 0" class="col-span-3 bg-white rounded-lg shadow p-8 text-center text-gray-500">
+
+        <div x-show="filteredReservations.length === 0"
+            class="col-span-3 bg-white rounded-lg shadow p-8 text-center text-gray-500">
             <div class="flex flex-col items-center justify-center">
                 <i class="fas fa-calendar-times text-4xl mb-3 text-gray-400"></i>
                 <p class="text-lg">No se encontraron reservaciones</p>
@@ -129,10 +213,8 @@
                     <span x-show="currentTab === 'today'">No hay reservaciones para hoy.</span>
                     <span x-show="currentTab === 'upcoming'">No hay reservaciones próximas.</span>
                 </p>
-                <button 
-                    x-on:click="openAddModal()" 
-                    class="mt-4 bg-sidebar text-white px-4 py-2 rounded-lg hover:bg-sidebar-hover focus:outline-none"
-                >
+                <button x-on:click="openAddModal()"
+                    class="mt-4 bg-sidebar text-white px-4 py-2 rounded-lg hover:bg-sidebar-hover focus:outline-none">
                     Crear una nueva reservación
                 </button>
             </div>
@@ -140,36 +222,64 @@
     </div>
 
     <!-- Add/Edit Modal -->
-    <div x-show="showModal" 
-         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-         @@click.self="closeModal()">
-        <div class="bg-white rounded-lg p-6 w-full max-w-2xl mx-4">
+    <div x-show="showModal" x-cloak class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-on:click.self="closeModal()">
+        <div class="bg-white rounded-lg p-6 w-full max-w-2xl mx-4" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 transform scale-95"
+            x-transition:enter-end="opacity-100 transform scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 transform scale-100"
+            x-transition:leave-end="opacity-0 transform scale-95">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-gray-800" x-text="currentReservation.id ? 'Editar Reservación' : 'Nueva Reservación'"></h2>
-                <button @@click="closeModal()" class="text-gray-500 hover:text-gray-700">
+                <h2 class="text-xl font-bold text-gray-800"
+                    x-text="currentReservation.id ? 'Editar Reservación' : 'Nueva Reservación'"></h2>
+                <button x-on:click="closeModal()" class="text-gray-500 hover:text-gray-700">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
-            <form @@submit.prevent="saveReservation">
+            <form x-on:submit.prevent="saveReservation">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Nombre del Cliente</label>
-                        <input type="text" 
-                               x-model="currentReservation.username"
-                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar focus:ring-sidebar">
+                        <input type="text" x-model="currentReservation.username"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200"
+                            required>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Teléfono</label>
-                        <input type="tel" 
-                               x-model="currentReservation.userNumber"
-                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar focus:ring-sidebar">
+                        <input type="tel" x-model="currentReservation.userNumber"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200"
+                            required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" x-model="currentReservation.email"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Número de Habitación</label>
+                        <input type="text" x-model="currentReservation.roomNumber"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Cantidad de Adultos</label>
+                        <input type="number" x-model="currentReservation.adultsCount" min="1"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Cantidad de Niños</label>
+                        <input type="number" x-model="currentReservation.childrenCount" min="0"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Hotel</label>
                         <select x-model="currentReservation.hotelId"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar focus:ring-sidebar">
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200">
                             <option value="">Seleccionar hotel</option>
                             <template x-for="hotel in hotels" :key="hotel.id">
                                 <option :value="hotel.id" x-text="hotel.name"></option>
@@ -178,14 +288,171 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Fecha</label>
-                        <input type="date" 
-                               x-model="currentReservation.reservationDate"
-                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar focus:ring-sidebar">
+                        <input type="date" x-model="currentReservation.reservationDate"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200"
+                            required>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Horario</label>
-                        <select x-model="currentReservation.scheduleId"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar focus:ring-sidebar">
+                        <select x-model="currentReservation.scheduleId" x-on:change="updateReserveTime()"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200">
+                            <option value="">Seleccionar horario</option>
+                            <template x-for="schedule in schedules" :key="schedule.id">
+                                <option :value="schedule.id" x-text="`${schedule.name} (${schedule.time})`"></option>
+                            </template>
+                        </select>
+                        <div x-show="currentReservation.reserveTime" class="mt-2">
+                            <span class="text-sm text-gray-600">Hora seleccionada: </span>
+                            <span class="text-sm font-medium text-sidebar"
+                                x-text="currentReservation.reserveTime"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Viaje</label>
+                        <select x-model="currentReservation.tripId"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200"
+                            required>
+                            <option value="">Seleccionar viaje</option>
+                            <template x-for="trip in trips" :key="trip.id">
+                                <option :value="trip.id" :disabled="trip.remainingCapacity <= 0"
+                                    x-text="`${trip.tripName} (${trip.currentReservations}/${trip.maxCapacity})`">
+                                </option>
+                            </template>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Detalles Adicionales</label>
+                        <textarea x-model="currentReservation.details"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200 resize-none"
+                            rows="3" placeholder="Información adicional sobre la reservación..."></textarea>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" x-on:click="closeModal()"
+                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-sidebar text-white rounded-md hover:bg-sidebar-hover">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Cancel Modal -->
+    <div x-show="showCancelModal" x-cloak class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-on:click.self="closeCancelModal()"
+    >
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 transform scale-95"
+            x-transition:enter-end="opacity-100 transform scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 transform scale-100"
+            x-transition:leave-end="opacity-0 transform scale-95">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Cancelar Reservación</h2>
+                <button x-on:click="closeCancelModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="mb-4">
+                <p class="text-gray-700 mb-2">¿Está seguro que desea cancelar la reservación de <strong
+                        x-text="reservationToCancel?.username"></strong>?</p>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Motivo de la cancelación:</label>
+                    <select x-model="cancelReason"
+                        class="w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200">
+                        <option value="">Seleccionar motivo</option>
+                        <option value="Cliente canceló">Cliente canceló</option>
+                        <option value="Problemas de transporte">Problemas de transporte</option>
+                        <option value="Mal tiempo">Mal tiempo</option>
+                        <option value="Overbooking">Overbooking</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+                <div x-show="cancelReason === 'Otro'" class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Especificar motivo:</label>
+                    <input type="text" x-model="customCancelReason"
+                        class="w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200"
+                        placeholder="Ingrese el motivo específico">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button type="button" x-on:click="closeCancelModal()"
+                    class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                    Cancelar
+                </button>
+                <button type="button" x-on:click="confirmCancelReservation()"
+                    class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                    Confirmar Cancelación
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reschedule Modal -->
+    <div x-show="showRescheduleModal" x-cloak
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+        x-on:click.self="closeRescheduleModal()">
+        <div class="bg-white rounded-lg p-6 w-full max-w-2xl mx-4" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 transform scale-95"
+            x-transition:enter-end="opacity-100 transform scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 transform scale-100"
+            x-transition:leave-end="opacity-0 transform scale-95">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Reprogramar Reservación</h2>
+                <button x-on:click="closeRescheduleModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="mb-4">
+                <p class="text-gray-700 mb-4">Reprogramando la reservación de <strong
+                        x-text="reservationToReschedule?.username"></strong></p>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Motivo de la reprogramación:</label>
+                    <select x-model="rescheduleReason"
+                        class="w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200">
+                        <option value="">Seleccionar motivo</option>
+                        <option value="Solicitud del cliente">Solicitud del cliente</option>
+                        <option value="Problemas de transporte">Problemas de transporte</option>
+                        <option value="Cambio de disponibilidad">Cambio de disponibilidad</option>
+                        <option value="Overbooking">Overbooking</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+                <div x-show="rescheduleReason === 'Otro'" class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Especificar motivo:</label>
+                    <input type="text" x-model="customRescheduleReason"
+                        class="w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200"
+                        placeholder="Ingrese el motivo específico">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nueva Fecha</label>
+                        <input type="date" x-model="rescheduleData.reservationDate"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200"
+                            required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nuevo Horario</label>
+                        <select x-model="rescheduleData.scheduleId"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200">
                             <option value="">Seleccionar horario</option>
                             <template x-for="schedule in schedules" :key="schedule.id">
                                 <option :value="schedule.id" x-text="`${schedule.name} (${schedule.time})`"></option>
@@ -193,32 +460,362 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Viaje</label>
-                        <select x-model="currentReservation.tripId"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar focus:ring-sidebar">
+                        <label class="block text-sm font-medium text-gray-700">Nuevo Viaje</label>
+                        <select x-model="rescheduleData.tripId"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200"
+                            required>
                             <option value="">Seleccionar viaje</option>
                             <template x-for="trip in trips" :key="trip.id">
-                                <option :value="trip.id" 
-                                        :disabled="trip.remainingCapacity <= 0"
-                                        x-text="`${trip.tripName} (${trip.currentReservations}/${trip.maxCapacity})`"></option>
+                                <option :value="trip.id" :disabled="trip.remainingCapacity <= 0"
+                                    x-text="`${trip.tripName} (${trip.currentReservations}/${trip.maxCapacity})`">
+                                </option>
                             </template>
                         </select>
                     </div>
-                    <div class="md:col-span-2">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button type="button" x-on:click="closeRescheduleModal()"
+                    class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                    Cancelar
+                </button>
+                <button type="button" x-on:click="confirmRescheduleReservation()"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    Confirmar Reprogramación
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section MobileContent {
+<div x-data="reservationsManagement" class="p-4">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-4">
+        <div>
+            <h1 class="text-lg font-semibold">Manejo de Reservaciones</h1>
+            <p class="text-sm text-gray-500" x-text="new Date().toLocaleDateString()"></p>
+        </div>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="mb-4">
+        <div class="flex space-x-2 mb-4">
+            <button x-on:click="changeTab('all')"
+                :class="{'bg-sidebar text-white': currentTab === 'all', 'bg-gray-200 text-gray-700': currentTab !== 'all'}"
+                class="flex-1 px-4 py-2 rounded-lg transition-colors">
+                Todas
+            </button>
+            <button x-on:click="changeTab('today')"
+                :class="{'bg-sidebar text-white': currentTab === 'today', 'bg-gray-200 text-gray-700': currentTab !== 'today'}"
+                class="flex-1 px-4 py-2 rounded-lg transition-colors">
+                Hoy
+            </button>
+            <button x-on:click="changeTab('upcoming')"
+                :class="{'bg-sidebar text-white': currentTab === 'upcoming', 'bg-gray-200 text-gray-700': currentTab !== 'upcoming'}"
+                class="flex-1 px-4 py-2 rounded-lg transition-colors">
+                Próximas
+            </button>
+        </div>
+        <div class="flex space-x-2">
+            <div class="relative flex-1">
+                <input type="text" x-model="searchTerm" placeholder="Buscar reservación..."
+                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200">
+                <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+            <button x-on:click="openAddModal()"
+                class="bg-sidebar text-white px-4 py-2 rounded-lg hover:bg-sidebar-hover transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div x-show="loading" class="p-8 text-center">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-sidebar border-t-transparent"></div>
+        <p class="mt-2 text-gray-600">Cargando reservaciones...</p>
+    </div>
+
+    <!-- Error State -->
+    <div x-show="error" class="p-4 m-4 bg-red-100 border border-red-400 text-red-700 rounded">
+        <p x-text="error"></p>
+    </div>
+
+    <!-- Reservations List -->
+    <div x-show="!loading && !error" class="space-y-4">
+        <template x-for="reservation in filteredReservations" :key="reservation.id">
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800" x-text="reservation.username"></h3>
+                        <p class="text-gray-600" x-text="reservation.userNumber"></p>
+                        <span :class="{
+                                'bg-green-100 text-green-800': reservation.status === 'Active',
+                                'bg-red-100 text-red-800': reservation.status === 'Cancelled',
+                                'bg-blue-100 text-blue-800': reservation.status === 'Rescheduled'
+                            }" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1">
+                            <span x-text="reservation.status || 'Active'"></span>
+                        </span>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button x-on:click="openEditModal(reservation)" class="text-sidebar hover:text-sidebar-hover">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </button>
+                        <div class="relative" x-data="{ open: false }">
+                            <button x-on:click="open = !open"
+                                class="text-gray-600 hover:text-gray-800 focus:outline-none">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                </svg>
+                            </button>
+                            <div x-show="open" x-on:click.away="open = false"
+                                class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                                <div class="py-1">
+                                    <button x-on:click="openRescheduleModal(reservation); open = false"
+                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        Reprogramar
+                                    </button>
+                                    <button x-on:click="openCancelModal(reservation); open = false"
+                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                        </svg>
+                                        Cancelar
+                                    </button>
+                                    <button x-on:click="deleteReservation(reservation.id); open = false"
+                                        class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-100">
+                                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                        Eliminar definitivamente
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        <span x-text="reservation.hotelName"></span>
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m7 7 5-5 5 5" />
+                        </svg>
+                        <span>Habitación: </span>
+                        <span x-text="reservation.roomNumber || 'No especificada'"></span>
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span
+                            x-text="`${reservation.adultsCount || 1} adultos, ${reservation.childrenCount || 0} niños`"></span>
+                    </div>
+                    <div class="flex items-center text-gray-600" x-show="reservation.email">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <span x-text="reservation.email"></span>
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span x-text="new Date(reservation.reservationDate).toLocaleDateString()"></span>
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span x-text="reservation.reserveTime"></span>
+                    </div>
+                    <div class="flex items-center text-gray-600"
+                        x-show="reservation.hotel && reservation.hotel.meetingPoint">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span>Punto de encuentro: </span>
+                        <span x-text="reservation.hotel?.meetingPoint || 'Lobby del Hotel'"></span>
+                    </div>
+                    <div class="flex items-center text-gray-600" x-show="reservation.details">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span x-text="reservation.details"></span>
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        <span x-text="getTripName(reservation.tripId)"></span>
+                        <span class="ml-2 text-sm"
+                            x-text="`(${getTripCapacity(reservation.tripId).current}/${getTripCapacity(reservation.tripId).max})`"></span>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <div x-show="filteredReservations.length === 0"
+            class="bg-white rounded-lg shadow p-8 text-center text-gray-500">
+            <div class="flex flex-col items-center justify-center">
+                <i class="fas fa-calendar-times text-4xl mb-3 text-gray-400"></i>
+                <p class="text-lg">No se encontraron reservaciones</p>
+                <p class="text-sm mt-2">
+                    <span x-show="currentTab === 'all'">No hay reservaciones registradas.</span>
+                    <span x-show="currentTab === 'today'">No hay reservaciones para hoy.</span>
+                    <span x-show="currentTab === 'upcoming'">No hay reservaciones próximas.</span>
+                </p>
+                <button x-on:click="openAddModal()"
+                    class="mt-4 bg-sidebar text-white px-4 py-2 rounded-lg hover:bg-sidebar-hover focus:outline-none">
+                    Crear una nueva reservación
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div x-show="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-on:click.self="closeModal()">
+        <div class="bg-white rounded-lg p-6 w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800"
+                    x-text="currentReservation.id ? 'Editar Reservación' : 'Nueva Reservación'"></h2>
+                <button x-on:click="closeModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <form x-on:submit.prevent="saveReservation">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nombre del Cliente</label>
+                        <input type="text" x-model="currentReservation.username"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200"
+                            required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Teléfono</label>
+                        <input type="tel" x-model="currentReservation.userNumber"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200"
+                            required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" x-model="currentReservation.email"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Número de Habitación</label>
+                        <input type="text" x-model="currentReservation.roomNumber"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Cantidad de Adultos</label>
+                        <input type="number" x-model="currentReservation.adultsCount" min="1"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Cantidad de Niños</label>
+                        <input type="number" x-model="currentReservation.childrenCount" min="0"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Hotel</label>
+                        <select x-model="currentReservation.hotelId"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200">
+                            <option value="">Seleccionar hotel</option>
+                            <template x-for="hotel in hotels" :key="hotel.id">
+                                <option :value="hotel.id" x-text="hotel.name"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Fecha</label>
+                        <input type="date" x-model="currentReservation.reservationDate"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200"
+                            required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Horario</label>
+                        <select x-model="currentReservation.scheduleId" x-on:change="updateReserveTime()"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200">
+                            <option value="">Seleccionar horario</option>
+                            <template x-for="schedule in schedules" :key="schedule.id">
+                                <option :value="schedule.id" x-text="`${schedule.name} (${schedule.time})`"></option>
+                            </template>
+                        </select>
+                        <div x-show="currentReservation.reserveTime" class="mt-2">
+                            <span class="text-sm text-gray-600">Hora seleccionada: </span>
+                            <span class="text-sm font-medium text-sidebar"
+                                x-text="currentReservation.reserveTime"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Viaje</label>
+                        <select x-model="currentReservation.tripId"
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200"
+                            required>
+                            <option value="">Seleccionar viaje</option>
+                            <template x-for="trip in trips" :key="trip.id">
+                                <option :value="trip.id" :disabled="trip.remainingCapacity <= 0"
+                                    x-text="`${trip.tripName} (${trip.currentReservations}/${trip.maxCapacity})`">
+                                </option>
+                            </template>
+                        </select>
+                    </div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700">Detalles Adicionales</label>
                         <textarea x-model="currentReservation.details"
-                                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar focus:ring-sidebar"
-                                  rows="3"></textarea>
+                            class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200 resize-none"
+                            rows="3" placeholder="Información adicional sobre la reservación..."></textarea>
                     </div>
                 </div>
                 <div class="mt-6 flex justify-end space-x-3">
-                    <button type="button"
-                            @@click="closeModal()"
-                            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                    <button type="button" x-on:click="closeModal()"
+                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
                         Cancelar
                     </button>
-                    <button type="submit"
-                            class="px-4 py-2 bg-sidebar text-white rounded-md hover:bg-sidebar-hover">
+                    <button type="submit" class="px-4 py-2 bg-sidebar text-white rounded-md hover:bg-sidebar-hover">
                         Guardar
                     </button>
                 </div>
@@ -226,234 +823,8 @@
         </div>
     </div>
 </div>
-
-@section MobileContent {
-    <div x-data="reservationsManagement" class="p-4">
-        <!-- Header -->
-        <div class="flex items-center justify-between mb-4">
-            <div>
-                <h1 class="text-lg font-semibold">Manejo de Reservaciones</h1>
-                <p class="text-sm text-gray-500" x-text="new Date().toLocaleDateString()"></p>
-            </div>
-        </div>
-
-        <!-- Action Bar -->
-        <div class="mb-4">
-            <div class="flex space-x-2 mb-4">
-                <button @@click="changeTab('all')" 
-                        :class="{'bg-sidebar text-white': currentTab === 'all', 'bg-gray-200 text-gray-700': currentTab !== 'all'}"
-                        class="flex-1 px-4 py-2 rounded-lg transition-colors">
-                    Todas
-                </button>
-                <button @@click="changeTab('today')"
-                        :class="{'bg-sidebar text-white': currentTab === 'today', 'bg-gray-200 text-gray-700': currentTab !== 'today'}"
-                        class="flex-1 px-4 py-2 rounded-lg transition-colors">
-                    Hoy
-                </button>
-                <button @@click="changeTab('upcoming')"
-                        :class="{'bg-sidebar text-white': currentTab === 'upcoming', 'bg-gray-200 text-gray-700': currentTab !== 'upcoming'}"
-                        class="flex-1 px-4 py-2 rounded-lg transition-colors">
-                    Próximas
-                </button>
-            </div>
-            <div class="flex space-x-2">
-                <div class="relative flex-1">
-                    <input type="text" 
-                           x-model="searchTerm" 
-                           placeholder="Buscar reservación..."
-                           class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sidebar">
-                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                </div>
-                <button @@click="openAddModal()" 
-                        class="bg-sidebar text-white px-4 py-2 rounded-lg hover:bg-sidebar-hover transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- Loading State -->
-        <div x-show="loading" class="p-8 text-center">
-            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-sidebar border-t-transparent"></div>
-            <p class="mt-2 text-gray-600">Cargando reservaciones...</p>
-        </div>
-
-        <!-- Error State -->
-        <div x-show="error" class="p-4 m-4 bg-red-100 border border-red-400 text-red-700 rounded">
-            <p x-text="error"></p>
-        </div>
-
-        <!-- Reservations List -->
-        <div x-show="!loading && !error" class="space-y-4">
-            <template x-for="reservation in filteredReservations" :key="reservation.id">
-                <div class="bg-white rounded-lg shadow-md p-4">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-800" x-text="reservation.username"></h3>
-                            <p class="text-gray-600" x-text="reservation.userNumber"></p>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button @@click="openEditModal(reservation)" 
-                                    class="text-sidebar hover:text-sidebar-hover">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                </svg>
-                            </button>
-                            <button @@click="deleteReservation(reservation.id)"
-                                    class="text-red-600 hover:text-red-800">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="space-y-2">
-                        <div class="flex items-center text-gray-600">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                            </svg>
-                            <span x-text="reservation.hotelName"></span>
-                        </div>
-                        <div class="flex items-center text-gray-600">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                            <span x-text="new Date(reservation.reservationDate).toLocaleDateString()"></span>
-                        </div>
-                        <div class="flex items-center text-gray-600">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span x-text="reservation.reserveTime"></span>
-                        </div>
-                        <div class="flex items-center text-gray-600">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span x-text="reservation.details"></span>
-                        </div>
-                        <div class="flex items-center text-gray-600">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                            </svg>
-                            <span x-text="getTripName(reservation.tripId)"></span>
-                            <span class="ml-2 text-sm" x-text="`(${getTripCapacity(reservation.tripId).current}/${getTripCapacity(reservation.tripId).max})`"></span>
-                        </div>
-                    </div>
-                </div>
-            </template>
-            
-            <div x-show="filteredReservations.length === 0" class="bg-white rounded-lg shadow p-8 text-center text-gray-500">
-                <div class="flex flex-col items-center justify-center">
-                    <i class="fas fa-calendar-times text-4xl mb-3 text-gray-400"></i>
-                    <p class="text-lg">No se encontraron reservaciones</p>
-                    <p class="text-sm mt-2">
-                        <span x-show="currentTab === 'all'">No hay reservaciones registradas.</span>
-                        <span x-show="currentTab === 'today'">No hay reservaciones para hoy.</span>
-                        <span x-show="currentTab === 'upcoming'">No hay reservaciones próximas.</span>
-                    </p>
-                    <button 
-                        x-on:click="openAddModal()" 
-                        class="mt-4 bg-sidebar text-white px-4 py-2 rounded-lg hover:bg-sidebar-hover focus:outline-none"
-                    >
-                        Crear una nueva reservación
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Add/Edit Modal -->
-        <div x-show="showModal" 
-             class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-             @@click.self="closeModal()">
-            <div class="bg-white rounded-lg p-6 w-full mx-4">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-gray-800" x-text="currentReservation.id ? 'Editar Reservación' : 'Nueva Reservación'"></h2>
-                    <button @@click="closeModal()" class="text-gray-500 hover:text-gray-700">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
-                </div>
-                <form @@submit.prevent="saveReservation">
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Nombre del Cliente</label>
-                            <input type="text" 
-                                   x-model="currentReservation.username"
-                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar focus:ring-sidebar">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Teléfono</label>
-                            <input type="tel" 
-                                   x-model="currentReservation.userNumber"
-                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar focus:ring-sidebar">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Hotel</label>
-                            <select x-model="currentReservation.hotelId"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar focus:ring-sidebar">
-                                <option value="">Seleccionar hotel</option>
-                                <template x-for="hotel in hotels" :key="hotel.id">
-                                    <option :value="hotel.id" x-text="hotel.name"></option>
-                                </template>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Fecha</label>
-                            <input type="date" 
-                                   x-model="currentReservation.reservationDate"
-                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar focus:ring-sidebar">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Horario</label>
-                            <select x-model="currentReservation.scheduleId"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar focus:ring-sidebar">
-                                <option value="">Seleccionar horario</option>
-                                <template x-for="schedule in schedules" :key="schedule.id">
-                                    <option :value="schedule.id" x-text="`${schedule.name} (${schedule.time})`"></option>
-                                </template>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Viaje</label>
-                            <select x-model="currentReservation.tripId"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar focus:ring-sidebar">
-                                <option value="">Seleccionar viaje</option>
-                                <template x-for="trip in trips" :key="trip.id">
-                                    <option :value="trip.id" 
-                                            :disabled="trip.remainingCapacity <= 0"
-                                            x-text="`${trip.tripName} (${trip.currentReservations}/${trip.maxCapacity})`"></option>
-                                </template>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Detalles Adicionales</label>
-                            <textarea x-model="currentReservation.details"
-                                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sidebar focus:ring-sidebar"
-                                      rows="3"></textarea>
-                        </div>
-                    </div>
-                    <div class="mt-6 flex justify-end space-x-3">
-                        <button type="button"
-                                @@click="closeModal()"
-                                class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
-                            Cancelar
-                        </button>
-                        <button type="submit"
-                                class="px-4 py-2 bg-sidebar text-white rounded-md hover:bg-sidebar-hover">
-                            Guardar
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 }
 
 @section Scripts {
-    <script src="~/js/reservations.js"></script>
+<script src="~/js/reservations.js"></script>
 }

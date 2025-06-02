@@ -15,11 +15,17 @@ document.addEventListener('alpine:init', () => {
          */
         reservations: [],
         showModal: false,
+        showCancelModal: false,
+        showRescheduleModal: false,
         currentTab: 'all',
         currentReservation: { 
             id: 0, 
             username: '', 
             userNumber: '', 
+            email: '',
+            roomNumber: '',
+            adultsCount: 1,
+            childrenCount: 0,
             details: '',
             reservationDate: '',
             reserveTime: '',
@@ -27,6 +33,17 @@ document.addEventListener('alpine:init', () => {
             tripId: '',
             scheduleId: '',
             hotelId: ''
+        },
+        reservationToCancel: null,
+        reservationToReschedule: null,
+        cancelReason: '',
+        customCancelReason: '',
+        rescheduleReason: '',
+        customRescheduleReason: '',
+        rescheduleData: {
+            reservationDate: '',
+            scheduleId: '',
+            tripId: ''
         },
         searchTerm: '',
         saving: false,
@@ -39,6 +56,11 @@ document.addEventListener('alpine:init', () => {
         trips: [],
         
         init() {
+            // Explicitly ensure modals are hidden on initialization
+            this.showModal = false;
+            this.showCancelModal = false;
+            this.showRescheduleModal = false;
+            
             this.connection = new signalR.HubConnectionBuilder()
                 .withUrl("/reservations")    
                 .withAutomaticReconnect()
@@ -69,6 +91,18 @@ document.addEventListener('alpine:init', () => {
 
             this.connection.on("ReceiveTrips", (trips) => {
                 this.trips = trips;
+            });
+
+            this.connection.on("ReservationStatusChanged", (statusUpdate) => {
+                // Find and update the reservation in the local array
+                const reservation = this.reservations.find(r => r.id === statusUpdate.reservationId);
+                if (reservation) {
+                    reservation.status = statusUpdate.status;
+                    reservation.statusReason = statusUpdate.statusReason;
+                    console.log(`Updated reservation ${statusUpdate.reservationId} status to ${statusUpdate.status}`);
+                } else {
+                    console.warn(`Reservation with ID ${statusUpdate.reservationId} not found in local array`);
+                }
             });
         },
 
@@ -169,6 +203,10 @@ document.addEventListener('alpine:init', () => {
                 id: 0, 
                 username: '', 
                 userNumber: '', 
+                email: '',
+                roomNumber: '',
+                adultsCount: 1,
+                childrenCount: 0,
                 details: '',
                 reservationDate: '',
                 reserveTime: '',
@@ -187,7 +225,32 @@ document.addEventListener('alpine:init', () => {
 
         async saveReservation() {
             try {
-                await this.connection.invoke("SaveReservation", this.currentReservation);
+                // Always update fields based on current selections
+                if (this.currentReservation.hotelId) {
+                    const hotel = this.hotels.find(h => h.id == this.currentReservation.hotelId);
+                    if (hotel) {
+                        this.currentReservation.hotelName = hotel.name;
+                    }
+                }
+
+                if (this.currentReservation.scheduleId) {
+                    const schedule = this.schedules.find(s => s.id == this.currentReservation.scheduleId);
+                    if (schedule) {
+                        this.currentReservation.reserveTime = schedule.time;
+                    }
+                }
+
+                // Convert string values to proper types
+                const reservationToSave = {
+                    ...this.currentReservation,
+                    tripId: parseInt(this.currentReservation.tripId) || 0,
+                    scheduleId: parseInt(this.currentReservation.scheduleId) || 0,
+                    hotelId: parseInt(this.currentReservation.hotelId) || 0,
+                    adultsCount: parseInt(this.currentReservation.adultsCount) || 1,
+                    childrenCount: parseInt(this.currentReservation.childrenCount) || 0
+                };
+
+                await this.connection.invoke("SaveReservation", reservationToSave);
                 this.closeModal();
                 Swal.fire({
                     icon: 'success',
@@ -273,6 +336,134 @@ document.addEventListener('alpine:init', () => {
 
         closeModal() {
             this.showModal = false;
+        },
+
+        updateReserveTime() {
+            if (this.currentReservation.scheduleId) {
+                const schedule = this.schedules.find(s => s.id == this.currentReservation.scheduleId);
+                if (schedule) {
+                    this.currentReservation.reserveTime = schedule.time;
+                }
+            } else {
+                this.currentReservation.reserveTime = '';
+            }
+        },
+
+        // Cancel functionality
+        openCancelModal(reservation) {
+            this.reservationToCancel = reservation;
+            this.cancelReason = 'reason';
+            this.customCancelReason = '';
+            this.showCancelModal = true;
+        },
+
+        closeCancelModal() {
+            this.showCancelModal = false;
+            this.reservationToCancel = null;
+            this.cancelReason = '';
+            this.customCancelReason = '';
+        },
+
+        async confirmCancelReservation() {
+            if (!this.cancelReason) {
+                alert('Por favor seleccione un motivo para la cancelación');
+                return;
+            }
+
+            const reason = this.cancelReason === 'Otro' ? this.customCancelReason : this.cancelReason;
+            
+            if (this.cancelReason === 'Otro' && !this.customCancelReason.trim()) {
+                alert('Por favor especifique el motivo de la cancelación');
+                return;
+            }
+
+            try {
+                await this.connection.invoke("CancelReservation", this.reservationToCancel.id, reason);
+                this.closeCancelModal();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Cancelada',
+                    text: 'La reservación ha sido cancelada exitosamente'
+                });
+            } catch (error) {
+                console.error("Error cancelling reservation:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'Error al cancelar la reservación'
+                });
+            }
+        },
+
+        // Reschedule functionality
+        openRescheduleModal(reservation) {
+            this.reservationToReschedule = reservation;
+            this.rescheduleReason = '';
+            this.customRescheduleReason = '';
+            this.rescheduleData = {
+                reservationDate: reservation.reservationDate,
+                scheduleId: reservation.scheduleId || '',
+                tripId: reservation.tripId || ''
+            };
+            this.showRescheduleModal = true;
+        },
+
+        closeRescheduleModal() {
+            this.showRescheduleModal = false;
+            this.reservationToReschedule = null;
+            this.rescheduleReason = '';
+            this.customRescheduleReason = '';
+            this.rescheduleData = {
+                reservationDate: '',
+                scheduleId: '',
+                tripId: ''
+            };
+        },
+
+        async confirmRescheduleReservation() {
+            if (!this.rescheduleReason) {
+                alert('Por favor seleccione un motivo para la reprogramación');
+                return;
+            }
+
+            if (!this.rescheduleData.reservationDate || !this.rescheduleData.tripId) {
+                alert('Por favor complete todos los campos requeridos');
+                return;
+            }
+
+            const reason = this.rescheduleReason === 'Otro' ? this.customRescheduleReason : this.rescheduleReason;
+            
+            if (this.rescheduleReason === 'Otro' && !this.customRescheduleReason.trim()) {
+                alert('Por favor especifique el motivo de la reprogramación');
+                return;
+            }
+
+            // Create new reservation data based on original reservation
+            const newReservation = {
+                ...this.reservationToReschedule,
+                id: 0, // New reservation
+                reservationDate: this.rescheduleData.reservationDate,
+                scheduleId: this.rescheduleData.scheduleId,
+                tripId: this.rescheduleData.tripId,
+                originalReservationId: this.reservationToReschedule.id
+            };
+
+            try {
+                await this.connection.invoke("RescheduleReservation", this.reservationToReschedule.id, newReservation, reason);
+                this.closeRescheduleModal();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Reprogramada',
+                    text: 'La reservación ha sido reprogramada exitosamente'
+                });
+            } catch (error) {
+                console.error("Error rescheduling reservation:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'Error al reprogramar la reservación'
+                });
+            }
         }
     }));
 });

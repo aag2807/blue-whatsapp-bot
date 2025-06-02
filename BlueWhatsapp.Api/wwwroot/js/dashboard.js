@@ -105,7 +105,11 @@ document.addEventListener('alpine:init', () => {
         
         handleConversationRefresh()
         {
-            console.log('conversation refresh');
+            if(!this.currentConversationId)
+            {
+                return;
+            }
+
             this.connection.invoke("GetAllMessagesFromConversation", this.currentConversationId)
         },
 
@@ -322,6 +326,7 @@ document.addEventListener('alpine:init', () => {
                 this.connection.invoke("GetAllConversations");
                 this.connection.invoke("GetWeeklyConversations");
                 this.connection.invoke("GetRecentConversations", 20);
+                this.handleConversationRefresh()  
             });
 
             this.connection.on("ReceiveAllConversations", (conversations) => {

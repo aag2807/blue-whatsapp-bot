@@ -92,8 +92,83 @@ public class ReservationsHub : Hub
     {
         _logger.LogInformation("SaveReservation called by client {ConnectionId}", Context.ConnectionId);
         
-        // Check if trip has capacity
+        // Check if trip has capacity (only for new reservations or when trip changes)
         var trip = await _tripRepository.GetTripByIdAsync(reservation.TripId).ConfigureAwait(true);
+        if (trip == null)
+        {
+            throw new InvalidOperationException("Trip not found");
+        }
+
+        // For updates, we need to check capacity differently to exclude the current reservation
+        var currentReservations = await _reservationRepository.GetReservationsByTripId(trip.Id).ConfigureAwait(true);
+        var activeReservations = currentReservations.Where(r => r.Status == "Active");
+        
+        // If updating, exclude the current reservation from capacity check
+        if (reservation.Id > 0)
+        {
+            activeReservations = activeReservations.Where(r => r.Id != reservation.Id);
+        }
+        
+        if (activeReservations.Count() >= trip.MaxCapacity)
+        {
+            throw new InvalidOperationException("Trip is at full capacity");
+        }
+
+        // Determine if this is a create or update operation
+        if (reservation.Id > 0)
+        {
+            await _reservationRepository.UpdateReservation(reservation).ConfigureAwait(true);
+            _logger.LogInformation("Updated reservation {ReservationId}", reservation.Id);
+        }
+        else
+        {
+            await _reservationRepository.SaveReservation(reservation).ConfigureAwait(true);
+            _logger.LogInformation("Created new reservation for user {UserNumber}", reservation.UserNumber);
+        }
+
+        IEnumerable<CoreReservation> updatedReservations = await _reservationRepository.GetAllWeeklyReservationsOrderedByCreationDate().ConfigureAwait(true);
+        _logger.LogInformation("Broadcasting {Count} updated reservations to all clients", updatedReservations.Count());
+        await Clients.All.SendAsync("ReceiveReservations", updatedReservations).ConfigureAwait(true);
+    }
+
+    public async Task DeleteReservation(int reservationId)
+    {
+        _logger.LogInformation("DeleteReservation called by client {ConnectionId} for reservation {ReservationId}", Context.ConnectionId, reservationId);
+        await _reservationRepository.DeleteReservation(reservationId).ConfigureAwait(true);
+        IEnumerable<CoreReservation> updatedReservations = await _reservationRepository.GetAllWeeklyReservationsOrderedByCreationDate().ConfigureAwait(true);
+        _logger.LogInformation("Broadcasting {Count} updated reservations to all clients", updatedReservations.Count());
+        await Clients.All.SendAsync("ReceiveReservations", updatedReservations).ConfigureAwait(true);
+    }
+
+    public async Task CancelReservation(int reservationId, string reason)
+    {
+        _logger.LogInformation("CancelReservation called by client {ConnectionId} for reservation {ReservationId}", Context.ConnectionId, reservationId);
+        
+        // Update the reservation status to cancelled
+        await _reservationRepository.CancelReservation(reservationId, reason).ConfigureAwait(true);
+        
+        // Since the repository queries filter out cancelled reservations, we need to 
+        // send a direct status update to clients so they can update their local data
+        await Clients.All.SendAsync("ReservationStatusChanged", new { 
+            reservationId = reservationId, 
+            status = "Cancelled", 
+            statusReason = reason 
+        }).ConfigureAwait(true);
+        
+        _logger.LogInformation("Broadcast status change for reservation {ReservationId} to Cancelled", reservationId);
+        
+        // Also get and broadcast current reservations (which won't include the cancelled one from repository)
+        IEnumerable<CoreReservation> updatedReservations = await _reservationRepository.GetAllWeeklyReservationsOrderedByCreationDate().ConfigureAwait(true);
+        _logger.LogInformation("Broadcasting {Count} updated reservations to all clients", updatedReservations.Count());
+        await Clients.All.SendAsync("ReceiveReservations", updatedReservations).ConfigureAwait(true);
+    }
+
+    public async Task RescheduleReservation(int originalReservationId, CoreReservation newReservation, string reason)
+    {
+        _logger.LogInformation("RescheduleReservation called by client {ConnectionId} for reservation {ReservationId}", Context.ConnectionId, originalReservationId);
+        
+        // Check if trip has capacity for the new reservation
+        var trip = await _tripRepository.GetTripByIdAsync(newReservation.TripId).ConfigureAwait(true);
         if (trip == null)
         {
             throw new InvalidOperationException("Trip not found");
@@ -105,16 +180,18 @@ public class ReservationsHub : Hub
             throw new InvalidOperationException("Trip is at full capacity");
         }
 
-        await _reservationRepository.SaveReservation(reservation).ConfigureAwait(true);
-        IEnumerable<CoreReservation> updatedReservations = await _reservationRepository.GetAllWeeklyReservationsOrderedByCreationDate().ConfigureAwait(true);
-        _logger.LogInformation("Broadcasting {Count} updated reservations to all clients", updatedReservations.Count());
-        await Clients.All.SendAsync("ReceiveReservations", updatedReservations).ConfigureAwait(true);
-    }
-
-    public async Task DeleteReservation(int reservationId)
-    {
-        _logger.LogInformation("DeleteReservation called by client {ConnectionId} for reservation {ReservationId}", Context.ConnectionId, reservationId);
-        await _reservationRepository.DeleteReservation(reservationId).ConfigureAwait(true);
+        await _reservationRepository.RescheduleReservation(originalReservationId, newReservation, reason).ConfigureAwait(true);
+        
+        // Send status update for the original reservation
+        await Clients.All.SendAsync("ReservationStatusChanged", new { 
+            reservationId = originalReservationId, 
+            status = "Rescheduled", 
+            statusReason = reason 
+        }).ConfigureAwait(true);
+        
+        _logger.LogInformation("Broadcast status change for reservation {ReservationId} to Rescheduled", originalReservationId);
+        
+        // Broadcast updated reservations list
         IEnumerable<CoreReservation> updatedReservations = await _reservationRepository.GetAllWeeklyReservationsOrderedByCreationDate().ConfigureAwait(true);
         _logger.LogInformation("Broadcasting {Count} updated reservations to all clients", updatedReservations.Count());
         await Clients.All.SendAsync("ReceiveReservations", updatedReservations).ConfigureAwait(true);

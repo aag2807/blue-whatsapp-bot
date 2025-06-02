@@ -34,12 +34,16 @@ public class ReservationCompleteState : BaseConversationState
             CoreReservation reservation = new();
             reservation.TripId = int.Parse(context.ZoneId);
             reservation.UserNumber = context.UserNumber;
+            reservation.Username = context.FullName;
+            reservation.RoomNumber = context.RoomNumber;
+            reservation.AdultsCount = context.Adults;
+            reservation.ChildrenCount = context.Children;
+            reservation.Email = context.Email;
             reservation.Schedule = schedule;
             reservation.ReservationDate = context.PickUpDate;
+            reservation.ReserveTime = schedule.Time;
             reservation.Hotel = hotel;
             reservation.HotelName = hotel.Name;
-            reservation.Username = context.FullName;
-            reservation.ReserveTime = schedule.Time;
                 
             await reservationRepository.SaveReservation(reservation).ConfigureAwait(true);
             
