@@ -45,8 +45,6 @@ public class WhatsappController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> ValidateToken([FromQuery(Name = "hub.mode")] string mode, [FromQuery(Name = "hub.verify_token")] string token, [FromQuery(Name = "hub.challenge")] string challenge)
     {
-        return Ok(challenge);
-        
         try
         {
             _logger.LogInfo("verify-token");
