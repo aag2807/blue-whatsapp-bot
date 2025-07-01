@@ -57,11 +57,11 @@ public class WhatsappController : ControllerBase
             _logger.LogInfo($"token: {token}");
             _logger.LogInfo($"challenge: {challenge}");
 
-            // if (token.IsNullOrWhiteSpace() || token.IsNullOrWhiteSpace() || token is not accessToken)
-            // {
-            //     _logger.LogError("Invalid token");
-            //     return BadRequest();
-            // }
+            if (token.IsNullOrWhiteSpace() || token.IsNullOrWhiteSpace() || token is not accessToken)
+            {
+                _logger.LogError("Invalid token");
+                return BadRequest();
+            }
 
             return Ok(challenge);
         }

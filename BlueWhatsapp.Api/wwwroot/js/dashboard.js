@@ -38,7 +38,7 @@ const { animate, scroll, stagger } = Motion
  */
 
 document.addEventListener('alpine:init', () => {
-    Alpine.data('dashboard', () => ({
+    Alpine.data('dashboard', (currentUser) => ({
         // State variables
         openChats: 0,
         totalMessages: 0,
@@ -50,6 +50,7 @@ document.addEventListener('alpine:init', () => {
         connection: null,
         newMessage: '',
         isOpen: false,
+        currentUser: currentUser,
 
         // Chart references
         chartRef$: null,
@@ -117,7 +118,7 @@ document.addEventListener('alpine:init', () => {
             if (!this.newMessage.trim() || !this.currentConversationId) return;
             
             // Send message through SignalR
-            this.connection.invoke("SendMessageToConversation", this.currentConversationId, this.newMessage)
+            this.connection.invoke("SendMessageToConversation", this.currentConversationId, this.newMessage, this.currentUser)
                 .then(() => {
                     // Clear input after successful send
                     this.newMessage = '';

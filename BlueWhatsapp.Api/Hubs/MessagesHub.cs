@@ -104,12 +104,12 @@ public class MessagesHub : Hub
         await GetRecentConversations().ConfigureAwait(true);
     }
 
-    public async Task SendMessageToConversation(int conversationId, string message)
+    public async Task SendMessageToConversation(int conversationId, string message, string userName)
     {
         CoreConversationState conversation = await _conversationStateRepository.GetConversationStateById(conversationId).ConfigureAwait(true);
         CoreMessageToSend coreMessage = new CoreMessageToSend(message, conversation.UserNumber);
         await _whatsappCloudService.SendMessage(coreMessage).ConfigureAwait(true);
-        await _messageService.SaveAsync("SYSTEM", message, conversation.UserNumber).ConfigureAwait(true);
+        await _messageService.SaveAsync(userName, message, conversation.UserNumber).ConfigureAwait(true);
         await _conversationStateRepository.MarkConversationAsManuallyOverridenAsync(conversationId).ConfigureAwait(true);
 
         await Clients.Caller.SendAsync("RefreshCurrentConversation");

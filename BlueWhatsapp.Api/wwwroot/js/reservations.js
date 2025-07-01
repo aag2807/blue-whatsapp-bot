@@ -132,15 +132,15 @@ document.addEventListener('alpine:init', () => {
             
             if (this.currentTab === 'today') {
                 filtered = filtered.filter(r => {
-                    const reservationDate = new Date(r.reservationDate);
+                    const reservationDate = this.parseLocalDate(r.reservationDate);
                     const today = new Date();
-                    return reservationDate.toDateString() === today.toDateString();
+                    return reservationDate && reservationDate.toDateString() === today.toDateString();
                 });
             } else if (this.currentTab === 'upcoming') {
                 const today = new Date();
                 filtered = filtered.filter(r => {
-                    const reservationDate = new Date(r.reservationDate);
-                    return reservationDate > today;
+                    const reservationDate = this.parseLocalDate(r.reservationDate);
+                    return reservationDate && reservationDate > today;
                 });
             }
             
@@ -187,8 +187,26 @@ document.addEventListener('alpine:init', () => {
             if (!date) {
                 return 'No disponible'
             };
+            // Parse as local date to avoid timezone issues
+            const [year, month, day] = date.split('-');
+            const localDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
             const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-            return new Date(date).toLocaleDateString('es-ES', options);
+            return localDate.toLocaleDateString('es-ES', options);
+        },
+
+        // Helper function to parse date string as local date
+        parseLocalDate(dateString) {
+            if (!dateString) return null;
+            const [year, month, day] = dateString.split('-');
+            return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        },
+
+        // Method to format date for templates (avoiding timezone issues)
+        formatDateForDisplay(dateString) {
+            if (!dateString) return 'No disponible';
+            const [year, month, day] = dateString.split('-');
+            const localDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+            return localDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
         },
 
         formatTime(time) {
@@ -220,6 +238,31 @@ document.addEventListener('alpine:init', () => {
 
         openEditModal(reservation) {
             this.currentReservation = { ...reservation };
+            
+            // Map hotel name to hotel ID
+            if (reservation.hotelName && this.hotels.length > 0) {
+                const hotel = this.hotels.find(h => h.name === reservation.hotelName);
+                if (hotel) {
+                    this.currentReservation.hotelId = hotel.id;
+                } else {
+                    this.currentReservation.hotelId = '';
+                }
+            } else {
+                this.currentReservation.hotelId = '';
+            }
+            
+            // Map reserve time to schedule ID
+            if (reservation.reserveTime && this.schedules.length > 0) {
+                const schedule = this.schedules.find(s => s.time === reservation.reserveTime);
+                if (schedule) {
+                    this.currentReservation.scheduleId = schedule.id;
+                } else {
+                    this.currentReservation.scheduleId = '';
+                }
+            } else {
+                this.currentReservation.scheduleId = '';
+            }
+            
             this.showModal = true;
         },
 
@@ -257,6 +300,7 @@ document.addEventListener('alpine:init', () => {
                     title: 'Success',
                     text: 'Reservation saved successfully'
                 });
+                this.loadData();
             } catch (error) {
                 console.error("Error saving reservation:", error);
                 Swal.fire({

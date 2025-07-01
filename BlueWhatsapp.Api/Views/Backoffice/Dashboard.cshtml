@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 }
 
-<div x-data="dashboard" class="flex-1 overflow-y-auto">
+<div x-data="dashboard('@user')" class="flex-1 overflow-y-auto">
     <!-- Header -->
     <div class="p-4 flex items-center justify-between border-b">
         <div>
@@ -221,7 +221,7 @@
 
 @section MobileContent
 {
-    <div x-data="dashboard" class="p-4">
+    <div x-data="dashboard('@user')" class="p-4">
         <div class="flex items-center justify-between mb-4">
             <div>
                 <h1 class="text-lg font-semibold">Bienvenido @user</h1>

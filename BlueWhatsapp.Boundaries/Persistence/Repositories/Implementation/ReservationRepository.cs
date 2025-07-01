@@ -71,11 +71,13 @@ public sealed class ReservationRepository : BaseRepository<Reservation>, IReserv
     async Task<IEnumerable<CoreReservation>> IReservationRepository.GetAllDailyReservationsOrderedByCreationDate()
     {
         DateTime today = DateTime.UtcNow.Date;
+        string todayString = today.ToString("yyyy-MM-dd");
+        
         List<Reservation> response = await GetAllActiveQuery(false)
             .Include(r => r.Trip)
                 .ThenInclude(t => t!.Route)
                     .ThenInclude(r => r!.Hotels)
-            .Where(r => r.CreatedTime.Date == today)
+            .Where(r => r.ReservationDate == todayString)
             .OrderByDescending(r => r.CreatedTime)
             .ToListAsync()
             .ConfigureAwait(true);
@@ -87,16 +89,23 @@ public sealed class ReservationRepository : BaseRepository<Reservation>, IReserv
     async Task<IEnumerable<CoreReservation>> IReservationRepository.GetAllUpcomingReservationsOrderedByCreationDate()
     {
         DateTime today = DateTime.UtcNow.Date;
+        
         List<Reservation> response = await GetAllActiveQuery(false)
             .Include(r => r.Trip)
                 .ThenInclude(t => t!.Route)
                     .ThenInclude(r => r!.Hotels)
-            .Where(r => r.CreatedTime.Date > today)
-            .OrderByDescending(r => r.CreatedTime)
             .ToListAsync()
             .ConfigureAwait(true);
 
-        return response.Select(MapToCore);
+        // Filter on client side to handle DateTime parsing
+        var filteredResponse = response
+            .Where(r => !string.IsNullOrEmpty(r.ReservationDate) && 
+                       DateTime.TryParse(r.ReservationDate, out DateTime reservationDate) && 
+                       reservationDate.Date >= today)
+            .OrderByDescending(r => r.CreatedTime)
+            .ToList();
+
+        return filteredResponse.Select(MapToCore);
     }
 
     /// <inheritdoc />
