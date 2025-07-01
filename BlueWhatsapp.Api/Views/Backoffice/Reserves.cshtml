@@ -197,7 +197,7 @@ ViewBag.ActivePage = "Reservations";
                         </svg>
                         <span x-text="getTripName(reservation.tripId)"></span>
                         <span class="ml-2 text-sm"
-                            x-text="`(${getTripCapacity(reservation.tripId).current}/${getTripCapacity(reservation.tripId).max})`"></span>
+                            x-text="`(${getDailyTripCapacity(reservation.tripId, reservation.reservationDate).current}/${getDailyTripCapacity(reservation.tripId, reservation.reservationDate).max} diarias)`"></span>
                     </div>
                 </div>
             </div>
@@ -313,9 +313,13 @@ ViewBag.ActivePage = "Reservations";
                             class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200"
                             required>
                             <option value="">Seleccionar viaje</option>
-                            <template x-for="trip in trips" :key="trip.id">
-                                <option :value="trip.id" :disabled="trip.remainingCapacity <= 0"
-                                    x-text="`${trip.tripName} (${trip.currentReservations}/${trip.maxCapacity})`">
+                            <template x-for="trip in availableTrips" :key="trip.id">
+                                <option :value="trip.id" 
+                                    :disabled="!trip.hasCapacity"
+                                    :class="{'text-red-500': !trip.hasCapacity}"
+                                    x-text="currentReservation.reservationDate ? 
+                                        `${trip.tripName} (${trip.dailyCapacity.current}/${trip.dailyCapacity.max} - ${trip.dailyCapacity.remaining} disponibles)` : 
+                                        `${trip.tripName} (Selecciona fecha primero)`">
                                 </option>
                             </template>
                         </select>
@@ -465,9 +469,13 @@ ViewBag.ActivePage = "Reservations";
                             class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200"
                             required>
                             <option value="">Seleccionar viaje</option>
-                            <template x-for="trip in trips" :key="trip.id">
-                                <option :value="trip.id" :disabled="trip.remainingCapacity <= 0"
-                                    x-text="`${trip.tripName} (${trip.currentReservations}/${trip.maxCapacity})`">
+                            <template x-for="trip in getAvailableTripsForDate(rescheduleData.reservationDate)" :key="trip.id">
+                                <option :value="trip.id" 
+                                    :disabled="!trip.hasCapacity"
+                                    :class="{'text-red-500': !trip.hasCapacity}"
+                                    x-text="rescheduleData.reservationDate ? 
+                                        `${trip.tripName} (${trip.dailyCapacity.current}/${trip.dailyCapacity.max} - ${trip.dailyCapacity.remaining} disponibles)` : 
+                                        `${trip.tripName} (Selecciona fecha primero)`">
                                 </option>
                             </template>
                         </select>
@@ -676,7 +684,7 @@ ViewBag.ActivePage = "Reservations";
                         </svg>
                         <span x-text="getTripName(reservation.tripId)"></span>
                         <span class="ml-2 text-sm"
-                            x-text="`(${getTripCapacity(reservation.tripId).current}/${getTripCapacity(reservation.tripId).max})`"></span>
+                            x-text="`(${getDailyTripCapacity(reservation.tripId, reservation.reservationDate).current}/${getDailyTripCapacity(reservation.tripId, reservation.reservationDate).max} diarias)`"></span>
                     </div>
                 </div>
             </div>
@@ -787,9 +795,13 @@ ViewBag.ActivePage = "Reservations";
                             class="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-sidebar focus:border-sidebar transition-colors duration-200"
                             required>
                             <option value="">Seleccionar viaje</option>
-                            <template x-for="trip in trips" :key="trip.id">
-                                <option :value="trip.id" :disabled="trip.remainingCapacity <= 0"
-                                    x-text="`${trip.tripName} (${trip.currentReservations}/${trip.maxCapacity})`">
+                            <template x-for="trip in availableTrips" :key="trip.id">
+                                <option :value="trip.id" 
+                                    :disabled="!trip.hasCapacity"
+                                    :class="{'text-red-500': !trip.hasCapacity}"
+                                    x-text="currentReservation.reservationDate ? 
+                                        `${trip.tripName} (${trip.dailyCapacity.current}/${trip.dailyCapacity.max} - ${trip.dailyCapacity.remaining} disponibles)` : 
+                                        `${trip.tripName} (Selecciona fecha primero)`">
                                 </option>
                             </template>
                         </select>

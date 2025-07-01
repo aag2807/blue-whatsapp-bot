@@ -17,6 +17,7 @@ public class ReservationsHub : Hub
     private readonly IHotelRepository _hotelRepository;
     private readonly ITripRepository _tripRepository;
     private readonly ILogger<ReservationsHub> _logger;
+    private const int DAILY_CAPACITY_LIMIT = 30;
 
     public ReservationsHub(
         IReservationRepository reservationRepository, 
@@ -88,30 +89,65 @@ public class ReservationsHub : Hub
         await Clients.Caller.SendAsync("ReceiveTrips", trips).ConfigureAwait(true);
     }
 
+    /// <summary>
+    /// Checks if a trip has available daily capacity for a specific date
+    /// </summary>
+    /// <param name="tripId">The trip ID to check</param>
+    /// <param name="reservationDate">The date to check capacity for</param>
+    /// <param name="excludeReservationId">Optional reservation ID to exclude from the count (for updates)</param>
+    /// <returns>True if capacity is available, false otherwise</returns>
+    private async Task<bool> HasDailyCapacity(int tripId, string reservationDate, int? excludeReservationId = null)
+    {
+        var allReservations = await _reservationRepository.GetReservationsByTripId(tripId).ConfigureAwait(true);
+        var dailyReservations = allReservations.Where(r => 
+            r.Status == "Active" && 
+            r.ReservationDate == reservationDate);
+        
+        // Exclude specific reservation if provided (used for updates)
+        if (excludeReservationId.HasValue)
+        {
+            dailyReservations = dailyReservations.Where(r => r.Id != excludeReservationId.Value);
+        }
+        
+        return dailyReservations.Count() < DAILY_CAPACITY_LIMIT;
+    }
+
+    /// <summary>
+    /// Gets the current daily reservation count for a trip on a specific date
+    /// </summary>
+    /// <param name="tripId">The trip ID</param>
+    /// <param name="reservationDate">The date to check</param>
+    /// <returns>The number of active reservations for the trip on the given date</returns>
+    private async Task<int> GetDailyReservationCount(int tripId, string reservationDate)
+    {
+        var allReservations = await _reservationRepository.GetReservationsByTripId(tripId).ConfigureAwait(true);
+        return allReservations.Count(r => 
+            r.Status == "Active" && 
+            r.ReservationDate == reservationDate);
+    }
+
     public async Task SaveReservation(CoreReservation reservation)
     {
         _logger.LogInformation("SaveReservation called by client {ConnectionId}", Context.ConnectionId);
         
-        // Check if trip has capacity (only for new reservations or when trip changes)
+        // Check if trip exists
         var trip = await _tripRepository.GetTripByIdAsync(reservation.TripId).ConfigureAwait(true);
         if (trip == null)
         {
             throw new InvalidOperationException("Trip not found");
         }
 
-        // For updates, we need to check capacity differently to exclude the current reservation
-        var currentReservations = await _reservationRepository.GetReservationsByTripId(trip.Id).ConfigureAwait(true);
-        var activeReservations = currentReservations.Where(r => r.Status == "Active");
-        
-        // If updating, exclude the current reservation from capacity check
-        if (reservation.Id > 0)
+        // Check daily capacity (30 reservations per trip per day)
+        bool hasCapacity = await HasDailyCapacity(
+            reservation.TripId, 
+            reservation.ReservationDate, 
+            reservation.Id > 0 ? reservation.Id : null
+        ).ConfigureAwait(true);
+
+        if (!hasCapacity)
         {
-            activeReservations = activeReservations.Where(r => r.Id != reservation.Id);
-        }
-        
-        if (activeReservations.Count() >= trip.MaxCapacity)
-        {
-            throw new InvalidOperationException("Trip is at full capacity");
+            var currentCount = await GetDailyReservationCount(reservation.TripId, reservation.ReservationDate).ConfigureAwait(true);
+            throw new InvalidOperationException($"Trip is at full daily capacity ({currentCount}/{DAILY_CAPACITY_LIMIT} reservations) for {reservation.ReservationDate}");
         }
 
         // Determine if this is a create or update operation
@@ -167,17 +203,24 @@ public class ReservationsHub : Hub
     {
         _logger.LogInformation("RescheduleReservation called by client {ConnectionId} for reservation {ReservationId}", Context.ConnectionId, originalReservationId);
         
-        // Check if trip has capacity for the new reservation
+        // Check if trip exists
         var trip = await _tripRepository.GetTripByIdAsync(newReservation.TripId).ConfigureAwait(true);
         if (trip == null)
         {
             throw new InvalidOperationException("Trip not found");
         }
 
-        var currentReservations = await _reservationRepository.GetReservationsByTripId(trip.Id).ConfigureAwait(true);
-        if (currentReservations.Count() >= trip.MaxCapacity)
+        // Check daily capacity for the new reservation date
+        bool hasCapacity = await HasDailyCapacity(
+            newReservation.TripId, 
+            newReservation.ReservationDate, 
+            originalReservationId
+        ).ConfigureAwait(true);
+
+        if (!hasCapacity)
         {
-            throw new InvalidOperationException("Trip is at full capacity");
+            var currentCount = await GetDailyReservationCount(newReservation.TripId, newReservation.ReservationDate).ConfigureAwait(true);
+            throw new InvalidOperationException($"Trip is at full daily capacity ({currentCount}/{DAILY_CAPACITY_LIMIT} reservations) for {newReservation.ReservationDate}");
         }
 
         await _reservationRepository.RescheduleReservation(originalReservationId, newReservation, reason).ConfigureAwait(true);

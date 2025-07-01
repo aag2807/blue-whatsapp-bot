@@ -156,6 +156,19 @@ document.addEventListener('alpine:init', () => {
             return filtered;
         },
 
+        // Computed property for trips with daily capacity info
+        get availableTrips() {
+            if (!this.currentReservation.reservationDate) {
+                return this.trips.map(trip => ({
+                    ...trip,
+                    dailyCapacity: { current: 0, max: 30, remaining: 30 },
+                    hasCapacity: true
+                }));
+            }
+            
+            return this.getAvailableTripsForDate(this.currentReservation.reservationDate);
+        },
+
         changeTab(tab) {
             console.log('Changing tab to:', tab);
             this.currentTab = tab;
@@ -268,6 +281,20 @@ document.addEventListener('alpine:init', () => {
 
         async saveReservation() {
             try {
+                // Validate daily capacity before saving
+                if (!this.hasDailyCapacity(
+                    this.currentReservation.tripId, 
+                    this.currentReservation.reservationDate, 
+                    this.currentReservation.id // Exclude current reservation when editing
+                )) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Capacidad Excedida',
+                        text: `El viaje seleccionado ya tiene 30 reservaciones para la fecha ${this.formatDateForDisplay(this.currentReservation.reservationDate)}. Por favor seleccione otro viaje o fecha.`
+                    });
+                    return;
+                }
+
                 // Always update fields based on current selections
                 if (this.currentReservation.hotelId) {
                     const hotel = this.hotels.find(h => h.id == this.currentReservation.hotelId);
@@ -373,6 +400,56 @@ document.addEventListener('alpine:init', () => {
             };
         },
 
+        // New method: Get daily capacity for a specific trip and date
+        getDailyTripCapacity(tripId, date) {
+            if (!date || !tripId) return { current: 0, max: 30, remaining: 30 };
+            
+            // Count reservations for this trip on this specific date
+            const dailyReservations = this.reservations.filter(r => 
+                r.tripId === tripId && 
+                r.reservationDate === date &&
+                r.status !== 'Cancelled' // Don't count cancelled reservations
+            );
+            
+            const maxCapacity = 30; // Daily limit per trip
+            const currentCount = dailyReservations.length;
+            const remaining = Math.max(0, maxCapacity - currentCount);
+            
+            return {
+                current: currentCount,
+                max: maxCapacity,
+                remaining: remaining
+            };
+        },
+
+        // Check if a trip has available capacity for a specific date
+        hasDailyCapacity(tripId, date, excludeReservationId = null) {
+            if (!date || !tripId) return false;
+            
+            const dailyReservations = this.reservations.filter(r => 
+                r.tripId === tripId && 
+                r.reservationDate === date &&
+                r.status !== 'Cancelled' &&
+                r.id !== excludeReservationId // Exclude current reservation when editing
+            );
+            
+            return dailyReservations.length < 30;
+        },
+
+        // Get available trips for a specific date
+        getAvailableTripsForDate(date) {
+            if (!date) return this.trips;
+            
+            return this.trips.map(trip => {
+                const dailyCapacity = this.getDailyTripCapacity(trip.id, date);
+                return {
+                    ...trip,
+                    dailyCapacity: dailyCapacity,
+                    hasCapacity: dailyCapacity.remaining > 0
+                };
+            });
+        },
+
         getTripName(tripId) {
             const trip = this.trips.find(t => t.id === tripId);
             return trip ? trip.tripName : 'Unknown Trip';
@@ -472,6 +549,20 @@ document.addEventListener('alpine:init', () => {
 
             if (!this.rescheduleData.reservationDate || !this.rescheduleData.tripId) {
                 alert('Por favor complete todos los campos requeridos');
+                return;
+            }
+
+            // Validate daily capacity before proceeding
+            if (!this.hasDailyCapacity(
+                this.rescheduleData.tripId, 
+                this.rescheduleData.reservationDate, 
+                this.reservationToReschedule.id // Exclude the original reservation
+            )) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Capacidad Excedida',
+                    text: `El viaje seleccionado ya tiene 30 reservaciones para la fecha ${this.formatDateForDisplay(this.rescheduleData.reservationDate)}. Por favor seleccione otro viaje o fecha.`
+                });
                 return;
             }
 
