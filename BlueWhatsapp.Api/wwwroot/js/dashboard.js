@@ -38,7 +38,7 @@ const { animate, scroll, stagger } = Motion
  */
 
 document.addEventListener('alpine:init', () => {
-    Alpine.data('dashboard', (currentUser) => ({
+    Alpine.data('dashboard', (currentUser, isAdmin) => ({
         // State variables
         openChats: 0,
         totalMessages: 0,
@@ -51,6 +51,7 @@ document.addEventListener('alpine:init', () => {
         newMessage: '',
         isOpen: false,
         currentUser: currentUser,
+        isAdmin: isAdmin,
 
         // Chart references
         chartRef$: null,
@@ -74,6 +75,11 @@ document.addEventListener('alpine:init', () => {
 
         get weeklyConversationCount() {
             return this.weeklyConversations.length;
+        },
+
+        // Helper methods
+        isAdminMessage(message) {
+            return this.isAdmin && message.from === this.currentUser;
         },
 
         // Methods

@@ -100,7 +100,7 @@ public class ReservationsHub : Hub
     {
         var allReservations = await _reservationRepository.GetReservationsByTripId(tripId).ConfigureAwait(true);
         var dailyReservations = allReservations.Where(r => 
-            r.Status == "Active" && 
+            (string.IsNullOrEmpty(r.Status) || r.Status == "Active") && 
             r.ReservationDate == reservationDate);
         
         // Exclude specific reservation if provided (used for updates)
@@ -122,7 +122,7 @@ public class ReservationsHub : Hub
     {
         var allReservations = await _reservationRepository.GetReservationsByTripId(tripId).ConfigureAwait(true);
         return allReservations.Count(r => 
-            r.Status == "Active" && 
+            (string.IsNullOrEmpty(r.Status) || r.Status == "Active") && 
             r.ReservationDate == reservationDate);
     }
 

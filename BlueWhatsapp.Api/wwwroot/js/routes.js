@@ -43,11 +43,13 @@ document.addEventListener('alpine:init', () => {
 
             this.connection.start()
             .then(() => {
+                console.log('SignalR Connected - Routes');
                 this.connection.invoke('GetRoutes');
-                this.loading = true;
+                // Keep loading true until routes are received
             })
             .catch(err => {
                 console.error('SignalR Connection Error: ', err);
+                this.error = 'Error al conectar con el servidor';
                 this.loading = false;
             });
 
@@ -79,6 +81,7 @@ document.addEventListener('alpine:init', () => {
 
         openAddModal() {
             this.currentRoute = { id: 0, name: '', description: '' };
+            this.isEditing = false; // Reset editing state
             this.showModal = true;
         },
         
@@ -89,11 +92,23 @@ document.addEventListener('alpine:init', () => {
         },
 
         async saveRoute() {
+            // Validate required fields
+            if (!this.currentRoute.name || !this.currentRoute.description) {
+                alert('Por favor complete todos los campos requeridos');
+                return;
+            }
+
             if (this.isEditing) {
                 await this.updateRoute();
             } else {
                 await this.createRoute();
             }
+        },
+
+        closeModal() {
+            this.showModal = false;
+            this.isEditing = false;
+            this.currentRoute = { id: 0, name: '', description: '' };
         },
 
         async createRoute() {
@@ -112,6 +127,7 @@ document.addEventListener('alpine:init', () => {
                 };
                 await this.connection.invoke('CreateRoute', routeToCreate);
                 this.showModal = false;
+                this.isEditing = false; // Reset editing state
             } catch (error) {
                 console.error('Error creating route:', error);
                 alert('Error creating route: ' + error.message);
@@ -121,13 +137,31 @@ document.addEventListener('alpine:init', () => {
         },
 
         async updateRoute() {
+            if (!this.connection || this.connection.state !== signalR.HubConnectionState.Connected) {
+                console.error('SignalR connection is not established');
+                return;
+            }
+
             this.saving = true;
-            await this.connection.invoke('UpdateRoute', this.currentRoute);
-            this.showModal = false;
-            this.saving = false;
+            try {
+                console.log('Attempting to update route:', this.currentRoute);
+                await this.connection.invoke('UpdateRoute', this.currentRoute);
+                this.showModal = false;
+                this.isEditing = false; // Reset editing state
+            } catch (error) {
+                console.error('Error updating route:', error);
+                alert('Error updating route: ' + error.message);
+            } finally {
+                this.saving = false;
+            }
         },
 
         async deleteRoute(id) {
+            if (!this.connection || this.connection.state !== signalR.HubConnectionState.Connected) {
+                console.error('SignalR connection is not established');
+                return;
+            }
+
             const { Swal } = window;    
 
             Swal.fire({
@@ -141,7 +175,17 @@ document.addEventListener('alpine:init', () => {
                 cancelButtonText: 'Cancelar'
             }).then(async (result) => {
                 if (result.isConfirmed) {
-                    await this.connection.invoke('DeleteRoute', id);
+                    try {
+                        console.log('Attempting to delete route:', id);
+                        await this.connection.invoke('DeleteRoute', id);
+                    } catch (error) {
+                        console.error('Error deleting route:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No se pudo eliminar la ruta: ' + error.message
+                        });
+                    }
                 }
             });
         }

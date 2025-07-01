@@ -11,6 +11,15 @@
             <h1 class="text-lg font-semibold">Manejo de Viajes</h1>
             <p class="text-sm text-gray-500 capitalize">@DateTime.Now.ToString("dddd, dd MMM", new System.Globalization.CultureInfo("es-ES"))</p>
         </div>
+        <div class="flex space-x-2">
+            <button 
+                x-on:click="currentView = currentView === 'trips' ? 'reservations' : 'trips'"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center space-x-2"
+            >
+                <i class="fas" :class="currentView === 'trips' ? 'fa-calendar-day' : 'fa-route'"></i>
+                <span x-text="currentView === 'trips' ? 'Ver Reservas de Hoy' : 'Ver Viajes'"></span>
+            </button>
+        </div>
     </div>
 
     <!-- Main Content -->
@@ -18,9 +27,17 @@
         <!-- Action Bar -->
         <div class="mb-4 flex justify-between items-center">
             <div class="text-sm text-gray-500">
-                <span x-text="tripsCount"></span> viajes encontrados
-                <span x-show="loading" class="ml-2 text-gray-400">
-                    <i class="fas fa-spinner fa-spin"></i> Buscando...
+                <span x-show="currentView === 'trips'">
+                    <span x-text="tripsCount"></span> viajes encontrados
+                    <span x-show="loading" class="ml-2 text-gray-400">
+                        <i class="fas fa-spinner fa-spin"></i> Buscando...
+                    </span>
+                </span>
+                <span x-show="currentView === 'reservations'">
+                    <span x-text="reservationsCount"></span> reservas para hoy
+                    <span x-show="reservationsLoading" class="ml-2 text-gray-400">
+                        <i class="fas fa-spinner fa-spin"></i> Cargando...
+                    </span>
                 </span>
                 <span x-show="error" class="ml-2 text-red-500" x-text="error"></span>
             </div>
@@ -29,7 +46,7 @@
                     <input 
                         type="text" 
                         x-model="searchTerm" 
-                        placeholder="Buscar por nombre, ruta o horario..." 
+                        :placeholder="currentView === 'trips' ? 'Buscar por nombre, ruta o horario...' : 'Buscar por cliente, hotel, viaje...'" 
                         class="pl-8 pr-2 py-2 border rounded focus:outline-none focus:ring-1 focus:ring-sidebar w-64"
                         :class="{ 'border-red-500': error }"
                     >
@@ -43,17 +60,27 @@
                     </button>
                 </div>
                 <button 
+                    x-show="currentView === 'trips'"
                     x-on:click="openAddModal()" 
                     class="bg-sidebar hover:bg-sidebar-hover text-white px-4 py-2 rounded flex items-center space-x-2"
                 >
                     <i class="fas fa-plus"></i>
                     <span>Crear Viaje</span>
                 </button>
+                <button 
+                    x-show="currentView === 'reservations'"
+                    x-on:click="refreshReservations()" 
+                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center space-x-2"
+                    :disabled="reservationsLoading"
+                >
+                    <i class="fas fa-sync-alt" :class="{ 'fa-spin': reservationsLoading }"></i>
+                    <span>Actualizar</span>
+                </button>
             </div>
         </div>
 
         <!-- Trips Table -->
-        <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div x-show="currentView === 'trips'" class="bg-white rounded-lg shadow overflow-hidden">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
@@ -61,7 +88,7 @@
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre del Viaje</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ruta</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Horario</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reservaciones</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reservaciones Hoy</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                     </tr>
@@ -84,8 +111,8 @@
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                                    :class="trip.reservations?.length > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
-                                    <span x-text="trip.reservations?.length || 0"></span>
+                                    :class="getTodayReservationsCount(trip.id) > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
+                                    <span x-text="getTodayReservationsCount(trip.id)"></span>
                                     <span class="ml-1">reservaciones</span>
                                 </span>
                             </td>
@@ -124,6 +151,73 @@
                     <tr x-show="filteredTrips.length === 0">
                         <td colspan="7" class="px-4 py-4 text-center text-gray-500">
                             No se encontraron viajes. Haz click en "Crear Viaje" para crear uno nuevo.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Today's Reservations Table -->
+        <div x-show="currentView === 'reservations'" class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hotel</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Viaje</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Horario</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Personas</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Habitación</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <template x-for="(reservation, index) in filteredReservations" :key="reservation.id">
+                        <tr class="hidden hover:bg-gray-50" x-data="{}" x-init="animateElement($el, index)">
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900" x-text="reservation.username"></div>
+                                <div class="text-sm text-gray-500" x-text="reservation.userNumber"></div>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900" x-text="reservation.hotelName"></div>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900" x-text="getTripName(reservation)"></div>
+                                <div class="text-sm text-gray-500" x-text="getRouteName(reservation)"></div>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900" x-text="formatTime(reservation.reserveTime)"></div>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900" x-text="getPersonCount(reservation)"></div>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900" x-text="reservation.roomNumber || 'N/A'"></div>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <span 
+                                    :class="getStatusBadgeClass(reservation.status)"
+                                    class="px-2 py-1 rounded-full text-xs font-medium"
+                                    x-text="getStatusText(reservation.status)"
+                                ></span>
+                            </td>
+                        </tr>
+                    </template>
+                    <tr x-show="filteredReservations.length === 0 && !reservationsLoading">
+                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                            <div class="flex flex-col items-center">
+                                <i class="fas fa-calendar-day text-4xl text-gray-300 mb-2"></i>
+                                <p class="text-lg font-medium">No hay reservas para hoy</p>
+                                <p class="text-sm">Las reservas aparecerán aquí cuando sean creadas</p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr x-show="reservationsLoading">
+                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                            <div class="flex flex-col items-center">
+                                <i class="fas fa-spinner fa-spin text-4xl text-gray-300 mb-2"></i>
+                                <p class="text-lg font-medium">Cargando reservas...</p>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -236,16 +330,32 @@
     <div class="p-4" x-data="tripsManagement">
         <!-- Header -->
         <div class="mb-4">
-            <h1 class="text-lg font-semibold">Manejo de Viajes</h1>
+            <div class="flex justify-between items-center mb-2">
+                <h1 class="text-lg font-semibold" x-text="currentView === 'trips' ? 'Manejo de Viajes' : 'Reservas de Hoy'"></h1>
+                <button 
+                    x-on:click="currentView = currentView === 'trips' ? 'reservations' : 'trips'"
+                    class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded"
+                >
+                    <i class="fas" :class="currentView === 'trips' ? 'fa-calendar-day' : 'fa-route'"></i>
+                </button>
+            </div>
             <p class="text-sm text-gray-500 capitalize">@DateTime.Now.ToString("dddd, dd MMM", new System.Globalization.CultureInfo("es-ES"))</p>
         </div>
 
         <!-- Action Bar -->
         <div class="mb-4 space-y-3">
             <div class="text-sm text-gray-500">
-                <span x-text="tripsCount"></span> viajes encontrados
-                <span x-show="loading" class="ml-2 text-gray-400">
-                    <i class="fas fa-spinner fa-spin"></i> Buscando...
+                <span x-show="currentView === 'trips'">
+                    <span x-text="tripsCount"></span> viajes encontrados
+                    <span x-show="loading" class="ml-2 text-gray-400">
+                        <i class="fas fa-spinner fa-spin"></i> Buscando...
+                    </span>
+                </span>
+                <span x-show="currentView === 'reservations'">
+                    <span x-text="reservationsCount"></span> reservas para hoy
+                    <span x-show="reservationsLoading" class="ml-2 text-gray-400">
+                        <i class="fas fa-spinner fa-spin"></i> Cargando...
+                    </span>
                 </span>
                 <span x-show="error" class="ml-2 text-red-500" x-text="error"></span>
             </div>
@@ -254,7 +364,7 @@
                     <input 
                         type="text" 
                         x-model="searchTerm" 
-                        placeholder="Buscar por nombre, ruta o horario..." 
+                        :placeholder="currentView === 'trips' ? 'Buscar por nombre, ruta o horario...' : 'Buscar por cliente, hotel, viaje...'" 
                         class="w-full pl-8 pr-8 py-2 border rounded focus:outline-none focus:ring-1 focus:ring-sidebar"
                         :class="{ 'border-red-500': error }"
                     >
@@ -268,17 +378,27 @@
                     </button>
                 </div>
                 <button 
+                    x-show="currentView === 'trips'"
                     x-on:click="openAddModal()" 
                     class="w-full bg-sidebar hover:bg-sidebar-hover text-white px-4 py-2 rounded flex items-center justify-center space-x-2"
                 >
                     <i class="fas fa-plus"></i>
                     <span>Crear Viaje</span>
                 </button>
+                <button 
+                    x-show="currentView === 'reservations'"
+                    x-on:click="refreshReservations()" 
+                    class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center justify-center space-x-2"
+                    :disabled="reservationsLoading"
+                >
+                    <i class="fas fa-sync-alt" :class="{ 'fa-spin': reservationsLoading }"></i>
+                    <span>Actualizar Reservas</span>
+                </button>
             </div>
         </div>
 
         <!-- Trips Cards -->
-        <div class="space-y-4">
+        <div x-show="currentView === 'trips'" class="space-y-4">
             <template x-for="(trip, index) in filteredTrips" :key="trip?.id">
                 <div class="hidden bg-white rounded-lg shadow p-4" x-data="{}" x-init="animateElement($el, index)">
                     <div class="flex justify-between items-start mb-2">
@@ -332,10 +452,10 @@
                         </div>
                         
                         <div class="flex justify-between">
-                            <span class="text-gray-500">Reservaciones:</span>
+                            <span class="text-gray-500">Reservaciones hoy:</span>
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                                :class="trip?.reservations?.length > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
-                                <span x-text="trip?.reservations?.length || 0"></span>
+                                :class="getTodayReservationsCount(trip?.id) > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
+                                <span x-text="getTodayReservationsCount(trip?.id)"></span>
                                 <span class="ml-1">reservaciones</span>
                             </span>
                         </div>
@@ -353,6 +473,68 @@
             </template>
             <div x-show="filteredTrips.length === 0" class="text-center text-gray-500 p-4">
                 No se encontraron viajes. Haz click en "Crear Viaje" para crear uno nuevo.
+            </div>
+        </div>
+
+        <!-- Reservations Cards -->
+        <div x-show="currentView === 'reservations'" class="space-y-4">
+            <template x-for="(reservation, index) in filteredReservations" :key="reservation.id">
+                <div class="hidden bg-white rounded-lg shadow p-4" x-data="{}" x-init="animateElement($el, index)">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h3 class="font-medium" x-text="reservation.username"></h3>
+                            <p class="text-sm text-gray-500" x-text="reservation.userNumber"></p>
+                        </div>
+                        <span 
+                            :class="getStatusBadgeClass(reservation.status)"
+                            class="px-2 py-1 rounded-full text-xs font-medium"
+                            x-text="getStatusText(reservation.status)"
+                        ></span>
+                    </div>
+                    
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Hotel:</span>
+                            <span x-text="reservation.hotelName"></span>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Viaje:</span>
+                            <span x-text="getTripName(reservation)"></span>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Horario:</span>
+                            <span x-text="formatTime(reservation.reserveTime)"></span>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Habitación:</span>
+                            <span x-text="reservation.roomNumber || 'N/A'"></span>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Personas:</span>
+                            <span x-text="getPersonCount(reservation)"></span>
+                        </div>
+                        
+                        <div class="flex justify-between" x-show="reservation.email">
+                            <span class="text-gray-500">Email:</span>
+                            <span class="text-xs" x-text="reservation.email"></span>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            
+            <div x-show="filteredReservations.length === 0 && !reservationsLoading" class="text-center text-gray-500 p-4">
+                <i class="fas fa-calendar-day text-4xl text-gray-300 mb-2"></i>
+                <p class="font-medium">No hay reservas para hoy</p>
+                <p class="text-sm">Las reservas aparecerán aquí cuando sean creadas</p>
+            </div>
+            
+            <div x-show="reservationsLoading" class="text-center text-gray-500 p-4">
+                <i class="fas fa-spinner fa-spin text-4xl text-gray-300 mb-2"></i>
+                <p class="font-medium">Cargando reservas...</p>
             </div>
         </div>
 

@@ -18,7 +18,11 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddMvc();
-builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+    .AddJsonProtocol(options =>
+    {
+        options.PayloadSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
 
 builder.Services.AddControllers();
 

@@ -50,7 +50,7 @@ public sealed class ReservationRepository : BaseRepository<Reservation>, IReserv
     /// <inheritdoc />
     async Task<IEnumerable<CoreReservation>> IReservationRepository.GetAllWeeklyReservationsOrderedByCreationDate()
     {
-        DateTime today = DateTime.UtcNow.Date;
+        DateTime today = DateTime.Now.Date; // Use local time to match frontend
         int currentDayOfWeek = (int)today.DayOfWeek;
         DateTime startOfWeek = today.AddDays(-currentDayOfWeek);
         DateTime endOfWeek = startOfWeek.AddDays(7); 
@@ -70,7 +70,7 @@ public sealed class ReservationRepository : BaseRepository<Reservation>, IReserv
     /// <inheritdoc />
     async Task<IEnumerable<CoreReservation>> IReservationRepository.GetAllDailyReservationsOrderedByCreationDate()
     {
-        DateTime today = DateTime.UtcNow.Date;
+        DateTime today = DateTime.Now.Date; // Use local time to match frontend
         string todayString = today.ToString("yyyy-MM-dd");
         
         List<Reservation> response = await GetAllActiveQuery(false)
@@ -88,7 +88,7 @@ public sealed class ReservationRepository : BaseRepository<Reservation>, IReserv
     /// <inheritdoc />
     async Task<IEnumerable<CoreReservation>> IReservationRepository.GetAllUpcomingReservationsOrderedByCreationDate()
     {
-        DateTime today = DateTime.UtcNow.Date;
+        DateTime today = DateTime.Now.Date; // Use local time to match frontend
         
         List<Reservation> response = await GetAllActiveQuery(false)
             .Include(r => r.Trip)

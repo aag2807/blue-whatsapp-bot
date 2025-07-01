@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 }
 
-<div x-data="dashboard('@user')" class="flex-1 overflow-y-auto">
+<div x-data="dashboard('@user', @Json.Serialize(ViewBag.IsAdmin ?? false))" class="flex-1 overflow-y-auto">
     <!-- Header -->
     <div class="p-4 flex items-center justify-between border-b">
         <div>
@@ -173,13 +173,13 @@
                 <div class="h-[400px] overflow-y-auto p-4 space-y-4" id="chat-messages">
                     <template x-for="(message, index) in conversationMessages" :key="index">
                         <div :class="{
-                            'flex justify-end': message.from === 'admin' || message.from === 'SYSTEM',
-                            'flex justify-start': message.from !== 'admin' && message.from !== 'SYSTEM'
+                            'flex justify-end': isAdminMessage(message) || message.from === 'SYSTEM',
+                            'flex justify-start': !isAdminMessage(message) && message.from !== 'SYSTEM'
                         }">
                             <div
                                 :class="{
-                                    'bg-gradient-to-br from-sidebar to-sidebar-hover text-white shadow-md': message.from === 'admin',
-                                    'bg-white text-gray-800 shadow-md': message.from !== 'admin' && message.from !== 'SYSTEM',
+                                    'bg-gradient-to-br from-sidebar to-sidebar-hover text-white shadow-md': isAdminMessage(message),
+                                    'bg-white text-gray-800 shadow-md': !isAdminMessage(message) && message.from !== 'SYSTEM',
                                     'bg-yellow-100 text-yellow-900 border border-yellow-300 shadow-sm': message.from === 'SYSTEM'
                                 }"
                                 class="rounded-2xl px-4 py-2 max-w-[75%] mb-2"
@@ -187,12 +187,12 @@
                                 <div class="flex flex-col">
                                     <template x-if="message.from !== 'SYSTEM'">
                                         <span class="text-xs font-semibold mb-1 opacity-70"
-                                              :class="{'text-white': message.from === 'admin', 'text-sidebar': message.from !== 'admin'}"
+                                              :class="{'text-white': isAdminMessage(message), 'text-sidebar': !isAdminMessage(message)}"
                                               x-text="message.from"></span>
                                     </template>
                                     <p class="whitespace-pre-wrap break-words" x-text="message.body"></p>
                                     <span class="text-xs mt-1 opacity-60"
-                                          :class="{'text-white': message.from === 'admin', 'text-gray-500': message.from !== 'admin'}"
+                                          :class="{'text-white': isAdminMessage(message), 'text-gray-500': !isAdminMessage(message)}"
                                           x-text="mapDateTime(message.createdTime)"></span>
                                 </div>
                             </div>
@@ -221,7 +221,7 @@
 
 @section MobileContent
 {
-    <div x-data="dashboard('@user')" class="p-4">
+    <div x-data="dashboard('@user', @Json.Serialize(ViewBag.IsAdmin ?? false))" class="p-4">
         <div class="flex items-center justify-between mb-4">
             <div>
                 <h1 class="text-lg font-semibold">Bienvenido @user</h1>
@@ -367,13 +367,13 @@
                 <div id='mobile-chat-messages' class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50" style="height: calc(100vh - 8rem);">
                     <template x-for="(message, index) in conversationMessages" :key="index">
                         <div :class="{
-                            'flex justify-end': message.from === 'admin' || message.from === 'SYSTEM',
-                            'flex justify-start': message.from !== 'admin' && message.from !== 'SYSTEM'
+                            'flex justify-end': isAdminMessage(message) || message.from === 'SYSTEM',
+                            'flex justify-start': !isAdminMessage(message) && message.from !== 'SYSTEM'
                         }">
                             <div
                                 :class="{
-                                    'bg-gradient-to-br from-sidebar to-sidebar-hover text-white shadow-md': message.from === 'admin',
-                                    'bg-white text-gray-800 shadow-md': message.from !== 'admin' && message.from !== 'SYSTEM',
+                                    'bg-gradient-to-br from-sidebar to-sidebar-hover text-white shadow-md': isAdminMessage(message),
+                                    'bg-white text-gray-800 shadow-md': !isAdminMessage(message) && message.from !== 'SYSTEM',
                                     'bg-yellow-100 text-yellow-900 border border-yellow-300 shadow-sm': message.from === 'SYSTEM'
                                 }"
                                 class="rounded-2xl px-4 py-2 max-w-[75%] mb-2"
@@ -381,12 +381,12 @@
                                 <div class="flex flex-col">
                                     <template x-if="message.from !== 'SYSTEM'">
                                         <span class="text-xs font-semibold mb-1 opacity-70"
-                                              :class="{'text-white': message.from === 'admin', 'text-sidebar': message.from !== 'admin'}"
+                                              :class="{'text-white': isAdminMessage(message), 'text-sidebar': !isAdminMessage(message)}"
                                               x-text="message.from"></span>
                                     </template>
                                     <p class="whitespace-pre-wrap break-words" x-text="message.body"></p>
                                     <span class="text-xs mt-1 opacity-60"
-                                          :class="{'text-white': message.from === 'admin', 'text-gray-500': message.from !== 'admin'}"
+                                          :class="{'text-white': isAdminMessage(message), 'text-gray-500': !isAdminMessage(message)}"
                                           x-text="mapDateTime(message.createdTime)"></span>
                                 </div>
                             </div>
