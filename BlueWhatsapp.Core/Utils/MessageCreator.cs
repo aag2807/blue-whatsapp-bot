@@ -24,7 +24,7 @@ public sealed class MessageCreator : IMessageCreator
         string message = MultilingualMessageService.GetWelcomeMessage(1);
         return new CoreMessageToSend(message, number);
     }
-    
+
     /// <inheritdoc />
     CoreMessageToSend IMessageCreator.CreateDatePromptMessage(string number, int languageId = 1)
     {
@@ -38,7 +38,8 @@ public sealed class MessageCreator : IMessageCreator
         var model = new CoreInteractiveMessage(number);
         model.interactive.header.type = "text";
         model.interactive.header.text = "Bluemall";
-        model.interactive.body.text = "Elija su idioma | Choose your language | Choisissez votre langue | Выберите язык | Escolha seu idioma | 选择您的语言";
+        model.interactive.body.text =
+            "Elija su idioma | Choose your language | Choisissez votre langue | Выберите язык | Escolha seu idioma | 选择您的语言";
 
         model.interactive.action.button = "Languages | Idiomas";
         model.interactive.action.sections = new List<Section>();
@@ -60,11 +61,12 @@ public sealed class MessageCreator : IMessageCreator
     }
 
     /// <inheritdoc />
-    CoreInteractiveMessage IMessageCreator.CreateSelectHotelZoneLocationMessage(string number, IEnumerable<CoreRoute> routes, int languageId = 1)
+    CoreInteractiveMessage IMessageCreator.CreateSelectHotelZoneLocationMessage(string number,
+        IEnumerable<CoreRoute> routes, int languageId = 1)
     {
         var model = new CoreInteractiveMessage(number);
         var buttonLabels = MultilingualMessageService.GetButtonLabels(languageId);
-        
+
         model.interactive.header.type = "text";
         model.interactive.header.text = "Bluemall";
         model.interactive.body.text = MultilingualMessageService.GetZoneSelectionMessage(languageId);
@@ -75,11 +77,11 @@ public sealed class MessageCreator : IMessageCreator
         var section = new Section();
         section.title = buttonLabels.Zones;
         section.rows = new List<Row>();
-        
-        List<Row> tempRows = routes.Select(route => new Row 
-        { 
-            id = route.Id.ToString(), 
-            title = route.Description 
+
+        List<Row> tempRows = routes.Select(route => new Row
+        {
+            id = route.Id.ToString(),
+            title = route.Description
         }).ToList();
 
         tempRows.Add(new Row
@@ -95,11 +97,12 @@ public sealed class MessageCreator : IMessageCreator
     }
 
     /// <inheritdoc />
-    CoreInteractiveMessage IMessageCreator.CreateHotelSelectionMessage(string number, IEnumerable<CoreHotel> hotels, int languageId = 1)
+    CoreInteractiveMessage IMessageCreator.CreateHotelSelectionMessage(string number, IEnumerable<CoreHotel> hotels,
+        int languageId = 1)
     {
         var model = new CoreInteractiveMessage(number);
         var buttonLabels = MultilingualMessageService.GetButtonLabels(languageId);
-        
+
         model.interactive.header.type = "text";
         model.interactive.header.text = "Bluemall";
         model.interactive.body.text = MultilingualMessageService.GetHotelSelectionMessage(languageId);
@@ -110,13 +113,13 @@ public sealed class MessageCreator : IMessageCreator
         var section = new Section();
         section.title = buttonLabels.Hotels;
         section.rows = new List<Row>();
-        
-        List<Row> tempRows = hotels.Select(hotel => new Row 
-        { 
-            id = hotel.Id.ToString(), 
-            title = hotel.Name 
+
+        List<Row> tempRows = hotels.Select(hotel => new Row
+        {
+            id = hotel.Id.ToString(),
+            title = hotel.Name
         }).ToList();
-       
+
         tempRows.Add(new Row
         {
             id = "99",
@@ -130,14 +133,15 @@ public sealed class MessageCreator : IMessageCreator
     }
 
     /// <inheritdoc />
-    CoreInteractiveMessage IMessageCreator.CreateTimeFrameSelectionMessage(string number, CoreHotel hotel, IEnumerable<CoreSchedule> schedules, int languageId = 1)
+    CoreInteractiveMessage IMessageCreator.CreateTimeFrameSelectionMessage(string number, CoreHotel hotel,
+        IEnumerable<CoreSchedule> schedules, int languageId = 1)
     {
         var model = new CoreInteractiveMessage(number);
         var buttonLabels = MultilingualMessageService.GetButtonLabels(languageId);
-        
+
         model.interactive.header.type = "text";
         model.interactive.header.text = "Bluemall";
-        model.interactive.body.text = hotel.Price > 0 
+        model.interactive.body.text = hotel.Price > 0
             ? MultilingualMessageService.GetVipHotelTripMessage(languageId, hotel.Name)
             : MultilingualMessageService.GetFreeHotelTripMessage(languageId, hotel.Name);
 
@@ -147,16 +151,16 @@ public sealed class MessageCreator : IMessageCreator
         var section = new Section();
         section.title = buttonLabels.Schedules;
         section.rows = new List<Row>();
-        
-        List<Row> tempRows = schedules.Select(schedule => new Row 
-        { 
-            id = schedule.Id.ToString(), 
-            title = schedule.Time 
+
+        List<Row> tempRows = schedules.Select(schedule => new Row
+        {
+            id = schedule.Id.ToString(),
+            title = schedule.Time
         }).ToList();
 
-        tempRows.Add(new Row 
-        { 
-            id = "99", 
+        tempRows.Add(new Row
+        {
+            id = "99",
             title = MultilingualMessageService.GetWriteLaterText(languageId)
         });
 
@@ -165,14 +169,14 @@ public sealed class MessageCreator : IMessageCreator
 
         return model;
     }
- 
+
     /// <inheritdoc />
     CoreMessageToSend IMessageCreator.CreateAskForReservationDetailsMessage(string userNumber, int languageId = 1)
     {
         string message = MultilingualMessageService.GetReservationDetailsMessage(languageId);
         return new CoreMessageToSend(message, userNumber);
     }
-    
+
     /// <inheritdoc />
     CoreMessageToSend IMessageCreator.CreateUnknownHotelMessage(string userNumber, int languageId = 1)
     {
@@ -193,20 +197,20 @@ public sealed class MessageCreator : IMessageCreator
         string message = MultilingualMessageService.GetAskForNameMessage(languageId);
         return new CoreMessageToSend(message, userNumber);
     }
-    
+
     /// <inheritdoc />
     CoreMessageToSend IMessageCreator.CreateAskForRoomNumberMessage(string userNumber, int languageId = 1)
     {
         string message = MultilingualMessageService.GetAskForRoomNumberMessage(languageId);
         return new CoreMessageToSend(message, userNumber);
     }
-    
+
     /// <inheritdoc />
     CoreInteractiveMessage IMessageCreator.CreateAskForAdultsCountMessage(string userNumber, int languageId = 1)
     {
         var model = new CoreInteractiveMessage(userNumber);
         var buttonLabels = MultilingualMessageService.GetButtonLabels(languageId);
-        
+
         model.interactive.header.type = "text";
         model.interactive.header.text = "Bluemall";
         model.interactive.body.text = MultilingualMessageService.GetAskForAdultsCountMessage(languageId);
@@ -217,7 +221,7 @@ public sealed class MessageCreator : IMessageCreator
         var section = new Section();
         section.title = buttonLabels.Quantity;
         section.rows = new List<Row>();
-        
+
         for (int i = 1; i <= 8; i++) // Start from 1, not 0, for adults
         {
             section.rows.Add(new Row
@@ -230,13 +234,13 @@ public sealed class MessageCreator : IMessageCreator
         model.interactive.action.sections.Add(section);
         return model;
     }
-    
+
     /// <inheritdoc />
     CoreInteractiveMessage IMessageCreator.CreateAskForChildrenCountMessage(string userNumber, int languageId = 1)
     {
         var model = new CoreInteractiveMessage(userNumber);
         var buttonLabels = MultilingualMessageService.GetButtonLabels(languageId);
-        
+
         model.interactive.header.type = "text";
         model.interactive.header.text = "Bluemall";
         model.interactive.body.text = MultilingualMessageService.GetAskForChildrenCountMessage(languageId);
@@ -247,7 +251,7 @@ public sealed class MessageCreator : IMessageCreator
         var section = new Section();
         section.title = buttonLabels.Quantity;
         section.rows = new List<Row>();
-        
+
         for (int i = 0; i <= 8; i++) // Children can be 0
         {
             section.rows.Add(new Row
@@ -269,7 +273,8 @@ public sealed class MessageCreator : IMessageCreator
     }
 
     /// <inheritdoc />
-    CoreMessageToSend IMessageCreator.CreateReservationConfirmationMessage(string userNumber, CoreHotel hotel, CoreSchedule schedule, string date, int languageId = 1)
+    CoreMessageToSend IMessageCreator.CreateReservationConfirmationMessage(string userNumber, CoreHotel hotel,
+        CoreSchedule schedule, string date, int languageId = 1)
     {
         string message = MultilingualMessageService.GetReservationConfirmationMessage(languageId, date, schedule.Time);
         return new CoreMessageToSend(message, userNumber);
@@ -285,28 +290,110 @@ public sealed class MessageCreator : IMessageCreator
     /// <inheritdoc />
     CoreMessageToSend IMessageCreator.CreateWillTextLaterMessage(string userNumber, int languageId = 1)
     {
-        string message = "Entendemos que necesita más tiempo para decidir. Cuando esté listo, puede contactarnos nuevamente para completar su reserva. ¡Gracias por su interés!";
-        
+        string message =
+            "Entendemos que necesita más tiempo para decidir. Cuando esté listo, puede contactarnos nuevamente para completar su reserva. ¡Gracias por su interés!";
+
         // Add this to MultilingualMessageService if needed
         switch (languageId)
         {
             case 2: // English
-                message = "We understand you need more time to decide. When you're ready, you can contact us again to complete your reservation. Thank you for your interest!";
+                message =
+                    "We understand you need more time to decide. When you're ready, you can contact us again to complete your reservation. Thank you for your interest!";
                 break;
             case 3: // French
-                message = "Nous comprenons que vous avez besoin de plus de temps pour décider. Quand vous êtes prêt, vous pouvez nous recontacter pour finaliser votre réservation. Merci de votre intérêt !";
+                message =
+                    "Nous comprenons que vous avez besoin de plus de temps pour décider. Quand vous êtes prêt, vous pouvez nous recontacter pour finaliser votre réservation. Merci de votre intérêt !";
                 break;
             case 4: // Russian
-                message = "Мы понимаем, что вам нужно больше времени для принятия решения. Когда будете готовы, вы можете связаться с нами снова, чтобы завершить бронирование. Спасибо за ваш интерес!";
+                message =
+                    "Мы понимаем, что вам нужно больше времени для принятия решения. Когда будете готовы, вы можете связаться с нами снова, чтобы завершить бронирование. Спасибо за ваш интерес!";
                 break;
             case 5: // Portuguese
-                message = "Entendemos que precisa de mais tempo para decidir. Quando estiver pronto, pode contactar-nos novamente para completar a sua reserva. Obrigado pelo seu interesse!";
+                message =
+                    "Entendemos que precisa de mais tempo para decidir. Quando estiver pronto, pode contactar-nos novamente para completar a sua reserva. Obrigado pelo seu interesse!";
                 break;
             case 6: // Chinese
                 message = "我们理解您需要更多时间来决定。当您准备好时，可以再次联系我们完成预订。谢谢您的关注！";
                 break;
         }
-        
+
         return new CoreMessageToSend(message, userNumber);
+    }
+
+    /// <inheritdoc />
+    CoreInteractiveMessage IMessageCreator.CreateVipServiceOfferMessage(string number, CoreHotel hotel,
+        int languageId = 1)
+    {
+        var model = new CoreInteractiveMessage(number);
+        var buttonLabels = MultilingualMessageService.GetButtonLabels(languageId);
+
+        model.interactive.header.type = "text";
+        model.interactive.header.text = "Bluemall";
+        model.interactive.body.text = MultilingualMessageService.GetVipHotelTripMessage(languageId, hotel.Name);
+
+        model.interactive.action.button = buttonLabels.Options;
+        model.interactive.action.sections = new List<Section>();
+
+        var section = new Section();
+        section.title = buttonLabels.Options;
+        section.rows = new List<Row>
+        {
+            new Row { id = "yes", title = MultilingualMessageService.GetYesText(languageId) },
+            new Row { id = "later", title = MultilingualMessageService.GetWriteLaterText(languageId) }
+        };
+
+        model.interactive.action.sections.Add(section);
+        return model;
+    }
+
+    /// <inheritdoc />
+    CoreInteractiveMessage IMessageCreator.CreateGroupSizeSelectionMessage(string number, int languageId = 1)
+    {
+        var model = new CoreInteractiveMessage(number);
+        var buttonLabels = MultilingualMessageService.GetButtonLabels(languageId);
+
+        model.interactive.header.type = "text";
+        model.interactive.header.text = "Bluemall";
+        model.interactive.body.text = MultilingualMessageService.GetGroupSizeSelectionMessage(languageId);
+
+        model.interactive.action.button = buttonLabels.GroupSize;
+        model.interactive.action.sections = new List<Section>();
+
+        var section = new Section();
+        section.title = buttonLabels.GroupSize;
+        section.rows = new List<Row>
+        {
+            new Row { id = "small", title = MultilingualMessageService.GetSmallGroupText(languageId) },
+            new Row { id = "large", title = MultilingualMessageService.GetLargeGroupText(languageId) }
+        };
+
+        model.interactive.action.sections.Add(section);
+        return model;
+    }
+
+    /// <inheritdoc />
+    CoreInteractiveMessage IMessageCreator.CreateMultipleHotelMatchMessage(string number, IEnumerable<CoreHotel> hotels,
+        int languageId = 1)
+    {
+        var model = new CoreInteractiveMessage(number);
+        var buttonLabels = MultilingualMessageService.GetButtonLabels(languageId);
+
+        model.interactive.header.type = "text";
+        model.interactive.header.text = "Bluemall";
+        model.interactive.body.text = MultilingualMessageService.GetMultipleHotelMatchMessage(languageId);
+
+        model.interactive.action.button = buttonLabels.Hotels;
+        model.interactive.action.sections = new List<Section>();
+
+        var section = new Section();
+        section.title = buttonLabels.Hotels;
+        section.rows = hotels.Select(hotel => new Row
+        {
+            id = hotel.Id.ToString(),
+            title = hotel.Name
+        }).ToList();
+
+        model.interactive.action.sections.Add(section);
+        return model;
     }
 }

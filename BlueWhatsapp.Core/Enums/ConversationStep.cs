@@ -42,6 +42,9 @@ public enum ConversationStep
     // Conversation ending states
     ReservationComplete = 20,
     PendingDecision = 21,
+    
+    // Group size selection for Bayahibe
+    GroupSizeSelection = 22,
 
     // Admin override state 
     ManualHandling = 99,

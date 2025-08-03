@@ -147,4 +147,30 @@ public interface IMessageCreator
     /// <param name="languageId">Language ID</param>
     /// <returns>A "will text later" message</returns>
     CoreMessageToSend CreateWillTextLaterMessage(string userNumber, int languageId = 1);
+    
+    /// <summary>
+    /// Creates a VIP service offer message in the specified language
+    /// </summary>
+    /// <param name="number">The destination phone number</param>
+    /// <param name="hotel">The hotel for VIP service</param>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>A VIP service offer message</returns>
+    CoreInteractiveMessage CreateVipServiceOfferMessage(string number, CoreHotel hotel, int languageId = 1);
+
+    /// <summary>
+    /// Creates a group size selection message for Bayahibe in the specified language
+    /// </summary>
+    /// <param name="number">The destination phone number</param>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>A group size selection message</returns>
+    CoreInteractiveMessage CreateGroupSizeSelectionMessage(string number, int languageId = 1);
+
+    /// <summary>
+    /// Creates a multiple hotel match message in the specified language
+    /// </summary>
+    /// <param name="number">The destination phone number</param>
+    /// <param name="hotels">Matched hotels</param>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>A multiple hotel match message</returns>
+    CoreInteractiveMessage CreateMultipleHotelMatchMessage(string number, IEnumerable<CoreHotel> hotels, int languageId = 1);
 }
