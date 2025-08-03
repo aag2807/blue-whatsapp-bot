@@ -8,127 +8,143 @@ namespace BlueWhatsapp.Core.Utils;
 public interface IMessageCreator
 {
     /// <summary>
-    /// 
+    /// Creates a welcome message (always in Spanish since language not selected yet)
     /// </summary>
-    /// <param name="number"></param>
-    /// <returns></returns>
-    public CoreMessageToSend CreateWelcomeMessage(string number);
+    /// <param name="number">The destination phone number</param>
+    /// <returns>A welcome message</returns>
+    CoreMessageToSend CreateWelcomeMessage(string number);
 
     /// <summary>
-    /// 
+    /// Creates a date prompt message in the specified language
     /// </summary>
-    /// <param name="number"></param>
-    /// <returns></returns>
-    public CoreMessageToSend CreateDatePromptMessage(string number);
+    /// <param name="number">The destination phone number</param>
+    /// <param name="languageId">Language ID (1=Spanish, 2=English, etc.)</param>
+    /// <returns>A date prompt message</returns>
+    CoreMessageToSend CreateDatePromptMessage(string number, int languageId = 1);
 
     /// <summary>
-    /// Creates a language prompt message for the specified phone number.
+    /// Creates a language prompt message (multilingual by design)
     /// </summary>
-    /// <param name="number">The destination</param>
-    /// <returns>A valid <see cref="CoreInteractiveMessage"/></returns>
-    public CoreInteractiveMessage CreateLanguagePromptMessage(string number);
+    /// <param name="number">The destination phone number</param>
+    /// <returns>A multilingual language selection message</returns>
+    CoreInteractiveMessage CreateLanguagePromptMessage(string number);
 
     /// <summary>
-    /// Creates a language prompt message for the specified phone number.
+    /// Creates a hotel zone selection message in the specified language
     /// </summary>
-    /// <param name="number">The destination</param>
-    /// <returns>A valid <see cref="CoreInteractiveMessage"/></returns>
-    public CoreInteractiveMessage CreateSelectHotelZoneLocationMessage(string number, IEnumerable<CoreRoute> routes);
+    /// <param name="number">The destination phone number</param>
+    /// <param name="routes">Available routes/zones</param>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>A zone selection message</returns>
+    CoreInteractiveMessage CreateSelectHotelZoneLocationMessage(string number, IEnumerable<CoreRoute> routes, int languageId = 1);
 
     /// <summary>
-    /// 
+    /// Creates a hotel selection message in the specified language
     /// </summary>
-    /// <param name="number"></param>
-    /// <param name="hotels"></param>
-    /// <returns></returns>
-    public CoreInteractiveMessage CreateHotelSelectionMessage(string number, IEnumerable<CoreHotel> hotels);
+    /// <param name="number">The destination phone number</param>
+    /// <param name="hotels">Available hotels</param>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>A hotel selection message</returns>
+    CoreInteractiveMessage CreateHotelSelectionMessage(string number, IEnumerable<CoreHotel> hotels, int languageId = 1);
 
     /// <summary>
-    /// 
+    /// Creates a time frame selection message in the specified language
     /// </summary>
-    /// <param name="number"></param>
-    /// <param name="hotel"></param>
-    /// <param name="schedules"></param>
-    /// <returns></returns>
-    public CoreInteractiveMessage CreateTimeFrameSelectionMessage(string number, CoreHotel hotel, IEnumerable<CoreSchedule> schedules);
+    /// <param name="number">The destination phone number</param>
+    /// <param name="hotel">Selected hotel</param>
+    /// <param name="schedules">Available schedules</param>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>A time frame selection message</returns>
+    CoreInteractiveMessage CreateTimeFrameSelectionMessage(string number, CoreHotel hotel, IEnumerable<CoreSchedule> schedules, int languageId = 1);
 
     /// <summary>
-    /// 
+    /// Creates a reservation details request message in the specified language
     /// </summary>
-    /// <param name="userNumber"></param>
-    /// <returns></returns>
-    public CoreMessageToSend CreateAskForReservationDetailsMessage(string userNumber);
+    /// <param name="userNumber">The destination phone number</param>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>A reservation details request message</returns>
+    CoreMessageToSend CreateAskForReservationDetailsMessage(string userNumber, int languageId = 1);
 
     /// <summary>
-    /// 
+    /// Creates an unknown hotel message in the specified language
     /// </summary>
-    /// <param name="number"></param>
-    /// <returns></returns>
-    public CoreMessageToSend CreateUnknownHotelMessage(string number);
+    /// <param name="number">The destination phone number</param>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>An unknown hotel message</returns>
+    CoreMessageToSend CreateUnknownHotelMessage(string number, int languageId = 1);
 
     /// <summary>
-    /// 
+    /// Creates a no matching hotel message in the specified language
     /// </summary>
-    /// <param name="number"></param>
-    /// <returns></returns>
-    public CoreMessageToSend CreateNoMatchingHotelMessage(string number);
+    /// <param name="number">The destination phone number</param>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>A no matching hotel message</returns>
+    CoreMessageToSend CreateNoMatchingHotelMessage(string number, int languageId = 1);
 
     /// <summary>
-    /// 
+    /// Creates a reservation confirmation message in the specified language
     /// </summary>
-    /// <param name="userNumber"></param>
-    /// <param name="hotel"></param>
-    /// <param name="schedule"></param>
-    /// <param name="date"></param>
-    /// <returns></returns>
-    public CoreMessageToSend CreateReservationConfirmationMessage(string userNumber, CoreHotel hotel, CoreSchedule schedule, string date);
+    /// <param name="userNumber">The destination phone number</param>
+    /// <param name="hotel">Reserved hotel</param>
+    /// <param name="schedule">Reserved schedule</param>
+    /// <param name="date">Reservation date</param>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>A reservation confirmation message</returns>
+    CoreMessageToSend CreateReservationConfirmationMessage(string userNumber, CoreHotel hotel, CoreSchedule schedule, string date, int languageId = 1);
 
     /// <summary>
-    /// 
+    /// Creates an asking for name message in the specified language
     /// </summary>
-    /// <param name="userNumber"></param>
-    /// <returns></returns>
-    public CoreMessageToSend CreateAskingForNameMessage(string userNumber);
+    /// <param name="userNumber">The destination phone number</param>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>An asking for name message</returns>
+    CoreMessageToSend CreateAskingForNameMessage(string userNumber, int languageId = 1);
 
     /// <summary>
-    /// 
+    /// Creates an ask for room number message in the specified language
     /// </summary>
-    /// <param name="userNumber"></param>
-    /// <returns></returns>
-    public CoreMessageToSend CreateAskForRoomNumberMessage(string userNumber);
+    /// <param name="userNumber">The destination phone number</param>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>An ask for room number message</returns>
+    CoreMessageToSend CreateAskForRoomNumberMessage(string userNumber, int languageId = 1);
 
     /// <summary>
-    /// 
+    /// Creates an ask for adults count message in the specified language
     /// </summary>
-    /// <param name="userNumber"></param>
-    /// <returns></returns>
-    public CoreInteractiveMessage CreateAskForAdultsCountMessage(string userNumber);
+    /// <param name="userNumber">The destination phone number</param>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>An ask for adults count message</returns>
+    CoreInteractiveMessage CreateAskForAdultsCountMessage(string userNumber, int languageId = 1);
 
     /// <summary>
-    /// 
+    /// Creates an ask for children count message in the specified language
     /// </summary>
-    /// <param name="userNumber"></param>
-    /// <returns></returns>
-    public CoreInteractiveMessage  CreateAskForChildrenCountMessage(string userNumber);
+    /// <param name="userNumber">The destination phone number</param>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>An ask for children count message</returns>
+    CoreInteractiveMessage CreateAskForChildrenCountMessage(string userNumber, int languageId = 1);
 
     /// <summary>
-    /// 
+    /// Creates an asking for email message in the specified language
     /// </summary>
-    /// <param name="userNumber"></param>
-    /// <returns></returns>
-    public CoreMessageToSend CreateAskingEmailMessage(string userNumber);
+    /// <param name="userNumber">The destination phone number</param>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>An asking for email message</returns>
+    CoreMessageToSend CreateAskingEmailMessage(string userNumber, int languageId = 1);
 
     /// <summary>
-    /// Creates a message informing the user that the trip is at full capacity.
+    /// Creates a trip full message in the specified language
     /// </summary>
-    /// <param name="userNumber">The user's phone number</param>
-    /// <returns>A message indicating the trip is full</returns>
-    public CoreMessageToSend CreateTripFullMessage(string userNumber);
+    /// <param name="userNumber">The destination phone number</param>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>A trip full message</returns>
+    CoreMessageToSend CreateTripFullMessage(string userNumber, int languageId = 1);
 
     /// <summary>
-    /// 
+    /// Creates a "will text later" message in the specified language
     /// </summary>
-    /// <param name="userNumber"></param>
-    /// <returns></returns>
-    public CoreMessageToSend CreateWillTextLaterMessage(string userNumber);
+    /// <param name="userNumber">The destination phone number</param>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>A "will text later" message</returns>
+    CoreMessageToSend CreateWillTextLaterMessage(string userNumber, int languageId = 1);
 }

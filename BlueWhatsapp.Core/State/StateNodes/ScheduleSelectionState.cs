@@ -15,12 +15,14 @@ public class ScheduleSelectionState : BaseConversationState
     public override async Task<CoreBaseMessage?> Process(CoreConversationState context, string userMessage)
     {
         IMessageCreator messageCreator = GetMessageCreator();
-        bool isValidHotelSelected = userMessage != I_DONT_KNOW_OPTION;
+        bool isValidHotelSelected = !IsIDontKnowOption(userMessage);
+        int languageId = GetLanguageId(context);
+        
         context.HotelId = userMessage;
-        context.CurrentStep = ConversationStep.AskForFullName;
 
         if (isValidHotelSelected)
         {
+            context.CurrentStep = ConversationStep.AskForFullName;
             return await ExecuteRepositoryAsync(async serviceLocator =>
             {
                 IHotelRepository hotelRepository = serviceLocator.GetRequiredService<IHotelRepository>();
@@ -29,10 +31,10 @@ public class ScheduleSelectionState : BaseConversationState
                 CoreHotel hotel = await hotelRepository.GetHotelByIdAsync(int.Parse(userMessage)).ConfigureAwait(true)!;
                 IEnumerable<CoreSchedule>? schedules = await scheduleRepository.GetSchedulesByHotelId(hotel.Id).ConfigureAwait(true)!;
 
-                return messageCreator.CreateTimeFrameSelectionMessage(context.UserNumber, hotel, schedules);
+                return messageCreator.CreateTimeFrameSelectionMessage(context.UserNumber, hotel, schedules, languageId);
             });
         }
 
-        return null;
+        return messageCreator.CreateUnknownHotelMessage(context.UserNumber, languageId);
     }
 }

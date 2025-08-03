@@ -16,6 +16,8 @@ public class ReservationCompleteState : BaseConversationState
     public override async Task<CoreBaseMessage?> Process(CoreConversationState context, string userMessage)
     {
         IMessageCreator messageCreator = GetMessageCreator();
+        int languageId = GetLanguageId(context);
+
         context.IsComplete = true;
         context.Email = userMessage;
 
@@ -24,30 +26,32 @@ public class ReservationCompleteState : BaseConversationState
             IHotelRepository hotelRepository = serviceLocator.GetRequiredService<IHotelRepository>();
             IScheduleRepository scheduleRepository = serviceLocator.GetRequiredService<IScheduleRepository>();
             IReservationRepository reservationRepository = serviceLocator.GetRequiredService<IReservationRepository>();
-            
+
             int hotelId = int.Parse(context.HotelId);
             int scheduleId = int.Parse(context.ScheduleId);
             CoreHotel hotel = await hotelRepository.GetHotelByIdAsync(hotelId).ConfigureAwait(true)!;
             CoreSchedule schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleId).ConfigureAwait(true)!;
-            string scheduleDate = context.PickUpDate;
 
-            CoreReservation reservation = new();
-            reservation.TripId = int.Parse(context.ZoneId);
-            reservation.UserNumber = context.UserNumber;
-            reservation.Username = context.FullName;
-            reservation.RoomNumber = context.RoomNumber;
-            reservation.AdultsCount = context.Adults;
-            reservation.ChildrenCount = context.Children;
-            reservation.Email = context.Email;
-            reservation.Schedule = schedule;
-            reservation.ReservationDate = context.PickUpDate;
-            reservation.ReserveTime = schedule.Time;
-            reservation.Hotel = hotel;
-            reservation.HotelName = hotel.Name;
-                
+            // Create and save reservation
+            CoreReservation reservation = new()
+            {
+                TripId = int.Parse(context.ZoneId),
+                UserNumber = context.UserNumber,
+                Username = context.FullName,
+                RoomNumber = context.RoomNumber,
+                AdultsCount = context.Adults,
+                ChildrenCount = context.Children,
+                Email = context.Email,
+                Schedule = schedule,
+                ReservationDate = context.PickUpDate,
+                ReserveTime = schedule.Time,
+                Hotel = hotel,
+                HotelName = hotel.Name
+            };
+
             await reservationRepository.SaveReservation(reservation).ConfigureAwait(true);
-            
-            return messageCreator.CreateReservationConfirmationMessage(context.UserNumber, hotel, schedule, scheduleDate);
+
+            return messageCreator.CreateReservationConfirmationMessage( context.UserNumber, hotel, schedule, context.PickUpDate, languageId);
         });
     }
 }

@@ -11,20 +11,20 @@ public class AskForFullNameState : BaseConversationState
 
     public override async Task<CoreBaseMessage?> Process(CoreConversationState context, string userMessage)
     {
-        bool isValidSchedule = userMessage != I_DONT_KNOW_OPTION;
+        bool isValidSchedule = !IsIDontKnowOption(userMessage);
         IMessageCreator messageCreator = GetMessageCreator();
+        int languageId = GetLanguageId(context);
 
         if (!isValidSchedule)
         {
             context.IsComplete = true;
             context.CurrentStep = ConversationStep.WillTextLater;
-
-            return messageCreator.CreateWillTextLaterMessage(context.UserNumber);
+            return messageCreator.CreateWillTextLaterMessage(context.UserNumber, languageId);
         }
 
         context.ScheduleId = userMessage;
         context.CurrentStep = ConversationStep.AskForRoomNumber;
 
-        return messageCreator.CreateAskingForNameMessage(context.UserNumber);
+        return messageCreator.CreateAskingForNameMessage(context.UserNumber, languageId);
     }
 }

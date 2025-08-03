@@ -12,10 +12,11 @@ public class AskForAdultsState : BaseConversationState
     public override async Task<CoreBaseMessage?> Process(CoreConversationState context, string userMessage)
     {
         IMessageCreator messageCreator = GetMessageCreator();
+        int languageId = GetLanguageId(context);
         
         context.RoomNumber = userMessage;
         context.CurrentStep = ConversationStep.AskForChildren;
         
-        return messageCreator.CreateAskForAdultsCountMessage(context.UserNumber);
+        return messageCreator.CreateAskForAdultsCountMessage(context.UserNumber, languageId);
     }
 }

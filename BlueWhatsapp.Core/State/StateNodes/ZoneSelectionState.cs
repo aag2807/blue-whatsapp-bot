@@ -24,8 +24,9 @@ public class ZoneSelectionState : BaseConversationState
             IMessageCreator messageCreator = serviceProvider.GetRequiredService<IMessageCreator>();
 
             IEnumerable<CoreRoute> routes = await routeRepository.GetAllRoutesAsync().ConfigureAwait(true);
+            int languageId = GetLanguageId(context);
 
-            return messageCreator.CreateSelectHotelZoneLocationMessage(context.UserNumber, routes);
+            return messageCreator.CreateSelectHotelZoneLocationMessage(context.UserNumber, routes, languageId);
         });
     }
 }

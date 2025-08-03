@@ -12,10 +12,19 @@ public class AskForEmailState : BaseConversationState
     public override async Task<CoreBaseMessage?> Process(CoreConversationState context, string userMessage)
     {
         IMessageCreator messageCreator = GetMessageCreator();
+        int languageId = GetLanguageId(context);
 
-        context.Children = int.Parse(userMessage);
+        if (int.TryParse(userMessage, out int children))
+        {
+            context.Children = children;
+        }
+        else
+        {
+            context.Children = 0; // Default to 0 children if parsing fails
+        }
+        
         context.CurrentStep = ConversationStep.ReservationComplete;
 
-        return messageCreator.CreateAskingEmailMessage(context.UserNumber);
+        return messageCreator.CreateAskingEmailMessage(context.UserNumber, languageId);
     }
 }

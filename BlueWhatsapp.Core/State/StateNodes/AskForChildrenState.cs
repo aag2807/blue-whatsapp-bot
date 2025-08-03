@@ -12,10 +12,19 @@ public class AskForChildrenState : BaseConversationState
     public override async Task<CoreBaseMessage?> Process(CoreConversationState context, string userMessage)
     {
         IMessageCreator messageCreator = GetMessageCreator();
+        int languageId = GetLanguageId(context);
         
-        context.Adults = int.Parse(userMessage);
+        if (int.TryParse(userMessage, out int adults))
+        {
+            context.Adults = adults;
+        }
+        else
+        {
+            context.Adults = 1;
+        }
+        
         context.CurrentStep = ConversationStep.AskForEmail;
         
-        return messageCreator.CreateAskForChildrenCountMessage(context.UserNumber);
+        return messageCreator.CreateAskForChildrenCountMessage(context.UserNumber, languageId);
     }
 }

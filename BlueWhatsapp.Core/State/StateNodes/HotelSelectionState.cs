@@ -14,8 +14,9 @@ public class HotelSelectionState : BaseConversationState
 
     public override async Task<CoreBaseMessage?> Process(CoreConversationState context, string userMessage)
     {
-        bool isValidZoneSelected = userMessage != I_DONT_KNOW_OPTION;
-        IMessageCreator messageCreator = GetMessageCreator()!;
+        bool isValidZoneSelected = !IsIDontKnowOption(userMessage);
+        IMessageCreator messageCreator = GetMessageCreator();
+        int languageId = GetLanguageId(context);
 
         if (isValidZoneSelected)
         {
@@ -24,14 +25,14 @@ public class HotelSelectionState : BaseConversationState
 
             return await ExecuteRepositoryAsync(async serviceProvider =>
             {
-                IHotelRepository repository = serviceProvider.GetRequiredService<IHotelRepository>()!;
+                IHotelRepository repository = serviceProvider.GetRequiredService<IHotelRepository>();
                 IEnumerable<CoreHotel> hotelsByRoute = await repository.GetHotelsByRouteIdAsync(int.Parse(userMessage)).ConfigureAwait(true);
 
-                return messageCreator.CreateHotelSelectionMessage(context.UserNumber, hotelsByRoute);
+                return messageCreator.CreateHotelSelectionMessage(context.UserNumber, hotelsByRoute, languageId);
             });
         }
 
         context.CurrentStep = ConversationStep.ZoneUnknown;
-        return messageCreator.CreateUnknownHotelMessage(context.UserNumber);
+        return messageCreator.CreateUnknownHotelMessage(context.UserNumber, languageId);
     }
 }

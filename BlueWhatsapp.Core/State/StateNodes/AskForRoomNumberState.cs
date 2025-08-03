@@ -12,9 +12,11 @@ public class AskForRoomNumberState : BaseConversationState
     public override async Task<CoreBaseMessage?> Process(CoreConversationState context, string userMessage)
     {
         IMessageCreator messageCreator = GetMessageCreator();
+        int languageId = GetLanguageId(context);
+        
         context.FullName = userMessage;
         context.CurrentStep = ConversationStep.AskForAdults;
 
-        return messageCreator.CreateAskForRoomNumberMessage(context.UserNumber);
+        return messageCreator.CreateAskForRoomNumberMessage(context.UserNumber, languageId);
     }
 }

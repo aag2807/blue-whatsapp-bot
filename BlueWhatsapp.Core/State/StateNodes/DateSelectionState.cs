@@ -11,12 +11,18 @@ public class DateSelectionState : BaseConversationState
 
     public override async Task<CoreBaseMessage?> Process(CoreConversationState context, string userMessage)
     {
-        IMessageCreator messageCreator = GetMessageCreator();
-        CoreBaseMessage? promptForScheduleDate =  messageCreator.CreateDatePromptMessage(context.UserNumber);
+        if (IsValidLanguageSelection(userMessage))
+        {
+            context.LanguageId = userMessage;
+        }
+        else
+        {
+            context.LanguageId = "1";
+        }
 
         context.CurrentStep = ConversationStep.ZoneSelection;
-        context.LanguageId = userMessage;
-        
-        return promptForScheduleDate;
+
+        int languageId = GetLanguageId(context);
+        return GetMessageCreator().CreateDatePromptMessage(context.UserNumber, languageId);
     }
 }
