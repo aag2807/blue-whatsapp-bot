@@ -147,7 +147,7 @@ public class DateParser
     {
         if (string.IsNullOrWhiteSpace(dateString))
         {
-            throw new ArgumentNullException(nameof(dateString));
+            return null;
         }
 
         // Clean up the input

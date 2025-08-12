@@ -62,10 +62,10 @@ public class ChatResponseServiceTests : BaseStateTest
         // Assert
         _mockConversationStateService.Verify(css => css.CreateNewConversationState(userNumber), Times.Once);
         _mockConversationHandlingService.Verify(chs => chs.HandleState(It.Is<CoreConversationState>(c => 
-            c.UserNumber == userNumber && c.PersonName == fromName), It.Is<string>(s => s == userText)), Times.Once);
-        _mockWhatsappCloudService.Verify(wcs => wcs.SendMessage(responseMessage), Times.Once);
+            c.UserNumber == userNumber && c.PersonName == fromName), It.Is<string>(s => s == userText)), Times.Exactly(2));
+        _mockWhatsappCloudService.Verify(wcs => wcs.SendMessage<CoreBaseMessage>(responseMessage), Times.Exactly(2));
         _mockMessageService.Verify(ms => ms.SaveAsync(It.Is<string>(s => s == fromName), It.Is<string>(s => s == userText), It.Is<string>(s => s == userNumber), It.IsAny<MessageStatus>()), Times.Once);
-        _mockConversationStateService.Verify(css => css.UpdateConversationState(It.IsAny<CoreConversationState>()), Times.Once);
+        _mockConversationStateService.Verify(css => css.AddAsync(It.IsAny<CoreConversationState>()), Times.Once);
     }
 
     [Test]
@@ -90,7 +90,7 @@ public class ChatResponseServiceTests : BaseStateTest
         // Assert
         _mockConversationStateService.Verify(css => css.CreateNewConversationState(It.IsAny<string>()), Times.Never);
         _mockConversationHandlingService.Verify(chs => chs.HandleState(existingContext, It.Is<string>(s => s == userText)), Times.Once);
-        _mockWhatsappCloudService.Verify(wcs => wcs.SendMessage(responseMessage), Times.Once);
+        _mockWhatsappCloudService.Verify(wcs => wcs.SendMessage<CoreBaseMessage>(responseMessage), Times.Once);
         _mockMessageService.Verify(ms => ms.SaveAsync(It.Is<string>(s => s == fromName), It.Is<string>(s => s == userText), It.Is<string>(s => s == userNumber), It.IsAny<MessageStatus>()), Times.Once);
         _mockConversationStateService.Verify(css => css.UpdateConversationState(existingContext), Times.Once);
     }
@@ -130,6 +130,8 @@ public class ChatResponseServiceTests : BaseStateTest
 
         _mockConversationStateService.Setup(css => css.GetConversationStateByNumber(userNumber))
             .ReturnsAsync(existingContext);
+        _mockConversationHandlingService.Setup(chs => chs.HandleState(existingContext, It.IsAny<string>()))
+            .ReturnsAsync(new CoreMessageToSend("Welcome", userNumber));
 
         // Act
         await ((IChatResponseService)_chatResponseService).Execute(userNumber, fromName, userText);
@@ -170,6 +172,7 @@ public class ChatResponseServiceTests : BaseStateTest
         var fromName = "John Doe";
         var userText = "Valid input";
         var existingContext = CreateTestConversationState(userNumber);
+        existingContext.CurrentStep = ConversationStep.LanguageSelection; // Not Welcome state
         var responseMessage = new CoreMessageToSend("Response", userNumber);
 
         _mockConversationStateService.Setup(css => css.GetConversationStateByNumber(userNumber))
@@ -181,7 +184,7 @@ public class ChatResponseServiceTests : BaseStateTest
         await ((IChatResponseService)_chatResponseService).Execute(userNumber, fromName, userText);
 
         // Assert - Verify order of operations
-        _mockWhatsappCloudService.Verify(wcs => wcs.SendMessage(responseMessage), Times.Once);
+        _mockWhatsappCloudService.Verify(wcs => wcs.SendMessage<CoreBaseMessage>(responseMessage), Times.Once);
         _mockMessageService.Verify(ms => ms.SaveAsync(It.Is<string>(s => s == fromName), It.Is<string>(s => s == userText), It.Is<string>(s => s == userNumber), It.IsAny<MessageStatus>()), Times.Once);
         _mockConversationStateService.Verify(css => css.UpdateConversationState(existingContext), Times.Once);
     }

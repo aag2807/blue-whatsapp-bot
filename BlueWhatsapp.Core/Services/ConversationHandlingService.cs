@@ -60,7 +60,6 @@ public sealed class ConversationHandlingService : IConversationHandlingService
         {
             _logger.LogError($"No state handler found for state: {state.CurrentStep}");
             return null;
-
         }
         CoreBaseMessage? message = await stateHandler.Process(state, userMessage);
 
@@ -83,6 +82,7 @@ public sealed class ConversationHandlingService : IConversationHandlingService
             if (!_stateTypes.TryGetValue(step, out var stateType))
             {
                 _logger.LogInfo($"No state type registered for step: {step}");
+                _logger.LogError($"Invalid conversation step: {step}");
                 stateType = _stateTypes[ConversationStep.Welcome];
             }
 

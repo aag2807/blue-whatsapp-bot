@@ -24,7 +24,8 @@ public class AskForPhoneState : BaseConversationState
         }
         else
         {
-            // Invalid children count, ask again
+            // Invalid children count, ask again - stay in AskForPhone state
+            context.CurrentStep = ConversationStep.AskForPhone;
             return messageCreator.CreateAskForChildrenCountMessage(context.UserNumber, languageId);
         }
     }

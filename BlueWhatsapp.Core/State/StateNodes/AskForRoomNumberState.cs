@@ -23,7 +23,8 @@ public class AskForRoomNumberState : BaseConversationState
         }
         else
         {
-            // Invalid name, ask again
+            // Invalid name, ask again - stay in AskForRoomNumber state
+            context.CurrentStep = ConversationStep.AskForRoomNumber;
             return messageCreator.CreateAskingForNameMessage(context.UserNumber, languageId);
         }
     }

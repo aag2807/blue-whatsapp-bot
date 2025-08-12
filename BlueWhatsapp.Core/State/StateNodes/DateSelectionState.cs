@@ -29,7 +29,8 @@ public class DateSelectionState : BaseConversationState
         }
         else
         {
-            // Invalid date format, ask again
+            // Invalid date format, ask again - stay in DateSelection state
+            context.CurrentStep = ConversationStep.DateSelection;
             int languageId = GetLanguageId(context);
             return GetMessageCreator().CreateDatePromptMessage(context.UserNumber, languageId);
         }

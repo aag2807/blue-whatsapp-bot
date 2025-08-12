@@ -18,12 +18,13 @@ public class AskForChildrenState : BaseConversationState
         if (int.TryParse(userMessage, out int adults) && adults > 0 && adults <= 50)
         {
             context.Adults = adults;
-            context.CurrentStep = ConversationStep.AskForEmail;
+            context.CurrentStep = ConversationStep.AskForPhone;
             return messageCreator.CreateAskForChildrenCountMessage(context.UserNumber, languageId);
         }
         else
         {
-            // Invalid adults count, ask again
+            // Invalid adults count, ask again - stay in AskForChildren state
+            context.CurrentStep = ConversationStep.AskForChildren;
             return messageCreator.CreateAskForAdultsCountMessage(context.UserNumber, languageId);
         }
     }

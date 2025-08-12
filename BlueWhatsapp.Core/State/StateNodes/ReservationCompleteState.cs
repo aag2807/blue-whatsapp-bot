@@ -60,7 +60,8 @@ public class ReservationCompleteState : BaseConversationState
         }
         else
         {
-            // Invalid email, ask again
+            // Invalid email, ask again - stay in ReservationComplete state
+            context.CurrentStep = ConversationStep.ReservationComplete;
             return messageCreator.CreateAskingEmailMessage(context.UserNumber, languageId);
         }
     }

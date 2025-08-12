@@ -41,7 +41,8 @@ public class ZoneSelectionState : BaseConversationState
         }
         else
         {
-            // Invalid zone selection, ask again
+            // Invalid zone selection, ask again - stay in ZoneSelection state
+            context.CurrentStep = ConversationStep.ZoneSelection;
             int languageId = GetLanguageId(context);
             return await ExecuteRepositoryAsync(async serviceProvider =>
             {

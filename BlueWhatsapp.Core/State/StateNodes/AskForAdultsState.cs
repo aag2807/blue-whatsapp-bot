@@ -23,7 +23,8 @@ public class AskForAdultsState : BaseConversationState
         }
         else
         {
-            // Invalid room number, ask again
+            // Invalid room number, ask again - stay in AskForAdults state
+            context.CurrentStep = ConversationStep.AskForAdults;
             return messageCreator.CreateAskForRoomNumberMessage(context.UserNumber, languageId);
         }
     }

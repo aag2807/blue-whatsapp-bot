@@ -38,9 +38,21 @@ public class HotelSelectionState : BaseConversationState
                 
                 if (hotel == null)
                 {
-                    // Hotel not found, ask again
-                    var hotelsByRoute = await hotelRepository.GetHotelsByRouteIdAsync(int.Parse(context.ZoneId)).ConfigureAwait(true);
-                    return messageCreator.CreateHotelSelectionMessage(context.UserNumber, hotelsByRoute, languageId);
+                    // Hotel not found, ask again - stay in HotelSelection state
+                    context.CurrentStep = ConversationStep.HotelSelection;
+                    if (int.TryParse(context.ZoneId, out int zoneIdForRetry))
+                    {
+                        var hotelsByRoute = await hotelRepository.GetHotelsByRouteIdAsync(zoneIdForRetry).ConfigureAwait(true);
+                        return messageCreator.CreateHotelSelectionMessage(context.UserNumber, hotelsByRoute, languageId);
+                    }
+                    else
+                    {
+                        // If ZoneId is invalid, return to zone selection
+                        context.CurrentStep = ConversationStep.ZoneSelection;
+                        var routeRepository = serviceProvider.GetRequiredService<IRouteRepository>();
+                        var routes = await routeRepository.GetAllRoutesAsync().ConfigureAwait(true);
+                        return messageCreator.CreateSelectHotelZoneLocationMessage(context.UserNumber, routes, languageId);
+                    }
                 }
 
                 // Check if hotel requires VIP service (has a price)
@@ -60,12 +72,24 @@ public class HotelSelectionState : BaseConversationState
         }
         else
         {
-            // Invalid hotel selection, ask again
+            // Invalid hotel selection, ask again - stay in HotelSelection state
+            context.CurrentStep = ConversationStep.HotelSelection;
             return await ExecuteRepositoryAsync(async serviceProvider =>
             {
                 var repository = serviceProvider.GetRequiredService<IHotelRepository>();
-                var hotelsByRoute = await repository.GetHotelsByRouteIdAsync(int.Parse(context.ZoneId)).ConfigureAwait(true);
-                return messageCreator.CreateHotelSelectionMessage(context.UserNumber, hotelsByRoute, languageId);
+                if (int.TryParse(context.ZoneId, out int zoneId))
+                {
+                    var hotelsByRoute = await repository.GetHotelsByRouteIdAsync(zoneId).ConfigureAwait(true);
+                    return messageCreator.CreateHotelSelectionMessage(context.UserNumber, hotelsByRoute, languageId);
+                }
+                else
+                {
+                    // If ZoneId is invalid, return to zone selection
+                    context.CurrentStep = ConversationStep.ZoneSelection;
+                    var routeRepository = serviceProvider.GetRequiredService<IRouteRepository>();
+                    var routes = await routeRepository.GetAllRoutesAsync().ConfigureAwait(true);
+                    return messageCreator.CreateSelectHotelZoneLocationMessage(context.UserNumber, routes, languageId);
+                }
             });
         }
     }

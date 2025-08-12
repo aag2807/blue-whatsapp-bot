@@ -2,6 +2,7 @@ using BlueWhatsapp.Core.Enums;
 using BlueWhatsapp.Core.Logger;
 using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
+using BlueWhatsapp.Core.Models.Schedule;
 using BlueWhatsapp.Core.Services;
 using BlueWhatsapp.Test.StateTests;
 using Microsoft.Extensions.DependencyInjection;
@@ -86,19 +87,32 @@ public class ConversationHandlingServiceTests : BaseStateTest
     }
 
     [Test]
-    [TestCase(ConversationStep.Welcome)]
-    [TestCase(ConversationStep.LanguageSelection)]
-    [TestCase(ConversationStep.DateSelection)]
-    [TestCase(ConversationStep.ZoneSelection)]
-    [TestCase(ConversationStep.HotelSelection)]
-    public async Task HandleState_WithDifferentSteps_ShouldProcessCorrectly(ConversationStep step)
+    [TestCase(ConversationStep.Welcome, "")]
+    [TestCase(ConversationStep.LanguageSelection, "1")]
+    [TestCase(ConversationStep.DateSelection, "2025-01-15")]
+    [TestCase(ConversationStep.ZoneSelection, "1")]
+    [TestCase(ConversationStep.HotelSelection, "1")]
+    public async Task HandleState_WithDifferentSteps_ShouldProcessCorrectly(ConversationStep step, string validInput)
     {
         // Arrange
         var context = CreateTestConversationState();
         context.CurrentStep = step;
+        if (step == ConversationStep.ZoneSelection || step == ConversationStep.HotelSelection)
+        {
+            context.ZoneId = "1"; // Set required ZoneId for hotel selection
+        }
+        if (step == ConversationStep.HotelSelection)
+        {
+            // Set up hotel repository to return a hotel for transition
+            var testHotel = CreateTestHotel(1, "Test Hotel", 0);
+            MockHotelRepository.Setup(hr => hr.GetHotelByIdAsync(1))
+                .ReturnsAsync(testHotel);
+            MockScheduleRepository.Setup(sr => sr.GetSchedulesByHotelId(1))
+                .ReturnsAsync(new List<CoreSchedule> { CreateTestSchedule() });
+        }
 
         // Act
-        var result = await ((IConversationHandlingService)_conversationHandlingService).HandleState(context, "1");
+        var result = await ((IConversationHandlingService)_conversationHandlingService).HandleState(context, validInput);
 
         // Assert
         Assert.That(result, Is.Not.Null);
