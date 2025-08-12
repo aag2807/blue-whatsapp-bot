@@ -15,26 +15,39 @@ public class ScheduleSelectionState : BaseConversationState
     public override async Task<CoreBaseMessage?> Process(CoreConversationState context, string userMessage)
     {
         IMessageCreator messageCreator = GetMessageCreator();
-        bool isValidHotelSelected = !IsIDontKnowOption(userMessage);
         int languageId = GetLanguageId(context);
         
-        context.HotelId = userMessage;
-
-        if (isValidHotelSelected)
+        // Check if user selected "I'll text later" option
+        if (userMessage.Equals("99", StringComparison.OrdinalIgnoreCase) || 
+            userMessage.Contains("analizar", StringComparison.OrdinalIgnoreCase) ||
+            userMessage.Contains("later", StringComparison.OrdinalIgnoreCase))
         {
-            context.CurrentStep = ConversationStep.AskForFullName;
-            return await ExecuteRepositoryAsync(async serviceLocator =>
-            {
-                IHotelRepository hotelRepository = serviceLocator.GetRequiredService<IHotelRepository>();
-                IScheduleRepository scheduleRepository = serviceLocator.GetRequiredService<IScheduleRepository>();
+            context.CurrentStep = ConversationStep.WillTextLater;
+            return messageCreator.CreateWillTextLaterMessage(context.UserNumber, languageId);
+        }
 
-                CoreHotel hotel = await hotelRepository.GetHotelByIdAsync(int.Parse(userMessage)).ConfigureAwait(true)!;
-                IEnumerable<CoreSchedule>? schedules = await scheduleRepository.GetSchedulesByHotelId(hotel.Id).ConfigureAwait(true)!;
+        // Validate schedule selection
+        if (int.TryParse(userMessage, out int scheduleId) && scheduleId > 0)
+        {
+            context.ScheduleId = userMessage;
+            context.CurrentStep = ConversationStep.AskForFullName;
+            
+            // Proceed to collect user information
+            return messageCreator.CreateAskingForNameMessage(context.UserNumber, languageId);
+        }
+        else
+        {
+            // Invalid schedule selection, ask again
+            return await ExecuteRepositoryAsync(async serviceProvider =>
+            {
+                IHotelRepository hotelRepository = serviceProvider.GetRequiredService<IHotelRepository>();
+                IScheduleRepository scheduleRepository = serviceProvider.GetRequiredService<IScheduleRepository>();
+
+                var hotel = await hotelRepository.GetHotelByIdAsync(int.Parse(context.HotelId)).ConfigureAwait(true);
+                var schedules = await scheduleRepository.GetSchedulesByHotelId(hotel!.Id).ConfigureAwait(true);
 
                 return messageCreator.CreateTimeFrameSelectionMessage(context.UserNumber, hotel, schedules, languageId);
             });
         }
-
-        return messageCreator.CreateUnknownHotelMessage(context.UserNumber, languageId);
     }
 }

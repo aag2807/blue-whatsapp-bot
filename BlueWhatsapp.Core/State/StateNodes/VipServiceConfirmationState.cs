@@ -17,12 +17,14 @@ public class VipServiceConfirmationState : BaseConversationState
         IMessageCreator messageCreator = GetMessageCreator();
         int languageId = GetLanguageId(context);
 
-        bool acceptedVip = userMessage.ToLower().Contains("si") ||
-                           userMessage.ToLower().Contains("yes") ||
-                           userMessage.ToLower().Contains("oui") ||
-                           userMessage.ToLower().Contains("да") ||
-                           userMessage.ToLower().Contains("sim") ||
-                           userMessage.ToLower().Contains("是");
+        // Check if user accepted VIP service
+        bool acceptedVip = userMessage.Equals("1", StringComparison.OrdinalIgnoreCase) ||
+                          userMessage.ToLower().Contains("si") ||
+                          userMessage.ToLower().Contains("yes") ||
+                          userMessage.ToLower().Contains("oui") ||
+                          userMessage.ToLower().Contains("да") ||
+                          userMessage.ToLower().Contains("sim") ||
+                          userMessage.ToLower().Contains("是");
 
         if (!acceptedVip)
         {
@@ -32,18 +34,23 @@ public class VipServiceConfirmationState : BaseConversationState
             return messageCreator.CreateWillTextLaterMessage(context.UserNumber, languageId);
         }
 
-        // User accepted VIP service, proceed to schedule selection
-        context.CurrentStep = ConversationStep.ScheduleSelection;
-
         return await ExecuteRepositoryAsync(async serviceProvider =>
         {
             IHotelRepository hotelRepository = serviceProvider.GetRequiredService<IHotelRepository>();
             IScheduleRepository scheduleRepository = serviceProvider.GetRequiredService<IScheduleRepository>();
 
             CoreHotel hotel = await hotelRepository.GetHotelByIdAsync(int.Parse(context.HotelId)).ConfigureAwait(true)!;
-            IEnumerable<CoreSchedule> schedules =
-                await scheduleRepository.GetSchedulesByHotelId(hotel.Id).ConfigureAwait(true);
 
+            // Check if hotel is in Bayahibe (requires group size selection)
+            if (hotel.RouteNavigation?.Name.Contains("Bayahibe", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                context.CurrentStep = ConversationStep.GroupSizeSelection;
+                return messageCreator.CreateGroupSizeSelectionMessage(context.UserNumber, languageId);
+            }
+
+            // Standard VIP service - proceed to schedule selection
+            context.CurrentStep = ConversationStep.ScheduleSelection;
+            var schedules = await scheduleRepository.GetSchedulesByHotelId(hotel.Id).ConfigureAwait(true);
             return messageCreator.CreateTimeFrameSelectionMessage(context.UserNumber, hotel, schedules, languageId);
         });
     }

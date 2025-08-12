@@ -27,7 +27,7 @@ public sealed class MessageService : IMessageService
         await _messageRepository.Persist(message).ConfigureAwait(true);
     }
     
-    async Task IMessageService.SaveAsync(string from,string message, string number, MessageStatus status = MessageStatus.Pending)
+    async Task IMessageService.SaveAsync(string from,string message, string number, MessageStatus status)
     {
         Arguments.NotEmptyOrWhiteSpaceOnly(message, nameof(message));
         Arguments.NotEmptyOrWhiteSpaceOnly(number, nameof(number));
@@ -41,6 +41,14 @@ public sealed class MessageService : IMessageService
         };
         
         await _messageRepository.Persist(messageToSave).ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// Convenience method with default status
+    /// </summary>
+    public async Task SaveAsync(string from, string message, string number)
+    {
+        await ((IMessageService)this).SaveAsync(from, message, number, MessageStatus.Pending).ConfigureAwait(true);
     }
 
     /// <inheritdoc />

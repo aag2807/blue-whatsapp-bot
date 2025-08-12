@@ -26,7 +26,7 @@ public sealed class ConversationStateService : IConversationStateService
     }
 
     /// <inheritdoc />
-    async Task<CoreConversationState> IConversationStateService.CreateNewConversationState(string number)
+    Task<CoreConversationState> IConversationStateService.CreateNewConversationState(string number)
     {
         CoreConversationState state = new CoreConversationState();
         state.UserNumber = number.Trim();
@@ -35,7 +35,7 @@ public sealed class ConversationStateService : IConversationStateService
         state.IsComplete = false;
         state.Flow = ConversationFlowEnum.DIRECT_CLIENT_FREE_ROUTE;
 
-        return state;
+        return Task.FromResult(state);
     }
 
     /// <inheritdoc />

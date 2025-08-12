@@ -33,7 +33,7 @@ public sealed class WhatsappCloudService(IAppLogger logger) : IWhatsappCloudServ
 
         if (responseContent != null)
         {
-            object data = JsonConvert.DeserializeObject<object>(responseContent);
+            object? data = JsonConvert.DeserializeObject<object>(responseContent);
             if (!response.IsSuccessStatusCode)
             {
                 logger.LogError(data);

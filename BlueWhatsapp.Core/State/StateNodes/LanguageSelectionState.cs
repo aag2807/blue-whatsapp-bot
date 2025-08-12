@@ -13,11 +13,21 @@ public class LanguageSelectionState : BaseConversationState
     {
         IMessageCreator messageCreator = GetMessageCreator();
         
-        CoreBaseMessage? languagePrompt =  messageCreator.CreateLanguagePromptMessage(context.UserNumber);
+        // Validate language selection and set appropriate language ID
+        if (IsValidLanguageSelection(userMessage))
+        {
+            context.LanguageId = userMessage;
+        }
+        else
+        {
+            // Default to Spanish (1) if invalid selection
+            context.LanguageId = "1";
+        }
 
-        context.LanguageId = userMessage;
         context.CurrentStep = ConversationStep.DateSelection;
-
-        return languagePrompt;
+        
+        // Get the validated language ID for message creation
+        int languageId = GetLanguageId(context);
+        return messageCreator.CreateDatePromptMessage(context.UserNumber, languageId);
     }
 }

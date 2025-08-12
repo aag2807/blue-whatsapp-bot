@@ -14,9 +14,17 @@ public class AskForAdultsState : BaseConversationState
         IMessageCreator messageCreator = GetMessageCreator();
         int languageId = GetLanguageId(context);
         
-        context.RoomNumber = userMessage;
-        context.CurrentStep = ConversationStep.AskForChildren;
-        
-        return messageCreator.CreateAskForAdultsCountMessage(context.UserNumber, languageId);
+        // Validate room number (should not be empty)
+        if (!string.IsNullOrWhiteSpace(userMessage))
+        {
+            context.RoomNumber = userMessage.Trim();
+            context.CurrentStep = ConversationStep.AskForChildren;
+            return messageCreator.CreateAskForAdultsCountMessage(context.UserNumber, languageId);
+        }
+        else
+        {
+            // Invalid room number, ask again
+            return messageCreator.CreateAskForRoomNumberMessage(context.UserNumber, languageId);
+        }
     }
 }

@@ -1,7 +1,6 @@
 using BlueWhatsapp.Core.Enums;
 using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
-using BlueWhatsapp.Core.Models.Route;
 using BlueWhatsapp.Core.Persistence;
 using BlueWhatsapp.Core.Utils;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,19 +13,42 @@ public class ZoneSelectionState : BaseConversationState
 
     public override async Task<CoreBaseMessage?> Process(CoreConversationState context, string userMessage)
     {
-        DateParser parser = new();
-        context.PickUpDate = parser.TryParseDate(userMessage);
-        context.CurrentStep = ConversationStep.HotelSelection;
-
-        return await ExecuteRepositoryAsync(async serviceProvider =>
+        // Validate zone selection
+        if (int.TryParse(userMessage, out int zoneId) && zoneId > 0)
         {
-            IRouteRepository routeRepository = serviceProvider.GetRequiredService<IRouteRepository>();
-            IMessageCreator messageCreator = serviceProvider.GetRequiredService<IMessageCreator>();
+            context.ZoneId = userMessage;
+            
+            // Check if user selected "I don't know" option
+            if (IsIDontKnowOption(userMessage))
+            {
+                context.CurrentStep = ConversationStep.ZoneUnknown;
+                int languageId = GetLanguageId(context);
+                return GetMessageCreator().CreateUnknownHotelMessage(context.UserNumber, languageId);
+            }
+            
+            context.CurrentStep = ConversationStep.HotelSelection;
+            
+            return await ExecuteRepositoryAsync(async serviceProvider =>
+            {
+                IHotelRepository repository = serviceProvider.GetRequiredService<IHotelRepository>();
+                IMessageCreator messageCreator = serviceProvider.GetRequiredService<IMessageCreator>();
 
-            IEnumerable<CoreRoute> routes = await routeRepository.GetAllRoutesAsync().ConfigureAwait(true);
+                var hotelsByRoute = await repository.GetHotelsByRouteIdAsync(zoneId).ConfigureAwait(true);
+                int languageId = GetLanguageId(context);
+
+                return messageCreator.CreateHotelSelectionMessage(context.UserNumber, hotelsByRoute, languageId);
+            });
+        }
+        else
+        {
+            // Invalid zone selection, ask again
             int languageId = GetLanguageId(context);
-
-            return messageCreator.CreateSelectHotelZoneLocationMessage(context.UserNumber, routes, languageId);
-        });
+            return await ExecuteRepositoryAsync(async serviceProvider =>
+            {
+                var routeRepository = serviceProvider.GetRequiredService<IRouteRepository>();
+                var routes = await routeRepository.GetAllRoutesAsync().ConfigureAwait(true);
+                return GetMessageCreator().CreateSelectHotelZoneLocationMessage(context.UserNumber, routes, languageId);
+            });
+        }
     }
 }

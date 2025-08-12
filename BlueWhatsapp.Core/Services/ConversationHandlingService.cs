@@ -21,12 +21,12 @@ public sealed class ConversationHandlingService : IConversationHandlingService
         _stateTypes = CreateStateTransitionDictionary();
     }
     
-    async Task<CoreBaseMessage?> IConversationHandlingService.HandleState(CoreConversationState state, string userMessage = "")
+    async Task<CoreBaseMessage?> IConversationHandlingService.HandleState(CoreConversationState state, string userMessage)
     {
         return await HandleDirectClientFreeRoute(state, userMessage).ConfigureAwait(true);
     }
 
-    private async Task<CoreBaseMessage> HandleDirectClientFreeRoute(CoreConversationState state, string userMessage)
+    private async Task<CoreBaseMessage?> HandleDirectClientFreeRoute(CoreConversationState state, string userMessage)
     {
         try
         {
@@ -112,10 +112,16 @@ public sealed class ConversationHandlingService : IConversationHandlingService
 
             // Location/hotel selection
             { ConversationStep.ZoneSelection, typeof(ZoneSelectionState) },
+            { ConversationStep.ZoneSelectionResponse, typeof(ZoneSelectionResponseState) },
             { ConversationStep.ZoneUnknown, typeof(ZoneUnknownState) },
             { ConversationStep.HotelSelection, typeof(HotelSelectionState) },
             { ConversationStep.HotelUnknown, typeof(HotelUnknownState) },
             { ConversationStep.HotelConfirmation, typeof(HotelConfirmationState) },
+            
+            // Hotel matching states
+            { ConversationStep.MoreThanOneMatchingHotel, typeof(MoreThanOneMatchingHotelState) },
+            { ConversationStep.IsThisMatchingHotel, typeof(MoreThanOneMatchingHotelState) }, // Reuse for now
+            { ConversationStep.NoMatchingHotel, typeof(ManualHandlingState) }, // Redirect to manual handling
 
             // Schedule and service type 
             { ConversationStep.ScheduleSelection, typeof(ScheduleSelectionState) },
@@ -123,6 +129,7 @@ public sealed class ConversationHandlingService : IConversationHandlingService
             { ConversationStep.VipServiceOffer, typeof(VipServiceOfferState) },
             { ConversationStep.VipServiceConfirmation, typeof(VipServiceConfirmationState) },
             { ConversationStep.VipGroupSizeSelection, typeof(VipGroupSizeSelectionState) },
+            { ConversationStep.GroupSizeSelection, typeof(VipGroupSizeSelectionState) }, // For Bayahibe
 
             // User information collection
             { ConversationStep.AskForFullName, typeof(AskForFullNameState) },

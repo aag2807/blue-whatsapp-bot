@@ -8,7 +8,7 @@ namespace BlueWhatsapp.Test;
 [TestFixture]
 public class HotelMatcherTests
 {
-    private IHotelMatcher _hotelMatcher;
+    private IHotelMatcher _hotelMatcher = null!;
     
     [SetUp]
     public void SetUp()

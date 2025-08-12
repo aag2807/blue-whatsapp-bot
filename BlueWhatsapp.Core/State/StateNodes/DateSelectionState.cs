@@ -1,7 +1,10 @@
 using BlueWhatsapp.Core.Enums;
 using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
+using BlueWhatsapp.Core.Models.Route;
+using BlueWhatsapp.Core.Persistence;
 using BlueWhatsapp.Core.Utils;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BlueWhatsapp.Core.State.StateNodes;
 
@@ -11,18 +14,33 @@ public class DateSelectionState : BaseConversationState
 
     public override async Task<CoreBaseMessage?> Process(CoreConversationState context, string userMessage)
     {
-        if (IsValidLanguageSelection(userMessage))
+        // Parse and validate the date input
+        DateParser parser = new();
+        string parsedDate = parser.TryParseDate(userMessage);
+        
+        if (!string.IsNullOrEmpty(parsedDate))
         {
-            context.LanguageId = userMessage;
+            context.PickUpDate = parsedDate;
+            context.CurrentStep = ConversationStep.ZoneSelection;
+            
+            int languageId = GetLanguageId(context);
+            return GetMessageCreator().CreateSelectHotelZoneLocationMessage(context.UserNumber, 
+                await GetAllRoutesAsync(), languageId);
         }
         else
         {
-            context.LanguageId = "1";
+            // Invalid date format, ask again
+            int languageId = GetLanguageId(context);
+            return GetMessageCreator().CreateDatePromptMessage(context.UserNumber, languageId);
         }
+    }
 
-        context.CurrentStep = ConversationStep.ZoneSelection;
-
-        int languageId = GetLanguageId(context);
-        return GetMessageCreator().CreateDatePromptMessage(context.UserNumber, languageId);
+    private async Task<IEnumerable<CoreRoute>> GetAllRoutesAsync()
+    {
+        return await ExecuteRepositoryAsync(async serviceProvider =>
+        {
+            var routeRepository = serviceProvider.GetRequiredService<IRouteRepository>();
+            return await routeRepository.GetAllRoutesAsync().ConfigureAwait(true);
+        });
     }
 }

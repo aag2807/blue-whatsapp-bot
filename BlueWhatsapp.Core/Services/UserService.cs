@@ -41,7 +41,7 @@ public sealed class UserService : IUserService
 
             return user;
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return null;
         }

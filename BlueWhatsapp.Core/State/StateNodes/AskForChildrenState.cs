@@ -14,17 +14,17 @@ public class AskForChildrenState : BaseConversationState
         IMessageCreator messageCreator = GetMessageCreator();
         int languageId = GetLanguageId(context);
         
-        if (int.TryParse(userMessage, out int adults))
+        // Validate adults count (should be a positive number, max reasonable limit)
+        if (int.TryParse(userMessage, out int adults) && adults > 0 && adults <= 50)
         {
             context.Adults = adults;
+            context.CurrentStep = ConversationStep.AskForEmail;
+            return messageCreator.CreateAskForChildrenCountMessage(context.UserNumber, languageId);
         }
         else
         {
-            context.Adults = 1;
+            // Invalid adults count, ask again
+            return messageCreator.CreateAskForAdultsCountMessage(context.UserNumber, languageId);
         }
-        
-        context.CurrentStep = ConversationStep.AskForEmail;
-        
-        return messageCreator.CreateAskForChildrenCountMessage(context.UserNumber, languageId);
     }
 }

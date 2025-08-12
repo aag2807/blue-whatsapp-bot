@@ -17,12 +17,12 @@ public enum ConversationStep
     HotelSelection = 6,
     HotelUnknown = 7,
     HotelConfirmation = 8,
-    ZoneSelectionResponse,
+    ZoneSelectionResponse = 23,
     
     // hotel name search selection
-    MoreThanOneMatchingHotel,
-    IsThisMatchingHotel,
-    NoMatchingHotel,
+    MoreThanOneMatchingHotel = 24,
+    IsThisMatchingHotel = 25,
+    NoMatchingHotel = 26,
 
     // Schedule and service type
     ScheduleSelection = 9,

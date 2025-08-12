@@ -14,17 +14,19 @@ public class AskForEmailState : BaseConversationState
         IMessageCreator messageCreator = GetMessageCreator();
         int languageId = GetLanguageId(context);
 
-        if (int.TryParse(userMessage, out int children))
+        // Validate children count (should be 0 or positive, max reasonable limit)
+        if (int.TryParse(userMessage, out int children) && children >= 0 && children <= 20)
         {
             context.Children = children;
+            context.CurrentStep = ConversationStep.ReservationComplete;
+            return messageCreator.CreateAskingEmailMessage(context.UserNumber, languageId);
         }
         else
         {
-            context.Children = 0; // Default to 0 children if parsing fails
+            // Invalid children count, ask again
+            return messageCreator.CreateAskForChildrenCountMessage(context.UserNumber, languageId);
         }
-        
-        context.CurrentStep = ConversationStep.ReservationComplete;
-
-        return messageCreator.CreateAskingEmailMessage(context.UserNumber, languageId);
     }
+
+
 }

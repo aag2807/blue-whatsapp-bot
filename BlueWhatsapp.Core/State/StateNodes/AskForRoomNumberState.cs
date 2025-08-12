@@ -14,9 +14,17 @@ public class AskForRoomNumberState : BaseConversationState
         IMessageCreator messageCreator = GetMessageCreator();
         int languageId = GetLanguageId(context);
         
-        context.FullName = userMessage;
-        context.CurrentStep = ConversationStep.AskForAdults;
-
-        return messageCreator.CreateAskForRoomNumberMessage(context.UserNumber, languageId);
+        // Validate full name (should not be empty or too short)
+        if (!string.IsNullOrWhiteSpace(userMessage) && userMessage.Trim().Length >= 2)
+        {
+            context.FullName = userMessage.Trim();
+            context.CurrentStep = ConversationStep.AskForAdults;
+            return messageCreator.CreateAskForRoomNumberMessage(context.UserNumber, languageId);
+        }
+        else
+        {
+            // Invalid name, ask again
+            return messageCreator.CreateAskingForNameMessage(context.UserNumber, languageId);
+        }
     }
 }

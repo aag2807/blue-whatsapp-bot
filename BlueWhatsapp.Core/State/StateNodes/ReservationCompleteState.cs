@@ -6,6 +6,7 @@ using BlueWhatsapp.Core.Models.Schedule;
 using BlueWhatsapp.Core.Persistence;
 using BlueWhatsapp.Core.Utils;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.RegularExpressions;
 
 namespace BlueWhatsapp.Core.State.StateNodes;
 
@@ -18,40 +19,69 @@ public class ReservationCompleteState : BaseConversationState
         IMessageCreator messageCreator = GetMessageCreator();
         int languageId = GetLanguageId(context);
 
-        context.IsComplete = true;
-        context.Email = userMessage;
-
-        return await ExecuteRepositoryAsync(async serviceLocator =>
+        // Validate email format
+        if (IsValidEmail(userMessage))
         {
-            IHotelRepository hotelRepository = serviceLocator.GetRequiredService<IHotelRepository>();
-            IScheduleRepository scheduleRepository = serviceLocator.GetRequiredService<IScheduleRepository>();
-            IReservationRepository reservationRepository = serviceLocator.GetRequiredService<IReservationRepository>();
+            context.Email = userMessage.Trim().ToLower();
+            context.IsComplete = true;
 
-            int hotelId = int.Parse(context.HotelId);
-            int scheduleId = int.Parse(context.ScheduleId);
-            CoreHotel hotel = await hotelRepository.GetHotelByIdAsync(hotelId).ConfigureAwait(true)!;
-            CoreSchedule schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleId).ConfigureAwait(true)!;
-
-            // Create and save reservation
-            CoreReservation reservation = new()
+            return await ExecuteRepositoryAsync(async serviceLocator =>
             {
-                TripId = int.Parse(context.ZoneId),
-                UserNumber = context.UserNumber,
-                Username = context.FullName,
-                RoomNumber = context.RoomNumber,
-                AdultsCount = context.Adults,
-                ChildrenCount = context.Children,
-                Email = context.Email,
-                Schedule = schedule,
-                ReservationDate = context.PickUpDate,
-                ReserveTime = schedule.Time,
-                Hotel = hotel,
-                HotelName = hotel.Name
-            };
+                IHotelRepository hotelRepository = serviceLocator.GetRequiredService<IHotelRepository>();
+                IScheduleRepository scheduleRepository = serviceLocator.GetRequiredService<IScheduleRepository>();
+                IReservationRepository reservationRepository = serviceLocator.GetRequiredService<IReservationRepository>();
 
-            await reservationRepository.SaveReservation(reservation).ConfigureAwait(true);
+                int hotelId = int.Parse(context.HotelId);
+                int scheduleId = int.Parse(context.ScheduleId);
+                CoreHotel hotel = await hotelRepository.GetHotelByIdAsync(hotelId).ConfigureAwait(true)!;
+                CoreSchedule schedule = await scheduleRepository.GetScheduleByIdAsync(scheduleId).ConfigureAwait(true)!;
 
-            return messageCreator.CreateReservationConfirmationMessage( context.UserNumber, hotel, schedule, context.PickUpDate, languageId);
-        });
+                // Create and save reservation
+                CoreReservation reservation = new()
+                {
+                    TripId = int.Parse(context.ZoneId),
+                    UserNumber = context.UserNumber,
+                    Username = context.FullName,
+                    RoomNumber = context.RoomNumber,
+                    AdultsCount = context.Adults,
+                    ChildrenCount = context.Children,
+                    Email = context.Email,
+                    Schedule = schedule,
+                    ReservationDate = context.PickUpDate,
+                    ReserveTime = schedule.Time,
+                    Hotel = hotel,
+                    HotelName = hotel.Name
+                };
+
+                await reservationRepository.SaveReservation(reservation).ConfigureAwait(true);
+
+                return messageCreator.CreateReservationConfirmationMessage(context.UserNumber, hotel, schedule, context.PickUpDate, languageId);
+            });
+        }
+        else
+        {
+            // Invalid email, ask again
+            return messageCreator.CreateAskingEmailMessage(context.UserNumber, languageId);
+        }
+    }
+
+    /// <summary>
+    /// Validates if the email is in a proper format
+    /// </summary>
+    private static bool IsValidEmail(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+            return false;
+
+        try
+        {
+            // Basic email format validation
+            string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+            return Regex.IsMatch(email.Trim(), pattern, RegexOptions.IgnoreCase);
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

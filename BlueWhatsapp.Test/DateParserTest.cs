@@ -55,8 +55,8 @@ public class DateParserTest
         Assert.That(parsedDate, Is.TypeOf<DateTime>());
         Assert.That(parsedDate, Is.Not.Null);
         Assert.That(parsedDate, Is.Not.EqualTo(DateTime.Now));
-        Assert.That(parsedDate.Value.Day, Is.EqualTo(15));
-        Assert.That(parsedDate.Value.Month, Is.EqualTo(8));
-        Assert.That(parsedDate.Value.Year, Is.EqualTo(2025));
+        Assert.That(parsedDate!.Value.Day, Is.EqualTo(15));
+        Assert.That(parsedDate!.Value.Month, Is.EqualTo(8));
+        Assert.That(parsedDate!.Value.Year, Is.EqualTo(2025));
     }
 }

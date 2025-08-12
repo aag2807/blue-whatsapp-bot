@@ -11,18 +11,11 @@ public class AskForFullNameState : BaseConversationState
 
     public override async Task<CoreBaseMessage?> Process(CoreConversationState context, string userMessage)
     {
-        bool isValidSchedule = !IsIDontKnowOption(userMessage);
         IMessageCreator messageCreator = GetMessageCreator();
         int languageId = GetLanguageId(context);
 
-        if (!isValidSchedule)
-        {
-            context.IsComplete = true;
-            context.CurrentStep = ConversationStep.WillTextLater;
-            return messageCreator.CreateWillTextLaterMessage(context.UserNumber, languageId);
-        }
-
-        context.ScheduleId = userMessage;
+        // This state asks for the full name, so we expect the previous state to have set the schedule
+        // The userMessage here should be empty (first call) or contain validation from previous state
         context.CurrentStep = ConversationStep.AskForRoomNumber;
 
         return messageCreator.CreateAskingForNameMessage(context.UserNumber, languageId);

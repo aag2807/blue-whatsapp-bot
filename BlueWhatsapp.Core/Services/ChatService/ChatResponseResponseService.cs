@@ -50,7 +50,8 @@ public sealed class ChatResponseResponseService(
 
     private async Task HandleConversationIntro(string userNumber, string fromName, string userText, CoreConversationState state)
     {
-        CoreBaseMessage welcomeMessage = await conversationHandling.HandleState(state, userText).ConfigureAwait(true)!;
+        CoreBaseMessage? welcomeMessage = await conversationHandling.HandleState(state, userText).ConfigureAwait(true);
+        if (welcomeMessage == null) return;
             
         CoreMessageToSend typedMessage = (CoreMessageToSend)welcomeMessage;
         await whatsappCloudService.SendMessage(welcomeMessage).ConfigureAwait(true);
@@ -58,8 +59,11 @@ public sealed class ChatResponseResponseService(
         await messageService.SaveAsync("SYSTEM", typedMessage.text.body, userNumber).ConfigureAwait(true);
             
         CoreBaseMessage? languageSelectionService = await conversationHandling.HandleState(state, userText).ConfigureAwait(true);
-        await whatsappCloudService.SendMessage(languageSelectionService).ConfigureAwait(true);
-        await messageService.SaveAsync("SYSTEM", "Listado de lenguajes", userNumber).ConfigureAwait(true);
+        if (languageSelectionService != null)
+        {
+            await whatsappCloudService.SendMessage(languageSelectionService).ConfigureAwait(true);
+            await messageService.SaveAsync("SYSTEM", "Listado de lenguajes", userNumber).ConfigureAwait(true);
+        }
 
         await conversationStateService.AddAsync(state).ConfigureAwait(true);
     }
