@@ -57,7 +57,7 @@ public class ServiceLocator
         catch (Exception ex)
         {
             _logger.LogError($"Error executing repository operation: {ex.Message}");
-            throw;
+            return default(TResult);
         }
     }
 

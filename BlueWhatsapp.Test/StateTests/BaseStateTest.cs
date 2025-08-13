@@ -23,6 +23,7 @@ public abstract class BaseStateTest
     protected Mock<IScheduleRepository> MockScheduleRepository { get; private set; } = null!;
     protected Mock<IReservationRepository> MockReservationRepository { get; private set; } = null!;
     protected Mock<IServiceProvider> MockServiceProvider { get; private set; } = null!;
+    protected TestServiceProvider TestServiceProvider { get; private set; } = null!;
     protected Mock<IServiceScopeFactory> MockServiceScopeFactory { get; private set; } = null!;
     protected Mock<IServiceScope> MockServiceScope { get; private set; } = null!;
 
@@ -37,6 +38,13 @@ public abstract class BaseStateTest
         MockServiceProvider = new Mock<IServiceProvider>();
         MockServiceScopeFactory = new Mock<IServiceScopeFactory>();
         MockServiceScope = new Mock<IServiceScope>();
+
+        TestServiceProvider = new TestServiceProvider(
+            MockHotelRepository.Object,
+            MockRouteRepository.Object,
+            MockScheduleRepository.Object,
+            MockReservationRepository.Object,
+            MockMessageCreator.Object);
 
         SetupMockServiceProvider();
         SetupMockServiceScopeFactory();
@@ -56,12 +64,14 @@ public abstract class BaseStateTest
             .Returns(MockReservationRepository.Object);
         MockServiceProvider.Setup(sp => sp.GetService(typeof(IMessageCreator)))
             .Returns(MockMessageCreator.Object);
+
+
     }
 
     private void SetupMockServiceScopeFactory()
     {
         MockServiceScope.Setup(s => s.ServiceProvider)
-            .Returns(MockServiceProvider.Object);
+            .Returns(TestServiceProvider);
         MockServiceScopeFactory.Setup(f => f.CreateScope())
             .Returns(MockServiceScope.Object);
     }
@@ -119,6 +129,9 @@ public abstract class BaseStateTest
 
         MockMessageCreator.Setup(mc => mc.CreateReservationConfirmationMessage(It.IsAny<string>(), It.IsAny<CoreHotel>(), It.IsAny<CoreSchedule>(), It.IsAny<string>(), It.IsAny<int>()))
             .Returns(new CoreMessageToSend("Reservation confirmed", "123456789"));
+
+        MockMessageCreator.Setup(mc => mc.CreateMultipleHotelMatchMessage(It.IsAny<string>(), It.IsAny<IEnumerable<CoreHotel>>(), It.IsAny<int>()))
+            .Returns(new CoreInteractiveMessage("123456789"));
     }
 
     protected CoreConversationState CreateTestConversationState(string userNumber = "123456789")
@@ -157,5 +170,32 @@ public abstract class BaseStateTest
     protected CoreSchedule CreateTestSchedule(int id = 1, string time = "09:00")
     {
         return new CoreSchedule(id, time, "Test Schedule", 1);
+    }
+}
+
+/// <summary>
+/// Test implementation of IServiceProvider that supports GetRequiredService
+/// </summary>
+public class TestServiceProvider : IServiceProvider
+{
+    private readonly Dictionary<Type, object> _services = new();
+
+    public TestServiceProvider(
+        IHotelRepository hotelRepository,
+        IRouteRepository routeRepository,
+        IScheduleRepository scheduleRepository,
+        IReservationRepository reservationRepository,
+        IMessageCreator messageCreator)
+    {
+        _services[typeof(IHotelRepository)] = hotelRepository;
+        _services[typeof(IRouteRepository)] = routeRepository;
+        _services[typeof(IScheduleRepository)] = scheduleRepository;
+        _services[typeof(IReservationRepository)] = reservationRepository;
+        _services[typeof(IMessageCreator)] = messageCreator;
+    }
+
+    public object? GetService(Type serviceType)
+    {
+        return _services.TryGetValue(serviceType, out var service) ? service : null;
     }
 }

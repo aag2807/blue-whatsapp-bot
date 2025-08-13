@@ -30,6 +30,14 @@ public class MoreThanOneMatchingHotelState: BaseConversationState
         {
             var hotelIds = PipeStringHelper.PipeStringToIntList(context.ExtraInformation);
             
+            // Check if hotelIds is empty (corrupted data)
+            if (hotelIds.Count == 0)
+            {
+                context.IsAdminOverridden = true;
+                context.CurrentStep = ConversationStep.ManualHandling;
+                return messageCreator.CreateUnknownHotelMessage(context.UserNumber, languageId);
+            }
+            
             // Check if selection is within valid range
             if (selectedIndex <= hotelIds.Count)
             {

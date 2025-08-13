@@ -14,6 +14,9 @@ public static class PipeStringHelper
 
     public static List<int> PipeStringToIntList(string pipeString)
     {
-        return pipeString.Split("|").Select(int.Parse).ToList();
+        return pipeString.Split("|")
+            .Where(s => int.TryParse(s, out _))
+            .Select(int.Parse)
+            .ToList();
     }
 }

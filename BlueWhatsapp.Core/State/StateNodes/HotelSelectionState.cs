@@ -24,8 +24,8 @@ public class HotelSelectionState : BaseConversationState
             return messageCreator.CreateUnknownHotelMessage(context.UserNumber, languageId);
         }
 
-        // Validate hotel selection
-        if (int.TryParse(userMessage, out int hotelId) && hotelId > 0)
+        // Validate hotel selection and ZoneId
+        if (int.TryParse(userMessage, out int hotelId) && hotelId > 0 && !string.IsNullOrEmpty(context.ZoneId) && int.TryParse(context.ZoneId, out int zoneId))
         {
             context.HotelId = userMessage;
 
@@ -40,19 +40,8 @@ public class HotelSelectionState : BaseConversationState
                 {
                     // Hotel not found, ask again - stay in HotelSelection state
                     context.CurrentStep = ConversationStep.HotelSelection;
-                    if (int.TryParse(context.ZoneId, out int zoneIdForRetry))
-                    {
-                        var hotelsByRoute = await hotelRepository.GetHotelsByRouteIdAsync(zoneIdForRetry).ConfigureAwait(true);
-                        return messageCreator.CreateHotelSelectionMessage(context.UserNumber, hotelsByRoute, languageId);
-                    }
-                    else
-                    {
-                        // If ZoneId is invalid, return to zone selection
-                        context.CurrentStep = ConversationStep.ZoneSelection;
-                        var routeRepository = serviceProvider.GetRequiredService<IRouteRepository>();
-                        var routes = await routeRepository.GetAllRoutesAsync().ConfigureAwait(true);
-                        return messageCreator.CreateSelectHotelZoneLocationMessage(context.UserNumber, routes, languageId);
-                    }
+                    var hotelsByRoute = await hotelRepository.GetHotelsByRouteIdAsync(zoneId).ConfigureAwait(true);
+                    return messageCreator.CreateHotelSelectionMessage(context.UserNumber, hotelsByRoute, languageId);
                 }
 
                 // Check if hotel requires VIP service (has a price)
