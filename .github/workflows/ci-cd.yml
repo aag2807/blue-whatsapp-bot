@@ -1,0 +1,121 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run unit tests
+        run: dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+
+      - name: Upload coverage reports to Codecov
+        if: success()
+        uses: codecov/codecov-action@v3
+        with:
+          directory: ./coverage
+          fail_ci_if_error: false
+
+  build-and-deploy:
+    name: Build and Deploy
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions: 
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build for production
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Publish application
+        run: dotnet publish BlueWhatsapp.Api/BlueWhatsapp.Api.csproj --configuration Release --no-build --output ./publish
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.WHATSAPPBOT_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.WHATSAPPBOT_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.WHATSAPPBOT_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }}
+          _dockerfilePathKey_: _dockerfilePath_
+          registryUrl: 
+          registryUsername: ${{ secrets.WHATSAPPBOT_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.WHATSAPPBOT_REGISTRY_PASSWORD }}
+          containerAppName: whatsapp-bot
+          resourceGroup: bot
+          imageToBuild: default/[parameters('containerAppName')]:${{ github.sha }}
+          _buildArgumentsKey_: |
+            _buildArgumentsValues_
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Run security analysis
+        run: |
+          dotnet list package --vulnerable --include-transitive 2>&1 | tee security-report.txt
+          if grep -q "has the following vulnerable packages" security-report.txt; then
+            echo "❌ Vulnerable packages found!"
+            cat security-report.txt
+            exit 1
+          else
+            echo "✅ No vulnerable packages found"
+          fi
+
+      - name: Upload security report
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-report
+          path: security-report.txt
