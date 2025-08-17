@@ -14,10 +14,18 @@ public class AskForFullNameState : BaseConversationState
         IMessageCreator messageCreator = GetMessageCreator();
         int languageId = GetLanguageId(context);
 
-        // This state asks for the full name, so we expect the previous state to have set the schedule
-        // The userMessage here should be empty (first call) or contain validation from previous state
-        context.CurrentStep = ConversationStep.AskForRoomNumber;
-
-        return messageCreator.CreateAskingForNameMessage(context.UserNumber, languageId);
+        // Validate full name (should not be empty or too short)
+        if (!string.IsNullOrWhiteSpace(userMessage) && userMessage.Trim().Length >= 2)
+        {
+            context.FullName = userMessage.Trim();
+            context.CurrentStep = ConversationStep.AskForRoomNumber;
+            return messageCreator.CreateAskForRoomNumberMessage(context.UserNumber, languageId);
+        }
+        else
+        {
+            // Invalid name or first call, ask for name - stay in AskForFullName state
+            context.CurrentStep = ConversationStep.AskForFullName;
+            return messageCreator.CreateAskingForNameMessage(context.UserNumber, languageId);
+        }
     }
 }

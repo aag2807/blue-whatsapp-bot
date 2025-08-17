@@ -124,6 +124,9 @@ public abstract class BaseStateTest
         MockMessageCreator.Setup(mc => mc.CreateAskForChildrenCountMessage(It.IsAny<string>(), It.IsAny<int>()))
             .Returns(new CoreInteractiveMessage("123456789"));
 
+        MockMessageCreator.Setup(mc => mc.CreateAskForPhoneMessage(It.IsAny<string>(), It.IsAny<int>()))
+            .Returns(new CoreMessageToSend("Ask for phone", "123456789"));
+
         MockMessageCreator.Setup(mc => mc.CreateAskingEmailMessage(It.IsAny<string>(), It.IsAny<int>()))
             .Returns(new CoreMessageToSend("Ask for email", "123456789"));
 

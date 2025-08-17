@@ -266,6 +266,13 @@ public sealed class MessageCreator : IMessageCreator
     }
 
     /// <inheritdoc />
+    CoreMessageToSend IMessageCreator.CreateAskForPhoneMessage(string userNumber, int languageId = 1)
+    {
+        string message = MultilingualMessageService.GetAskForPhoneMessage(languageId);
+        return new CoreMessageToSend(message, userNumber);
+    }
+
+    /// <inheritdoc />
     CoreMessageToSend IMessageCreator.CreateAskingEmailMessage(string userNumber, int languageId = 1)
     {
         string message = MultilingualMessageService.GetAskForEmailMessage(languageId);

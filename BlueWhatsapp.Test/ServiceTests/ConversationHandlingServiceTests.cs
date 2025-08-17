@@ -62,7 +62,7 @@ public class ConversationHandlingServiceTests : BaseStateTest
         context.CurrentStep = ConversationStep.AskForFullName;
         
         // Act
-        var result = await ((IConversationHandlingService)_conversationHandlingService).HandleState(context, "");
+        var result = await ((IConversationHandlingService)_conversationHandlingService).HandleState(context, "John Doe");
 
         // Assert
         // AskForFullName should transition to AskForRoomNumber and return a message

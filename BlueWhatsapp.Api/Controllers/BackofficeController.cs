@@ -201,15 +201,36 @@ public class BackofficeController : Controller
     }
 
     /// <summary>
-    /// 
+    /// Checks if the current user has admin privileges based on their email domain or specific admin emails
     /// </summary>
-    /// <returns></returns>
+    /// <returns>True if user is admin, false otherwise</returns>
     private bool IsUserAdmin()
     {
-        var adminIds = new List<int>() { 1, 2 };
+        try
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            string? userEmail = HttpContext.Session.GetString("UserEmail");
+            
+            if (!userId.HasValue || string.IsNullOrEmpty(userEmail))
+            {
+                return false;
+            }
 
-        int? userId = HttpContext.Session.GetInt32("UserId");
+            // Check if user email is in admin list or has admin domain
+            var adminEmails = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "admin@admin.com",
+                "dmartinez@bluemall.com.do"
+            };
 
-        return adminIds.Contains((int)userId!);
+            // Admin by email or by domain
+            return adminEmails.Contains(userEmail) || 
+                   userEmail.EndsWith("@bluemall.com.do", StringComparison.OrdinalIgnoreCase);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error checking admin status: {ex.Message}");
+            return false; // Fail securely - deny access on error
+        }
     }
 }

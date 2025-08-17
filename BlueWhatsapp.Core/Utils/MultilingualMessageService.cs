@@ -288,6 +288,25 @@ public static class MultilingualMessageService
     }
 
     /// <summary>
+    /// Gets the ask for phone number message in the specified language
+    /// </summary>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>Ask for phone number message text</returns>
+    public static string GetAskForPhoneMessage(int languageId)
+    {
+        return languageId switch
+        {
+            1 => "Indique su número de teléfono",
+            2 => "Please provide your phone number",
+            3 => "Veuillez fournir votre numéro de téléphone",
+            4 => "Укажите ваш номер телефона",
+            5 => "Indique seu número de telefone",
+            6 => "请提供您的电话号码",
+            _ => GetAskForPhoneMessage(1)
+        };
+    }
+
+    /// <summary>
     /// Gets the ask for email message in the specified language
     /// </summary>
     /// <param name="languageId">Language ID</param>
@@ -448,7 +467,9 @@ public static class MultilingualMessageService
                 Zones = "Zones",
                 Hotels = "Hôtels",
                 Schedules = "Horaires",
-                Quantity = "Quantité"
+                Quantity = "Quantité",
+                Options = "Options",
+                GroupSize = "Taille du Groupe"
             },
             4 => new InteractiveButtonLabels
             {
@@ -456,7 +477,9 @@ public static class MultilingualMessageService
                 Zones = "Зоны",
                 Hotels = "Отели",
                 Schedules = "Расписания",
-                Quantity = "Количество"
+                Quantity = "Количество",
+                Options = "Опции",
+                GroupSize = "Размер Группы"
             },
             5 => new InteractiveButtonLabels
             {
@@ -464,7 +487,9 @@ public static class MultilingualMessageService
                 Zones = "Zonas",
                 Hotels = "Hotéis",
                 Schedules = "Horários",
-                Quantity = "Quantidade"
+                Quantity = "Quantidade",
+                Options = "Opções",
+                GroupSize = "Tamanho do Grupo"
             },
             6 => new InteractiveButtonLabels
             {
@@ -472,7 +497,9 @@ public static class MultilingualMessageService
                 Zones = "区域",
                 Hotels = "酒店",
                 Schedules = "时间表",
-                Quantity = "数量"
+                Quantity = "数量",
+                Options = "选项",
+                GroupSize = "群组大小"
             },
             _ => GetButtonLabels(1)
         };

@@ -71,44 +71,44 @@ public class ConversationFlowIntegrationTests : BaseStateTest
 
         // 7. Ask for Full Name -> Ask for Room Number
         context.CurrentStep = ConversationStep.AskForFullName;
-        var result7 = await ((IConversationHandlingService)_conversationHandlingService).HandleState(context, "");
+        var result7 = await ((IConversationHandlingService)_conversationHandlingService).HandleState(context, "John Doe");
         Assert.That(context.CurrentStep, Is.EqualTo(ConversationStep.AskForRoomNumber));
+        Assert.That(context.FullName, Is.EqualTo("John Doe"));
 
         // 8. Ask for Room Number -> Ask for Adults
         context.CurrentStep = ConversationStep.AskForRoomNumber;
-        var result8 = await ((IConversationHandlingService)_conversationHandlingService).HandleState(context, "John Doe");
+        var result8 = await ((IConversationHandlingService)_conversationHandlingService).HandleState(context, "101");
         Assert.That(context.CurrentStep, Is.EqualTo(ConversationStep.AskForAdults));
-        Assert.That(context.FullName, Is.EqualTo("John Doe"));
+        Assert.That(context.RoomNumber, Is.EqualTo("101"));
 
         // 9. Ask for Adults -> Ask for Children
         context.CurrentStep = ConversationStep.AskForAdults;
-        var result9 = await ((IConversationHandlingService)_conversationHandlingService).HandleState(context, "101");
+        var result9 = await ((IConversationHandlingService)_conversationHandlingService).HandleState(context, "2");
         Assert.That(context.CurrentStep, Is.EqualTo(ConversationStep.AskForChildren));
-        Assert.That(context.RoomNumber, Is.EqualTo("101"));
+        Assert.That(context.Adults, Is.EqualTo(2));
 
         // 10. Ask for Children -> Ask for Phone
         context.CurrentStep = ConversationStep.AskForChildren;
-        var result10 = await ((IConversationHandlingService)_conversationHandlingService).HandleState(context, "2");
+        var result10 = await ((IConversationHandlingService)_conversationHandlingService).HandleState(context, "1");
         Assert.That(context.CurrentStep, Is.EqualTo(ConversationStep.AskForPhone));
-        Assert.That(context.Adults, Is.EqualTo(2));
+        Assert.That(context.Children, Is.EqualTo(1));
 
         // 11. Ask for Phone -> Ask for Email
         context.CurrentStep = ConversationStep.AskForPhone;
-        var result11 = await ((IConversationHandlingService)_conversationHandlingService).HandleState(context, "1");
+        var result11 = await ((IConversationHandlingService)_conversationHandlingService).HandleState(context, "1234567890");
         Assert.That(context.CurrentStep, Is.EqualTo(ConversationStep.AskForEmail));
-        Assert.That(context.Children, Is.EqualTo(1));
+        Assert.That(context.ExtraInformation, Is.EqualTo("1234567890"));
 
         // 12. Ask for Email -> Reservation Complete
         context.CurrentStep = ConversationStep.AskForEmail;
-        var result12 = await ((IConversationHandlingService)_conversationHandlingService).HandleState(context, "1234567890");
+        var result12 = await ((IConversationHandlingService)_conversationHandlingService).HandleState(context, "john@example.com");
         Assert.That(context.CurrentStep, Is.EqualTo(ConversationStep.ReservationComplete));
-        Assert.That(context.ExtraInformation, Is.EqualTo("1234567890"));
+        Assert.That(context.Email, Is.EqualTo("john@example.com"));
 
         // 13. Reservation Complete -> Finish
         context.CurrentStep = ConversationStep.ReservationComplete;
-        var result13 = await ((IConversationHandlingService)_conversationHandlingService).HandleState(context, "john@example.com");
+        var result13 = await ((IConversationHandlingService)_conversationHandlingService).HandleState(context, "");
         Assert.That(context.IsComplete, Is.True);
-        Assert.That(context.Email, Is.EqualTo("john@example.com"));
     }
 
     [Test]

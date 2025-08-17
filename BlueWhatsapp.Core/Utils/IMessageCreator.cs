@@ -125,6 +125,14 @@ public interface IMessageCreator
     CoreInteractiveMessage CreateAskForChildrenCountMessage(string userNumber, int languageId = 1);
 
     /// <summary>
+    /// Creates an ask for phone number message in the specified language
+    /// </summary>
+    /// <param name="userNumber">The destination phone number</param>
+    /// <param name="languageId">Language ID</param>
+    /// <returns>An ask for phone number message</returns>
+    CoreMessageToSend CreateAskForPhoneMessage(string userNumber, int languageId = 1);
+
+    /// <summary>
     /// Creates an asking for email message in the specified language
     /// </summary>
     /// <param name="userNumber">The destination phone number</param>

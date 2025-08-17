@@ -286,10 +286,10 @@ public class ErrorScenarioTests : BaseStateTest
 
         // Assert
         Assert.That(result, Is.Not.Null);
-        if (shouldBeValid && input.Trim().Length >= 2)
+        if (shouldBeValid && !string.IsNullOrWhiteSpace(input))
         {
             Assert.That(context.CurrentStep, Is.EqualTo(ConversationStep.AskForAdults));
-            Assert.That(context.FullName, Is.EqualTo(input.Trim()));
+            Assert.That(context.RoomNumber, Is.EqualTo(input.Trim()));
         }
         else
         {
@@ -297,12 +297,14 @@ public class ErrorScenarioTests : BaseStateTest
         }
     }
 
-    [TestCase("101A", true)] // Alphanumeric room
-    [TestCase("Presidential Suite", true)] // Text room number
-    [TestCase("Rm-205", true)] // Room with dash
-    [TestCase("Floor 3, Room 12", true)] // Complex room description
-    [TestCase("", false)] // Empty room number
-    public async Task AskForAdultsState_WithVariousRoomNumbers_ShouldHandleCorrectly(string input, bool shouldBeValid)
+    [TestCase("1", true)] // Minimum valid adults
+    [TestCase("25", true)] // Normal adults count
+    [TestCase("50", true)] // Maximum valid adults
+    [TestCase("0", false)] // Below minimum
+    [TestCase("51", false)] // Above maximum
+    [TestCase("invalid", false)] // Non-numeric input
+    [TestCase("", false)] // Empty input
+    public async Task AskForAdultsState_WithVariousAdultsCounts_ShouldHandleCorrectly(string input, bool shouldBeValid)
     {
         // Arrange
         var state = new AskForAdultsState();
@@ -317,7 +319,7 @@ public class ErrorScenarioTests : BaseStateTest
         if (shouldBeValid)
         {
             Assert.That(context.CurrentStep, Is.EqualTo(ConversationStep.AskForChildren));
-            Assert.That(context.RoomNumber, Is.EqualTo(input.Trim()));
+            Assert.That(context.Adults, Is.EqualTo(int.Parse(input)));
         }
         else
         {
@@ -345,8 +347,8 @@ public class ErrorScenarioTests : BaseStateTest
         context2.UserNumber = "User2";
 
         // Act - Process both states simultaneously
-        var task1 = state1.Process(context1, "5"); // Valid adults count
-        var task2 = state2.Process(context2, "2"); // Valid children count
+        var task1 = state1.Process(context1, "2"); // Valid children count
+        var task2 = state2.Process(context2, "1234567890"); // Valid phone number
         
         var results = await Task.WhenAll(task1, task2);
 
@@ -355,10 +357,10 @@ public class ErrorScenarioTests : BaseStateTest
         Assert.That(results[1], Is.Not.Null);
         
         Assert.That(context1.CurrentStep, Is.EqualTo(ConversationStep.AskForPhone));
-        Assert.That(context1.Adults, Is.EqualTo(5));
+        Assert.That(context1.Children, Is.EqualTo(2));
         
         Assert.That(context2.CurrentStep, Is.EqualTo(ConversationStep.AskForEmail));
-        Assert.That(context2.Children, Is.EqualTo(2));
+        Assert.That(context2.ExtraInformation, Is.EqualTo("1234567890"));
     }
 
     #endregion

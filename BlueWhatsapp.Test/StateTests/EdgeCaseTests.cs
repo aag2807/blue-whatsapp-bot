@@ -78,7 +78,7 @@ public class EdgeCaseTests : BaseStateTest
     }
 
     [Test]
-    public async Task AskForChildrenState_WithZeroAdults_ShouldStayInSameState()
+    public async Task AskForChildrenState_WithValidChildrenCount_ShouldTransition()
     {
         // Arrange
         var state = new AskForChildrenState();
@@ -90,7 +90,8 @@ public class EdgeCaseTests : BaseStateTest
 
         // Assert
         Assert.That(result, Is.Not.Null);
-        Assert.That(context.CurrentStep, Is.EqualTo(ConversationStep.AskForChildren));
+        Assert.That(context.CurrentStep, Is.EqualTo(ConversationStep.AskForPhone));
+        Assert.That(context.Children, Is.EqualTo(0));
     }
 
     [Test]
@@ -174,7 +175,7 @@ public class EdgeCaseTests : BaseStateTest
     }
 
     [Test]
-    public async Task AskForRoomNumberState_WithSingleCharacterName_ShouldStayInSameState()
+    public async Task AskForRoomNumberState_WithSingleCharacterRoom_ShouldTransition()
     {
         // Arrange
         var state = new AskForRoomNumberState();
@@ -186,7 +187,8 @@ public class EdgeCaseTests : BaseStateTest
 
         // Assert
         Assert.That(result, Is.Not.Null);
-        Assert.That(context.CurrentStep, Is.EqualTo(ConversationStep.AskForRoomNumber));
+        Assert.That(context.CurrentStep, Is.EqualTo(ConversationStep.AskForAdults));
+        Assert.That(context.RoomNumber, Is.EqualTo("A"));
     }
 
     #endregion
@@ -346,11 +348,11 @@ public class EdgeCaseTests : BaseStateTest
 
     #region Boundary Condition Tests
 
-    [TestCase("1", true)] // Minimum valid adults
-    [TestCase("50", true)] // Maximum valid adults
-    [TestCase("51", false)] // Over maximum
-    [TestCase("0", false)] // Below minimum
-    public async Task AskForChildrenState_AdultsBoundaryConditions(string input, bool shouldTransition)
+    [TestCase("0", true)] // Minimum valid children
+    [TestCase("20", true)] // Maximum valid children
+    [TestCase("21", false)] // Over maximum
+    [TestCase("-1", false)] // Below minimum
+    public async Task AskForChildrenState_ChildrenBoundaryConditions(string input, bool shouldTransition)
     {
         // Arrange
         var state = new AskForChildrenState();
@@ -365,7 +367,7 @@ public class EdgeCaseTests : BaseStateTest
         if (shouldTransition)
         {
             Assert.That(context.CurrentStep, Is.EqualTo(ConversationStep.AskForPhone));
-            Assert.That(context.Adults, Is.EqualTo(int.Parse(input)));
+            Assert.That(context.Children, Is.EqualTo(int.Parse(input)));
         }
         else
         {
@@ -373,11 +375,12 @@ public class EdgeCaseTests : BaseStateTest
         }
     }
 
-    [TestCase("0", true)] // Minimum valid children
-    [TestCase("20", true)] // Maximum valid children  
-    [TestCase("21", false)] // Over maximum
-    [TestCase("-1", false)] // Below minimum
-    public async Task AskForPhoneState_ChildrenBoundaryConditions(string input, bool shouldTransition)
+    [TestCase("1234567890", true)] // Valid phone
+    [TestCase("123-456-7890", true)] // Valid phone with dashes
+    [TestCase("(555) 123-4567", true)] // Valid phone with parentheses
+    [TestCase("123", false)] // Too short
+    [TestCase("invalid", false)] // Invalid format
+    public async Task AskForPhoneState_PhoneValidationBoundaryConditions(string input, bool shouldTransition)
     {
         // Arrange
         var state = new AskForPhoneState();
@@ -392,7 +395,7 @@ public class EdgeCaseTests : BaseStateTest
         if (shouldTransition)
         {
             Assert.That(context.CurrentStep, Is.EqualTo(ConversationStep.AskForEmail));
-            Assert.That(context.Children, Is.EqualTo(int.Parse(input)));
+            Assert.That(context.ExtraInformation, Is.EqualTo(input.Trim()));
         }
         else
         {
@@ -400,12 +403,12 @@ public class EdgeCaseTests : BaseStateTest
         }
     }
 
-    [TestCase("AB", true)] // Minimum valid name length
-    [TestCase("John Doe", true)] // Normal name
-    [TestCase("A", false)] // Too short
+    [TestCase("101", true)] // Valid room number
+    [TestCase("A1B", true)] // Valid alphanumeric room
+    [TestCase("Presidential Suite", true)] // Valid suite name
     [TestCase("", false)] // Empty
     [TestCase("   ", false)] // Whitespace only
-    public async Task AskForRoomNumberState_NameLengthBoundaryConditions(string input, bool shouldTransition)
+    public async Task AskForRoomNumberState_RoomNumberBoundaryConditions(string input, bool shouldTransition)
     {
         // Arrange
         var state = new AskForRoomNumberState();
@@ -420,7 +423,7 @@ public class EdgeCaseTests : BaseStateTest
         if (shouldTransition)
         {
             Assert.That(context.CurrentStep, Is.EqualTo(ConversationStep.AskForAdults));
-            Assert.That(context.FullName, Is.EqualTo(input.Trim()));
+            Assert.That(context.RoomNumber, Is.EqualTo(input.Trim()));
         }
         else
         {
@@ -432,17 +435,16 @@ public class EdgeCaseTests : BaseStateTest
 
     #region Phone Validation Tests
 
-    [TestCase("1234567", true)] // Minimum length
-    [TestCase("123456789012345", true)] // Maximum length
-    [TestCase("123-456-7890", true)] // With dashes
-    [TestCase("+1 (555) 123-4567", true)] // International format
-    [TestCase("555.123.4567", true)] // With dots
-    [TestCase("123456", false)] // Too short
-    [TestCase("1234567890123456", false)] // Too long
-    [TestCase("abc123def", false)] // Contains letters
+    [TestCase("user@example.com", true)] // Valid email
+    [TestCase("test.email@domain.org", true)] // Valid email with dot
+    [TestCase("john.doe@company.co.uk", true)] // Valid email with subdomain
+    [TestCase("invalid-email", false)] // No @ symbol
+    [TestCase("@example.com", false)] // Missing username
+    [TestCase("user@", false)] // Missing domain
     [TestCase("", false)] // Empty
     [TestCase("   ", false)] // Whitespace only
-    public async Task AskForEmailState_PhoneValidationTests(string input, bool shouldBeValid)
+    [TestCase("user.example.com", false)] // Missing @ symbol
+    public async Task AskForEmailState_EmailValidationTests(string input, bool shouldBeValid)
     {
         // Arrange
         var state = new AskForEmailState();
@@ -453,14 +455,15 @@ public class EdgeCaseTests : BaseStateTest
         var result = await state.Process(context, input);
 
         // Assert
-        Assert.That(result, Is.Not.Null);
         if (shouldBeValid)
         {
+            Assert.That(result, Is.Null); // Should return null to trigger transition
             Assert.That(context.CurrentStep, Is.EqualTo(ConversationStep.ReservationComplete));
-            Assert.That(context.ExtraInformation, Is.EqualTo(input.Trim()));
+            Assert.That(context.Email, Is.EqualTo(input.Trim()));
         }
         else
         {
+            Assert.That(result, Is.Not.Null);
             Assert.That(context.CurrentStep, Is.EqualTo(ConversationStep.AskForEmail));
         }
     }

@@ -15,18 +15,19 @@ public class AskForPhoneState : BaseConversationState
         IMessageCreator messageCreator = GetMessageCreator();
         int languageId = GetLanguageId(context);
         
-        // Validate children count (should be 0 or positive, max reasonable limit)
-        if (int.TryParse(userMessage, out int children) && children >= 0 && children <= 20)
+        // Validate phone number
+        if (IsValidPhoneNumber(userMessage))
         {
-            context.Children = children;
+            // Store phone number in ExtraInformation field since there's no dedicated Phone field
+            context.ExtraInformation = userMessage.Trim();
             context.CurrentStep = ConversationStep.AskForEmail;
             return messageCreator.CreateAskingEmailMessage(context.UserNumber, languageId);
         }
         else
         {
-            // Invalid children count, ask again - stay in AskForPhone state
+            // Invalid phone number, ask again - stay in AskForPhone state
             context.CurrentStep = ConversationStep.AskForPhone;
-            return messageCreator.CreateAskForChildrenCountMessage(context.UserNumber, languageId);
+            return messageCreator.CreateAskForPhoneMessage(context.UserNumber, languageId);
         }
     }
 
@@ -39,7 +40,7 @@ public class AskForPhoneState : BaseConversationState
             return false;
 
         // Remove common separators and spaces
-        string cleanPhone = Regex.Replace(phone, @"[\s\-\(\)\+]", "");
+        string cleanPhone = Regex.Replace(phone, @"[\s\-\(\)\+\.]", "");
         
         // Check if it's all digits and has reasonable length (7-15 digits)
         return Regex.IsMatch(cleanPhone, @"^\d{7,15}$");
