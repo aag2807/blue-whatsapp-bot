@@ -1,4 +1,5 @@
 ﻿using BlueWhatsapp.Core.Models;
+using BlueWhatsapp.Core.Options;
 using BlueWhatsapp.Core.Services;
 using BlueWhatsapp.Core.Services.ChatService;
 using BlueWhatsapp.Core.Utils;
@@ -16,6 +17,10 @@ internal static class DomainServiceExtensions
     /// <param name="builder">The WebApplicationBuilder instance used to register services.</param>
     internal static void ConfigureDomainServices(this WebApplicationBuilder builder)
     {
+        // Configure WhatsApp Cloud API options
+        builder.Services.Configure<WhatsAppCloudOptions>(
+            builder.Configuration.GetSection(WhatsAppCloudOptions.SectionName));
+        
         builder.Services.AddTransient<IWhatsappCloudService, WhatsappCloudService>();
         builder.Services.AddTransient<IMessageService, MessageService>();
         builder.Services.AddTransient<IConversationStateService, ConversationStateService>();

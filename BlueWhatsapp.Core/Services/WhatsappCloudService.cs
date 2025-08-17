@@ -5,38 +5,65 @@ using BlueWhatsapp.Core.Models;
 using BlueWhatsapp.Core.Models.Messages;
 using BlueWhatsapp.Core.Models.Messages.Interactive;
 using BlueWhatsapp.Core.Models.Schedule;
+using BlueWhatsapp.Core.Options;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace BlueWhatsapp.Core.Services;
 
-public sealed class WhatsappCloudService(IAppLogger logger) : IWhatsappCloudService
+public sealed class WhatsappCloudService(IAppLogger logger, IOptions<WhatsAppCloudOptions> options) : IWhatsappCloudService
 {
+    private readonly WhatsAppCloudOptions _options = options.Value;
+
     /// <inheritdoc />
     async Task<bool> IWhatsappCloudService.SendMessage<T>(T model)
     {
-        string  json = JsonConvert.SerializeObject(model);
-        byte[] byteData = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(model));
-        using var client = new HttpClient();
-        using var content = new ByteArrayContent(byteData);
+        // Validate configuration
+        if (string.IsNullOrEmpty(_options.AccessToken))
+        {
+            logger.LogError("WhatsApp Cloud API AccessToken is not configured");
+            return false;
+        }
 
-        string endpoint = "https://graph.facebook.com/v22.0";
-        string phoneNumberId = "559595107241645";
-        string accessToken =
-            "EAAN28uo8ybUBO46hVhzVgyrZApjV8fjnoz37sNKsMOz8JZB1YfcNxsO0pOezTXKwijfKQJ2UzviE4BfbXOZCTsQpDYOX0xKApZB7gJlwCtmIbLNmofV6vr2qZCDC6I7KSEZC36cJye7oZChUqUU4NPSNfFYKluPcxhsdNhSifroVVQ3ntMlZAh9ZBEOFpz6NxII87RgZDZD";
-        string uri = $"{endpoint}/{phoneNumberId}/messages";
+        if (string.IsNullOrEmpty(_options.PhoneNumberId))
+        {
+            logger.LogError("WhatsApp Cloud API PhoneNumberId is not configured");
+            return false;
+        }
+
+        string json = JsonConvert.SerializeObject(model);
+        byte[] byteData = Encoding.UTF8.GetBytes(json);
+
+        using var client = new HttpClient();
+        client.Timeout = TimeSpan.FromSeconds(_options.TimeoutSeconds);
+        
+        using var content = new ByteArrayContent(byteData);
+        string uri = $"{_options.BaseEndpoint}/{_options.PhoneNumberId}/messages";
 
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_options.AccessToken}");
+
+        if (_options.EnableLogging)
+        {
+            logger.LogInfo($"Sending WhatsApp message to {uri}");
+            logger.LogInfo($"Request payload: {json}");
+        }
 
         HttpResponseMessage response = await client.PostAsync(uri, content).ConfigureAwait(true);
         string responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+
+        if (_options.EnableLogging)
+        {
+            logger.LogInfo($"WhatsApp API Response Status: {response.StatusCode}");
+            logger.LogInfo($"WhatsApp API Response: {responseContent}");
+        }
 
         if (responseContent != null)
         {
             object? data = JsonConvert.DeserializeObject<object>(responseContent);
             if (!response.IsSuccessStatusCode)
             {
-                logger.LogError(data);
+                logger.LogError($"WhatsApp API Error: {data}");
             }
         }
         

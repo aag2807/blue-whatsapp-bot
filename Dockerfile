@@ -54,6 +54,14 @@ RUN chmod 644 appsettings.json
 ENV ASPNETCORE_URLS=http://+:80
 ENV ASPNETCORE_ENVIRONMENT=Production
 
+# WhatsApp Cloud API Configuration
+ENV WhatsAppCloud__AccessToken=""
+ENV WhatsAppCloud__PhoneNumberId=""
+ENV WhatsAppCloud__BaseEndpoint="https://graph.facebook.com/v22.0"
+ENV WhatsAppCloud__ApiVersion="v22.0"
+ENV WhatsAppCloud__TimeoutSeconds="30"
+ENV WhatsAppCloud__EnableLogging="true"
+
 # Create the SQLite database file
 RUN touch /app/WhatsappApp.db
 RUN chmod 666 /app/WhatsappApp.db
