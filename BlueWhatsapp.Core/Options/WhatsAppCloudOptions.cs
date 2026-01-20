@@ -39,4 +39,9 @@ public class WhatsAppCloudOptions
     /// Whether to enable request/response logging for debugging
     /// </summary>
     public bool EnableLogging { get; set; } = true;
+
+    /// <summary>
+    /// Webhook verify token for Meta webhook validation
+    /// </summary>
+    public string VerifyToken { get; set; } = string.Empty;
 }

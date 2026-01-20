@@ -37,6 +37,7 @@ docker run -d \
   -p 8080:80 \
   -e WhatsAppCloud__AccessToken="your_access_token" \
   -e WhatsAppCloud__PhoneNumberId="your_phone_number_id" \
+  -e WhatsAppCloud__VerifyToken="your_verify_token" \
   -v $(pwd)/data:/app/data \
   blue-whatsapp-bot
 ```
@@ -49,6 +50,7 @@ docker run -d \
 |----------|-------------|---------|
 | `WhatsAppCloud__AccessToken` | WhatsApp Business API access token | `EAAN28uo8ybU...` |
 | `WhatsAppCloud__PhoneNumberId` | Your WhatsApp Business phone number ID | `559595107241645` |
+| `WhatsAppCloud__VerifyToken` | Webhook verify token (you choose this) | `my_secure_token_123` |
 
 ### Optional Environment Variables
 
@@ -153,6 +155,15 @@ The SQLite database is stored in `/app/data` inside the container. Make sure to:
 ```bash
 # Create data directory
 mkdir -p ./data
+
+# Copy environment template
+cp env.example .env
+
+# Edit .env file with your credentials
+# Required:
+#   - WHATSAPP_ACCESS_TOKEN
+#   - WHATSAPP_PHONE_NUMBER_ID
+#   - WHATSAPP_VERIFY_TOKEN
 
 # Run with volume mount
 docker run -v $(pwd)/data:/app/data blue-whatsapp-bot

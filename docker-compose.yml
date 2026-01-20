@@ -1,4 +1,4 @@
-﻿version: '3.8'
+version: '3.8'
 
 services:
   blue-whatsapp-bot:
@@ -17,6 +17,7 @@ services:
       # Or use .env file (recommended for production)
       - WhatsAppCloud__AccessToken=${WHATSAPP_ACCESS_TOKEN:-YOUR_WHATSAPP_ACCESS_TOKEN_HERE}
       - WhatsAppCloud__PhoneNumberId=${WHATSAPP_PHONE_NUMBER_ID:-YOUR_PHONE_NUMBER_ID_HERE}
+      - WhatsAppCloud__VerifyToken=${WHATSAPP_VERIFY_TOKEN:-YOUR_VERIFY_TOKEN_HERE}
       - WhatsAppCloud__BaseEndpoint=https://graph.facebook.com/v22.0
       - WhatsAppCloud__ApiVersion=v22.0
       - WhatsAppCloud__TimeoutSeconds=30
@@ -48,3 +49,4 @@ volumes:
 # Create a .env file in the same directory with:
 # WHATSAPP_ACCESS_TOKEN=your_actual_token
 # WHATSAPP_PHONE_NUMBER_ID=your_actual_phone_id
+# WHATSAPP_VERIFY_TOKEN=your_verify_token

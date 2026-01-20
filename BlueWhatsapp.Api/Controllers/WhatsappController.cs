@@ -1,4 +1,4 @@
-﻿using BlueWhatsapp.Api.Hubs;
+using BlueWhatsapp.Api.Hubs;
 using BlueWhatsapp.Api.models.DTO;
 using BlueWhatsapp.Api.models.DTO.Messages;
 using BlueWhatsapp.Api.Utils;
@@ -10,8 +10,10 @@ using BlueWhatsapp.Core.Persistence;
 using BlueWhatsapp.Core.Services;
 using BlueWhatsapp.Core.Services.ChatService;
 using BlueWhatsapp.Core.Utils;
+using BlueWhatsapp.Core.Options;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Options;
 using Quartz.Util;
 
 namespace BlueWhatsapp.Api.Controllers;
@@ -23,6 +25,7 @@ public class WhatsappController : ControllerBase
     private readonly IAppLogger _logger;
     private readonly IHubContext<MessagesHub> _hubContext;
     private readonly IChatResponseService _chatResponseService;
+    private readonly WhatsAppCloudOptions _whatsAppOptions;
 
     /// <summary>
     /// Controller responsible for handling API endpoints related to WhatsApp integrations.
@@ -31,11 +34,16 @@ public class WhatsappController : ControllerBase
     /// This controller provides functionalities such as validating tokens, handling incoming messages,
     /// and checking the health status of the service.
     /// </remarks>
-    public WhatsappController(IAppLogger logger, IHubContext<MessagesHub> hubContext, IChatResponseService chatResponseService)
+    public WhatsappController(
+        IAppLogger logger, 
+        IHubContext<MessagesHub> hubContext, 
+        IChatResponseService chatResponseService,
+        IOptions<WhatsAppCloudOptions> whatsAppOptions)
     {
         _logger = logger;
         _hubContext = hubContext;
         _chatResponseService = chatResponseService;
+        _whatsAppOptions = whatsAppOptions.Value;
     }
 
     /// <summary>
@@ -43,30 +51,44 @@ public class WhatsappController : ControllerBase
     /// </summary>
     /// <returns>The challenge response.</returns>
     [HttpGet]
-    public async Task<IActionResult> ValidateToken([FromQuery(Name = "hub.mode")] string mode, [FromQuery(Name = "hub.verify_token")] string token, [FromQuery(Name = "hub.challenge")] string challenge)
+    public IActionResult ValidateToken([FromQuery(Name = "hub.mode")] string mode, [FromQuery(Name = "hub.verify_token")] string token, [FromQuery(Name = "hub.challenge")] string challenge)
     {
         try
         {
             _logger.LogInfo("verify-token");
+            _logger.LogInfo($"Received mode: {mode}");
+            _logger.LogInfo($"Received token: {token}");
+            _logger.LogInfo($"Received challenge: {challenge}");
 
-            const string accessToken =
-                "EAAJZBUAn6wJcBADZCDnZCT0VEIqfScKb37HVn8ZAfPwl5LXZBm3r4ZBeE0ZCeVgf9DgZCY6YrXqLb1TxE9ZAZBfNPMjUuIiOHy18wxmTcOEtqWZAj6DTZAm1JvtEt9gYgJHOCySPrGYrJDYXmZBUPISDV6ezOPdI8MVE8fKwHq0ZBxzyjhVtq5eLQXQRljWIXPNHwYPqkJF";
-
-            _logger.LogInfo($"token: {token}");
-            _logger.LogInfo($"challenge: {challenge}");
-
-            if (token.IsNullOrWhiteSpace() || token.IsNullOrWhiteSpace() || token is not accessToken)
+            // Validate that we have a configured verify token
+            if (string.IsNullOrWhiteSpace(_whatsAppOptions.VerifyToken))
             {
-                _logger.LogError("Invalid token");
-                return BadRequest();
+                _logger.LogError("VerifyToken is not configured in appsettings. Please set WhatsAppCloud__VerifyToken");
+                return StatusCode(500, new { error = "VerifyToken not configured" });
             }
 
+            // Validate the token matches
+            if (string.IsNullOrWhiteSpace(token) || token != _whatsAppOptions.VerifyToken)
+            {
+                _logger.LogError($"Invalid token received. Expected: {_whatsAppOptions.VerifyToken}, Received: {token}");
+                return Unauthorized(new { error = "Invalid verify token" });
+            }
+
+            // Validate mode
+            if (mode != "subscribe")
+            {
+                _logger.LogError($"Invalid mode: {mode}");
+                return BadRequest(new { error = "Invalid mode" });
+            }
+
+            _logger.LogInfo($"Webhook verification successful, returning challenge: {challenge}");
             return Ok(challenge);
         }
         catch (Exception ex)
         {
-            _logger.LogError($"token: {ex.Message}");
-            throw new Exception("issue happened");
+            _logger.LogError($"Error during token validation: {ex.Message}");
+            _logger.LogError(ex);
+            return StatusCode(500, new { error = "Internal server error during webhook verification" });
         }
     }
 
@@ -109,7 +131,7 @@ public class WhatsappController : ControllerBase
 
     [HttpGet("health")]
     [LogAction]
-    public async Task<IActionResult> Health()
+    public IActionResult Health()
     {
         return Ok(new { healthy = true });
     }
